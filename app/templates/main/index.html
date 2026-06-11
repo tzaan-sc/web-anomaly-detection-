@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Trang chủ | StudyDrive{% endblock %}
+
+{% block content %}
+<section class="p-4 p-md-5 bg-white border rounded-3 shadow-sm">
+    <span class="badge text-bg-success mb-3">Flask skeleton đang hoạt động</span>
+    <h1 class="display-6 fw-bold">StudyDrive</h1>
+    <p class="lead mb-4">
+        Nền tảng quản lý tài liệu học tập, thu thập structured log
+        và phát hiện hành vi truy cập bất thường.
+    </p>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="{{ url_for('documents.index') }}">
+            Mở module tài liệu
+        </a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('main.health') }}">
+            Kiểm tra /health
+        </a>
+    </div>
+</section>
+{% endblock %}

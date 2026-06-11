@@ -1,0 +1,11 @@
+body {
+    min-width: 320px;
+}
+
+code {
+    color: #b02a37;
+}
+
+.navbar-brand {
+    letter-spacing: 0.2px;
+}

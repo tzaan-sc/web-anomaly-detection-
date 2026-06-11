@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}500 | Lỗi hệ thống{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <div class="display-1 fw-bold">500</div>
+    <h1 class="h3">Hệ thống gặp lỗi</h1>
+    <p class="text-secondary">
+        Yêu cầu chưa thể xử lý. Chi tiết kỹ thuật đã được ghi vào log.
+    </p>
+    <a class="btn btn-primary" href="{{ url_for('main.index') }}">Về trang chủ</a>
+</div>
+{% endblock %}
