@@ -1,0 +1,1 @@
+"""Alert model module placeholder."""

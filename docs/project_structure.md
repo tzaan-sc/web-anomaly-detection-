@@ -1,8 +1,14 @@
-# StudyDrive – Web Anomaly Detection
+# Cấu trúc dự án StudyDrive
 
-Đề tài: **Xây dựng hệ thống phát hiện hành vi truy cập bất thường trên ứng dụng web bằng Machine Learning**.
+## Mục tiêu tổ chức
 
-## Cấu trúc thư mục hiện tại
+- `app/` là package Flask chính duy nhất.
+- `ml/` chứa pipeline Machine Learning.
+- `scripts/` chứa script seed, reset, export và mô phỏng hành vi.
+- `data/` chứa dữ liệu thô, xử lý và mẫu.
+- `artifacts/` chứa model, metrics và figures sinh ra trong quá trình ML.
+
+## Cây thư mục hiện tại
 
 ```text
 web-anomaly-detection/
@@ -83,52 +89,18 @@ web-anomaly-detection/
 └── run.py
 ```
 
-## Vai trò từng package
+## Quy tắc đặt tên và trách nhiệm
 
-- `app/`: package Flask chính duy nhất cho web app.
-- `app/blueprints/`: route theo nghiệp vụ.
-- `app/models/`: SQLAlchemy models (dùng `from app.extensions import db`).
-- `app/services/`: business/service layer.
-- `app/middleware/`: middleware như request logging.
-- `app/decorators/`: decorators phân quyền/authorization.
-- `ml/`: pipeline Machine Learning.
-- `scripts/`: seed/reset/export/simulator.
-- `data/`: dữ liệu raw/processed/samples.
-- `artifacts/`: model/metrics/figures sinh ra khi huấn luyện/đánh giá.
+- Model chỉ import `db` từ `app.extensions`.
+- Route nằm trong `app/blueprints/*/routes.py`.
+- Form nằm cạnh blueprint tương ứng.
+- Service không import Flask app toàn cục.
+- Middleware chỉ xử lý quan sát/chặn request, không giữ business logic lớn.
+- ML code chỉ đặt trong `ml/`.
+- Script vận hành/dữ liệu mẫu chỉ đặt trong `scripts/`.
 
-## Chạy ứng dụng
+## Ghi chú
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-python run.py
-```
-
-## Chạy test
-
-```powershell
-python -m pytest
-```
-
-## Quy tắc codebase
-
-- Chỉ tạo Flask app qua `create_app()` trong `app/__init__.py`.
-- Extension pattern:
-  - khai báo `db = SQLAlchemy()`, `csrf = CSRFProtect()` trong `app/extensions.py`.
-  - gọi `db.init_app(app)` và `csrf.init_app(app)` trong factory.
-- Không import Flask app toàn cục trong model/service/route.
-- Blueprint phải được đăng ký trong `create_app()`.
-- Không đổi route hiện có: `/`, `/health`, `/auth/login`, `/auth/logout`, `/documents/`, `/admin/`, `/alerts/`.
-
-## Lưu ý MySQL
-
-- Hệ thống hỗ trợ MySQL qua `DATABASE_URL`.
-- Ví dụ:
-
-```env
-DATABASE_URL=mysql+pymysql://root:MAT_KHAU@localhost:3306/studydrive
-```
-
-- Không commit file `.env` và không đưa secret/mật khẩu thật vào source code.
+- Không đổi `DATABASE_URL`.
+- Không chuyển MySQL sang SQLite.
+- Không commit secret hoặc `.env`.

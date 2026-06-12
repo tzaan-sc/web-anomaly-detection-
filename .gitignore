@@ -15,6 +15,9 @@ instance/
 *.db
 *.sqlite3
 
+# ML artifacts
+artifacts/models/*.joblib
+
 # IDE / OS
 .vscode/
 .idea/
