@@ -1,0 +1,1 @@
+"""Document model module placeholder."""
