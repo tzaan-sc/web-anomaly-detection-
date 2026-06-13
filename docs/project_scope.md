@@ -10,6 +10,8 @@
 
 **Thời gian thực hiện:** 08/06/2026 – 19/07/2026
 
+**Trạng thái hiện tại:** Đã hoàn thành phần thiết kế và setup Flask đến hết ngày 11/06/2026; ngày 12/06/2026 bắt đầu models, seed và reset demo.
+
 ---
 
 ## 2. Mô tả vấn đề
@@ -78,6 +80,16 @@ Admin quản lý tài khoản, metadata tài nguyên, request log, quá trình d
 * Không cho `VIEWER` chia sẻ tiếp, đổi tên, di chuyển, export hàng loạt hoặc xóa tệp.
 * Một cặp `file_id` và `shared_with_user_id` chỉ có một bản ghi chia sẻ đang hiệu lực.
 
+### 4.5. Quy tắc export
+
+* Mỗi lần export tạo một `ExportJob`.
+* CSV metadata là M0 và có thể hoàn thành đồng bộ.
+* ZIP là M1, chỉ làm sau khi M0 ổn định.
+* Bulk export chỉ gồm tệp do user sở hữu; `VIEWER` chỉ được download từng tệp được chia sẻ.
+* User chỉ xem và tải export job do chính mình tạo.
+
+---
+
 ### 4.4. Nguyên tắc authorization
 
 Mỗi request truy cập tệp phải kiểm tra ít nhất một trong hai điều kiện:
@@ -107,7 +119,7 @@ Machine Learning không thay thế cơ chế phân quyền. Dù mô hình chưa 
 | M0-05 | Danh sách, chi tiết và download tệp | BOLA |
 | M0-06 | Kiểm tra `OWNER/VIEWER/NONE` ở cấp đối tượng | BOLA |
 | M0-07 | Xóa mềm, thùng rác và khôi phục tệp | Delete Abuse |
-| M0-08 | Export danh sách tệp CSV | Export Abuse |
+| M0-08 | Tạo export job CSV metadata thuộc tệp do user sở hữu | Export Abuse |
 | M0-09 | Structured request logging | Cả ba |
 | M0-10 | Trang Admin xem, lọc và export log | Cả ba |
 | M0-11 | Script sinh normal và ba scenario bất thường | Cả ba |
@@ -158,8 +170,8 @@ Machine Learning không thay thế cơ chế phân quyền. Dù mô hình chưa 
 * Tìm kiếm, lọc, sắp xếp và phân trang.
 * Chia sẻ hoặc hủy chia sẻ từng tệp với quyền `VIEWER`.
 * Xem danh sách tệp được chia sẻ với mình.
-* Export danh sách tệp thành CSV.
-* Tạo export ZIP từ các tệp được phép khi chức năng M1-06 được triển khai.
+* Tạo export job CSV metadata cho các tệp do mình sở hữu.
+* Tạo export ZIP từ các tệp do mình sở hữu khi chức năng M1-06 được triển khai.
 * Xóa mềm, xem thùng rác, khôi phục và xóa vĩnh viễn sau xác nhận.
 * Xem profile và đổi mật khẩu.
 
@@ -186,7 +198,7 @@ Machine Learning không thay thế cơ chế phân quyền. Dù mô hình chưa 
 | U07 | Search/filter/pagination | User | Từ khóa, loại tệp, thời gian, trang | Danh sách phù hợp | Giữ query khi chuyển trang; không lộ tệp trái quyền |
 | U08 | Chia sẻ/hủy chia sẻ tệp | User | `file_id`, user nhận | Tạo/xóa `file_share` | Chỉ `OWNER`; không chia sẻ folder |
 | U09 | Tệp được chia sẻ | User | User hiện tại | Danh sách tệp có quyền `VIEWER` | Không cho sửa/xóa/chia sẻ tiếp |
-| U10 | Export CSV/ZIP | User | Bộ lọc hoặc danh sách `file_id` | CSV hoặc `export_job`/ZIP | Chỉ export tài nguyên được phép; ghi đủ log |
+| U10 | Export | User | Loại export, bộ lọc hoặc danh sách `file_id` thuộc sở hữu | `export_job`; CSV là M0, ZIP là M1 | Không bulk export tệp chỉ có quyền VIEWER; ghi đủ log |
 | U11 | Trash/restore/permanent delete | User | `file_id` | Thay đổi trạng thái hoặc xóa vật lý | Chỉ `OWNER`; có xác nhận; thao tác idempotent hợp lý |
 | U12 | Profile/đổi mật khẩu | User | Profile, mật khẩu cũ/mới | Cập nhật tài khoản | Password hash, không lưu plaintext |
 | A01 | Quản lý user | Admin | User ID, trạng thái | Danh sách/khóa/mở | User bị khóa không đăng nhập được |
@@ -207,6 +219,7 @@ folders
 files
 file_shares
 export_jobs
+export_job_items
 request_logs
 alerts
 ```
@@ -280,6 +293,15 @@ status
 output_path
 created_at
 completed_at
+```
+
+#### `export_job_items`
+
+```text
+id
+export_job_id
+file_id
+created_at
 ```
 
 #### `request_logs`
@@ -471,7 +493,7 @@ Hệ thống đánh dấu phiên có dấu hiệu IDOR/BOLA Scan kể cả khi r
 * Search, filter, sort và pagination.
 * Chia sẻ từng tệp; không chia sẻ folder.
 * Soft delete, thùng rác, khôi phục và xóa vĩnh viễn có xác nhận.
-* Export CSV; export ZIP theo `export_job` nếu hoàn thành M1.
+* Export CSV thông qua `export_job` là bắt buộc; export ZIP là M1.
 * Profile và đổi mật khẩu.
 * Admin quản lý user và metadata tệp.
 * Structured request logging.
