@@ -11,7 +11,7 @@ flowchart LR
     C --> D[Authorization Service]
     D --> E[Business Services]
 
-    E --> F[(SQLite Metadata DB)]
+    E --> F[(MySQL Metadata DB)]
     E --> G[Local File Storage]
     E --> H[Export Service]
 
@@ -140,7 +140,9 @@ detection_service
 
 Service chịu trách nhiệm transaction và không trộn trực tiếp với HTML rendering.
 
-### 3.6. Metadata Database
+### 3.6. MySQL Metadata Database
+
+Database chính là MySQL, truy cập thông qua SQLAlchemy và driver PyMySQL.
 
 Các bảng cốt lõi:
 
