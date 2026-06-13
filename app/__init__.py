@@ -66,6 +66,7 @@ def register_cli_commands(app: Flask) -> None:
     @app.cli.command("init-db")
     def init_db() -> None:
         """Create all SQLAlchemy tables currently declared by the project."""
-        # Import app.models here after models are added to the project.
+        from app import models  # noqa: F401
+
         db.create_all()
         click.echo("Đã khởi tạo database.")
