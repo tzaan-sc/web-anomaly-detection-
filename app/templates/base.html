@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand fw-semibold" href="{{ url_for('main.index') }}">
@@ -34,53 +35,99 @@
         </button>
 
         <div class="collapse navbar-collapse" id="mainNavbar">
+            <!-- Menu bên trái -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                {% if session.get("user_id") %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('documents.index') }}">
-                            Tệp của tôi
-                        </a>
-                    </li>
 
-                    {% if session.get("role", "")|upper == "ADMIN" %}
+                {% if current_user %}
+
+                    <!-- Menu dành cho USER -->
+                    {% if not current_user.is_admin %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('admin.index') }}">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('main.dashboard') }}"
+                            >
+                                Dashboard
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('documents.index') }}"
+                            >
+                                My Drive
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <!-- Menu dành cho ADMIN -->
+                    {% if current_user.is_admin %}
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('admin.index') }}"
+                            >
                                 Quản trị
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('alerts.index') }}">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('alerts.index') }}"
+                            >
                                 Cảnh báo
                             </a>
                         </li>
                     {% endif %}
+
                 {% endif %}
             </ul>
 
+            <!-- Khu vực tài khoản bên phải -->
             <div class="d-flex align-items-center gap-3 text-white">
-                {% if session.get("user_id") %}
-                    <span class="small">
-                        Xin chào, {{ session.get("username", "User") }}
-                        <span class="badge text-bg-secondary">
-                            {{ session.get("role", "user") }}
-                        </span>
-                    </span>
 
-                    <form method="post" action="{{ url_for('auth.logout') }}">
+                {% if current_user %}
+                    <a
+                        class="text-white text-decoration-none small"
+                        href="{{ url_for('auth.profile') }}"
+                    >
+                        Xin chào, {{ current_user.username }}
+
+                        <span class="badge text-bg-secondary">
+                            {{ current_user.role }}
+                        </span>
+                    </a>
+
+                    <form
+                        method="post"
+                        action="{{ url_for('auth.logout') }}"
+                        class="m-0"
+                    >
                         <input
                             type="hidden"
                             name="csrf_token"
                             value="{{ csrf_token() }}"
                         >
-                        <button class="btn btn-outline-light btn-sm" type="submit">
+
+                        <button
+                            class="btn btn-outline-light btn-sm"
+                            type="submit"
+                        >
                             Đăng xuất
                         </button>
                     </form>
+
                 {% else %}
-                    <a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.login') }}">
+                    <a
+                        class="btn btn-outline-light btn-sm"
+                        href="{{ url_for('auth.login') }}"
+                    >
                         Đăng nhập
                     </a>
                 {% endif %}
+
             </div>
         </div>
     </div>

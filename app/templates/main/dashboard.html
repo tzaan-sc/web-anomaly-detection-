@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | StudyDrive{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h2 mb-1">
+        Xin chào, {{ current_user.username }}
+    </h1>
+
+    <p class="text-secondary mb-0">
+        Tổng quan dữ liệu StudyDrive của bạn.
+    </p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">Tệp sở hữu</div>
+                <div class="display-6 fw-semibold">
+                    {{ owned_file_count }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">Thư mục</div>
+                <div class="display-6 fw-semibold">
+                    {{ folder_count }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">Được chia sẻ</div>
+                <div class="display-6 fw-semibold">
+                    {{ shared_file_count }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">Trong thùng rác</div>
+                <div class="display-6 fw-semibold">
+                    {{ trash_file_count }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h2 class="h5 mb-3">Thao tác nhanh</h2>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a
+                class="btn btn-primary"
+                href="{{ url_for('documents.index') }}"
+            >
+                Mở My Drive
+            </a>
+
+            <a
+                class="btn btn-outline-primary"
+                href="{{ url_for('documents.index') }}"
+            >
+                Upload tệp
+            </a>
+
+            <a
+                class="btn btn-outline-secondary"
+                href="{{ url_for('auth.profile') }}"
+            >
+                Hồ sơ
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <h2 class="h5 mb-3">Tệp gần đây</h2>
+
+        {% if recent_files %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tên tệp</th>
+                            <th>Định dạng</th>
+                            <th>Dung lượng</th>
+                            <th>Ngày tạo</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for file in recent_files %}
+                            <tr>
+                                <td>{{ file.original_name }}</td>
+                                <td>{{ file.file_extension|upper }}</td>
+                                <td>{{ file.file_size }} bytes</td>
+                                <td>
+                                    {{ file.created_at.strftime("%d/%m/%Y %H:%M") }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-secondary mb-0">
+                Chưa có tệp nào.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

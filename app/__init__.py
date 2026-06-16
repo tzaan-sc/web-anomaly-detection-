@@ -2,7 +2,7 @@ import os
 
 import click
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, g, request, session
 
 from app.config import CONFIG_BY_NAME
 from app.extensions import csrf, db
@@ -27,6 +27,7 @@ def create_app(config_name: str | None = None) -> Flask:
     os.makedirs(app.instance_path, exist_ok=True)
 
     register_extensions(app)
+    register_request_hooks(app)
     register_blueprints(app)
     register_error_handlers(app)
     register_cli_commands(app)
@@ -39,6 +40,45 @@ def register_extensions(app: Flask) -> None:
     db.init_app(app)
     csrf.init_app(app)
 
+def register_request_hooks(app: Flask) -> None:
+    """Load logged-in user and prevent caching protected HTML pages."""
+
+    @app.before_request
+    def load_logged_in_user() -> None:
+        from app.models import User
+
+        user_id = session.get("user_id")
+        g.current_user = None
+
+        if user_id is None:
+            return
+
+        user = db.session.get(User, user_id)
+
+        # Session không hợp lệ hoặc tài khoản đã bị khóa.
+        if user is None or not user.is_active:
+            session.clear()
+            return
+
+        g.current_user = user
+
+    @app.after_request
+    def prevent_html_cache(response):
+        # Tránh browser hiển thị lại dashboard sau khi logout bằng nút Back.
+        if response.content_type and response.content_type.startswith("text/html"):
+            response.headers["Cache-Control"] = (
+                "no-store, no-cache, must-revalidate, max-age=0"
+            )
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+
+        return response
+
+    @app.context_processor
+    def inject_current_user():
+        return {
+            "current_user": g.get("current_user"),
+        }
 
 def register_blueprints(app: Flask) -> None:
     """Import blueprints locally to avoid circular imports."""
@@ -56,11 +96,11 @@ def register_blueprints(app: Flask) -> None:
 
 
 def register_error_handlers(app: Flask) -> None:
-    from app.errors import page_not_found, server_error
+    from app.errors import forbidden, page_not_found, server_error
 
+    app.register_error_handler(403, forbidden)
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(500, server_error)
-
 
 def register_cli_commands(app: Flask) -> None:
     @app.cli.command("init-db")
