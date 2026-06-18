@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import mimetypes
 import uuid
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
@@ -531,6 +532,97 @@ def revoke_file_share(
         raise
     return share
 
+
+
+# Soft delete / trash lifecycle ---------------------------------------------
+
+def _ensure_owner_any_state(stored_file: StoredFile | None, owner: User) -> StoredFile:
+    """Return a file only when it belongs to owner, even if it is in trash."""
+    if stored_file is None or stored_file.owner_id != owner.id:
+        raise PermissionError("Only the owner may manage this file lifecycle")
+    return stored_file
+
+
+def soft_delete_file(*, stored_file: StoredFile | None, owner: User) -> StoredFile:
+    """Move an owned file to trash without removing physical bytes.
+
+    Calling this repeatedly is idempotent: a file already in trash stays in
+    trash and keeps its original deleted_at timestamp.
+    """
+    stored_file = _ensure_owner_any_state(stored_file, owner)
+    if stored_file.is_deleted:
+        return stored_file
+
+    stored_file.is_deleted = True
+    stored_file.deleted_at = datetime.now(timezone.utc)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    return stored_file
+
+
+def restore_file(*, stored_file: StoredFile | None, owner: User) -> StoredFile:
+    """Restore an owned trashed file to normal StudyDrive views.
+
+    If the file is already active, the call is idempotent.  When restoring a
+    deleted file, an active duplicate with the same owner/folder/name is
+    rejected to avoid confusing the normal file list.
+    """
+    stored_file = _ensure_owner_any_state(stored_file, owner)
+    if not stored_file.is_deleted:
+        return stored_file
+
+    duplicate = StoredFile.query.filter(
+        StoredFile.id != stored_file.id,
+        StoredFile.owner_id == owner.id,
+        StoredFile.folder_id == stored_file.folder_id,
+        StoredFile.is_deleted.is_(False),
+        func.lower(StoredFile.original_name) == stored_file.original_name.lower(),
+    ).first()
+    if duplicate is not None:
+        raise DocumentValidationError(
+            "Không thể khôi phục vì vị trí cũ đang có tệp cùng tên."
+        )
+
+    stored_file.is_deleted = False
+    stored_file.deleted_at = None
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    return stored_file
+
+
+def permanently_delete_file(*, stored_file: StoredFile | None, owner: User) -> Path | None:
+    """Permanently remove a trashed file's metadata and physical bytes.
+
+    To avoid accidental data loss, only files already in trash may be purged.
+    The database row is deleted first; then the local file is unlinked with
+    missing_ok=True so stale metadata does not crash the request.
+    """
+    stored_file = _ensure_owner_any_state(stored_file, owner)
+    if not stored_file.is_deleted:
+        raise DocumentValidationError("Chỉ xóa vĩnh viễn tệp đang nằm trong thùng rác.")
+
+    physical_path: Path | None = None
+    try:
+        physical_path = resolve_physical_file(stored_file)
+    except FileNotFoundError:
+        physical_path = None
+
+    db.session.delete(stored_file)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+
+    if physical_path is not None:
+        physical_path.unlink(missing_ok=True)
+    return physical_path
 
 def share_recipient_choices(owner_id: int) -> list[tuple[int, str]]:
     """Return active normal users except the owner; IDs are rechecked on POST."""

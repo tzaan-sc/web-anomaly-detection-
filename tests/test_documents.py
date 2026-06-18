@@ -515,3 +515,92 @@ def test_deleted_file_is_inaccessible_to_owner_and_viewer(app, client, login_as)
     login_as(app.config["TEST_USER_B_ID"])
     assert client.get(f"/files/{file_id}").status_code == 404
     assert "deleted.txt" not in client.get("/shared-with-me").get_data(as_text=True)
+
+
+def test_soft_delete_trash_restore_hides_file_from_normal_routes_and_viewer(
+    app, client, login_as
+):
+    from app.models import FileShare
+
+    with app.app_context():
+        owner = db.session.get(User, app.config["TEST_USER_A_ID"])
+        viewer = db.session.get(User, app.config["TEST_USER_B_ID"])
+        stored_file, _content, physical_path = _make_physical_file(
+            app, owner, "trash-me.txt"
+        )
+        db.session.add(
+            FileShare(
+                file=stored_file,
+                shared_with_user=viewer,
+                shared_by_user=owner,
+                permission="VIEWER",
+            )
+        )
+        db.session.commit()
+        file_id = stored_file.id
+
+    login_as(app.config["TEST_USER_A_ID"])
+    delete = client.post(f"/files/{file_id}/delete", follow_redirects=False)
+    assert delete.status_code == 302
+
+    with app.app_context():
+        stored_file = db.session.get(StoredFile, file_id)
+        assert stored_file.is_deleted is True
+        assert stored_file.deleted_at is not None
+        assert physical_path.exists()
+
+    # Deleted files are hidden from normal owner routes.
+    assert client.get(f"/files/{file_id}").status_code == 404
+    assert "trash-me.txt" not in client.get("/files").get_data(as_text=True)
+    trash_page = client.get("/trash")
+    assert trash_page.status_code == 200
+    assert "trash-me.txt" in trash_page.get_data(as_text=True)
+
+    # Existing VIEWER share no longer grants access while the file is deleted.
+    login_as(app.config["TEST_USER_B_ID"])
+    assert client.get(f"/files/{file_id}").status_code == 404
+    assert "trash-me.txt" not in client.get("/shared-with-me").get_data(as_text=True)
+    assert client.post(f"/files/{file_id}/restore").status_code == 404
+
+    login_as(app.config["TEST_USER_A_ID"])
+    restore = client.post(f"/files/{file_id}/restore", follow_redirects=False)
+    assert restore.status_code == 302
+    with app.app_context():
+        stored_file = db.session.get(StoredFile, file_id)
+        assert stored_file.is_deleted is False
+        assert stored_file.deleted_at is None
+        assert physical_path.exists()
+
+    assert client.get(f"/files/{file_id}").status_code == 200
+    assert "trash-me.txt" not in client.get("/trash").get_data(as_text=True)
+
+
+def test_repeated_soft_delete_is_idempotent_and_permanent_delete_removes_file(
+    app, client, login_as
+):
+    with app.app_context():
+        owner = db.session.get(User, app.config["TEST_USER_A_ID"])
+        stored_file, _content, physical_path = _make_physical_file(
+            app, owner, "purge-me.txt"
+        )
+        file_id = stored_file.id
+
+    login_as(app.config["TEST_USER_A_ID"])
+    first = client.post(f"/files/{file_id}/delete", follow_redirects=False)
+    assert first.status_code == 302
+    with app.app_context():
+        first_deleted_at = db.session.get(StoredFile, file_id).deleted_at
+
+    second = client.post(f"/files/{file_id}/delete", follow_redirects=False)
+    assert second.status_code == 302
+    with app.app_context():
+        stored_file = db.session.get(StoredFile, file_id)
+        assert stored_file.is_deleted is True
+        assert stored_file.deleted_at == first_deleted_at
+        assert physical_path.exists()
+
+    purge = client.post(f"/files/{file_id}/permanent-delete", follow_redirects=False)
+    assert purge.status_code == 302
+    with app.app_context():
+        assert db.session.get(StoredFile, file_id) is None
+    assert not physical_path.exists()

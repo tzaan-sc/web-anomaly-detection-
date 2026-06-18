@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Thùng rác | StudyDrive{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1">Thùng rác</h1>
+        <p class="text-secondary mb-0">
+            Chỉ hiển thị các tệp đã xóa mềm thuộc tài khoản hiện tại. File vật lý chưa bị xóa cho đến khi bạn xóa vĩnh viễn.
+        </p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('documents.index') }}">← Về My Drive</a>
+</div>
+
+{% if files %}
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Tên tệp</th>
+                        <th scope="col">Loại</th>
+                        <th scope="col">Kích thước</th>
+                        <th scope="col">Thư mục cũ</th>
+                        <th scope="col">Thời điểm xóa</th>
+                        <th scope="col" class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold text-break">{{ file.original_name }}</div>
+                                <div class="small text-secondary">ID: {{ file.id }}</div>
+                            </td>
+                            <td><span class="badge text-bg-light border">.{{ file.file_extension|lower }}</span></td>
+                            <td>{{ format_file_size(file.file_size) }}</td>
+                            <td>
+                                {% if file.folder and not file.folder.is_deleted %}
+                                    {{ file.folder.name }}
+                                {% else %}
+                                    <span class="text-secondary">My Drive hoặc thư mục đã xóa</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if file.deleted_at %}
+                                    {{ file.deleted_at.strftime('%d/%m/%Y %H:%M') }}
+                                {% else %}
+                                    <span class="text-secondary">Không rõ</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <form method="post" action="{{ url_for('documents.restore_file', file_id=file.id) }}" class="m-0">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="btn btn-sm btn-success" type="submit">Khôi phục</button>
+                                    </form>
+                                    <button
+                                        class="btn btn-sm btn-outline-danger"
+                                        type="button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#permanentDeleteModal{{ file.id }}"
+                                    >
+                                        Xóa vĩnh viễn
+                                    </button>
+                                </div>
+
+                                <div class="modal fade text-start" id="permanentDeleteModal{{ file.id }}" tabindex="-1" aria-labelledby="permanentDeleteModalLabel{{ file.id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h2 class="modal-title h5" id="permanentDeleteModalLabel{{ file.id }}">Xóa vĩnh viễn tệp?</h2>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p class="mb-2">Bạn sắp xóa vĩnh viễn <strong class="text-break">{{ file.original_name }}</strong>.</p>
+                                                <p class="text-danger small mb-0">Hành động này xóa metadata khỏi database và xóa file vật lý nếu còn tồn tại. Không thể khôi phục bằng giao diện StudyDrive.</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                <form method="post" action="{{ url_for('documents.permanent_delete_file', file_id=file.id) }}" class="m-0">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <button class="btn btn-danger" type="submit">Xóa vĩnh viễn</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if pagination.pages > 1 %}
+        <nav class="mt-4" aria-label="Phân trang thùng rác">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="{{ page_url(pagination.prev_num) if pagination.has_prev else '#' }}">Trước</a>
+                </li>
+
+                {% for page_number in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if page_number %}
+                        <li class="page-item {% if page_number == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ page_url(page_number) }}">{{ page_number }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+
+                <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ page_url(pagination.next_num) if pagination.has_next else '#' }}">Sau</a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <div class="display-5 mb-3">🗑️</div>
+            <h2 class="h5">Thùng rác đang trống</h2>
+            <p class="text-secondary mb-3">Khi bạn xóa mềm tệp, tệp sẽ xuất hiện ở đây để khôi phục hoặc xóa vĩnh viễn.</p>
+            <a class="btn btn-primary" href="{{ url_for('documents.index') }}">Mở My Drive</a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

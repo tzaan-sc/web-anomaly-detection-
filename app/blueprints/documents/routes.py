@@ -42,8 +42,11 @@ from app.services.document_service import (
     move_file as move_file_record,
     rename_file as rename_file_record,
     resolve_physical_file,
+    restore_file as restore_file_record,
     revoke_file_share,
     save_uploaded_file,
+    soft_delete_file as soft_delete_file_record,
+    permanently_delete_file as permanently_delete_file_record,
     share_file as share_file_record,
     share_recipient_choices,
 )
@@ -91,6 +94,19 @@ def _owned_file_or_404(file_id: int) -> StoredFile:
         abort(404)
     return stored_file
 
+
+
+def _owned_file_any_state_or_404(file_id: int) -> StoredFile:
+    """Return an owned file even when it is already in trash.
+
+    Normal detail/download/share routes deliberately use can_view_file(), which
+    hides deleted files.  Trash lifecycle routes need a separate owner-only
+    lookup so repeated delete/restore operations remain safe and predictable.
+    """
+    stored_file = _file_record(file_id)
+    if stored_file is None or stored_file.owner_id != g.current_user.id:
+        abort(404)
+    return stored_file
 
 def _render_file_list(current_folder: Folder | None = None):
     user_id = g.current_user.id
@@ -536,6 +552,89 @@ def revoke_share(file_id: int, share_id: int):
             "success",
         )
     return redirect(url_for("documents.file_detail", file_id=file_id))
+
+
+@bp.route("/files/<int:file_id>/delete", methods=["POST", "DELETE"])
+@login_required
+def delete_file(file_id: int):
+    stored_file = _owned_file_any_state_or_404(file_id)
+    try:
+        was_deleted = stored_file.is_deleted
+        soft_delete_file_record(stored_file=stored_file, owner=g.current_user)
+    except Exception:
+        current_app.logger.exception("Không thể xóa mềm file_id=%s", file_id)
+        flash("Không thể đưa tệp vào thùng rác. Dữ liệu chưa thay đổi.", "danger")
+        return redirect(url_for("documents.file_detail", file_id=file_id))
+
+    if was_deleted:
+        flash("Tệp này đã nằm trong thùng rác từ trước.", "info")
+    else:
+        flash(f"Đã đưa “{stored_file.original_name}” vào thùng rác.", "success")
+    return redirect(url_for("documents.trash"))
+
+
+@bp.get("/trash")
+@login_required
+def trash():
+    page = max(request.args.get("page", 1, type=int), 1)
+    query = (
+        StoredFile.query.filter(
+            StoredFile.owner_id == g.current_user.id,
+            StoredFile.is_deleted.is_(True),
+        )
+        .order_by(StoredFile.deleted_at.desc(), StoredFile.id.desc())
+    )
+    pagination = query.paginate(page=page, per_page=10, error_out=False)
+
+    def page_url(page_number: int) -> str:
+        return url_for("documents.trash", page=page_number)
+
+    return render_template(
+        "documents/trash.html",
+        files=pagination.items,
+        pagination=pagination,
+        page_url=page_url,
+        format_file_size=format_file_size,
+    )
+
+
+@bp.post("/files/<int:file_id>/restore")
+@login_required
+def restore_file(file_id: int):
+    stored_file = _owned_file_any_state_or_404(file_id)
+    try:
+        was_deleted = stored_file.is_deleted
+        restore_file_record(stored_file=stored_file, owner=g.current_user)
+    except DocumentValidationError as exc:
+        flash(str(exc), "danger")
+        return redirect(url_for("documents.trash"))
+    except Exception:
+        current_app.logger.exception("Không thể khôi phục file_id=%s", file_id)
+        flash("Không thể khôi phục tệp. Dữ liệu chưa thay đổi.", "danger")
+        return redirect(url_for("documents.trash"))
+
+    if was_deleted:
+        flash(f"Đã khôi phục “{stored_file.original_name}”.", "success")
+    else:
+        flash("Tệp này đã được khôi phục từ trước.", "info")
+    return redirect(url_for("documents.file_detail", file_id=file_id))
+
+
+@bp.post("/files/<int:file_id>/permanent-delete")
+@login_required
+def permanent_delete_file(file_id: int):
+    stored_file = _owned_file_any_state_or_404(file_id)
+    file_name = stored_file.original_name
+    try:
+        permanently_delete_file_record(stored_file=stored_file, owner=g.current_user)
+    except DocumentValidationError as exc:
+        flash(str(exc), "danger")
+    except Exception:
+        current_app.logger.exception("Không thể xóa vĩnh viễn file_id=%s", file_id)
+        flash("Không thể xóa vĩnh viễn tệp. Dữ liệu chưa thay đổi.", "danger")
+    else:
+        flash(f"Đã xóa vĩnh viễn “{file_name}”.", "success")
+    return redirect(url_for("documents.trash"))
 
 
 @bp.get("/shared-with-me")

@@ -80,6 +80,20 @@
 
             <a
                 class="btn btn-outline-secondary"
+                href="{{ url_for('documents.shared_with_me') }}"
+            >
+                Được chia sẻ với tôi
+            </a>
+
+            <a
+                class="btn btn-outline-danger"
+                href="{{ url_for('documents.trash') }}"
+            >
+                Thùng rác
+            </a>
+
+            <a
+                class="btn btn-outline-secondary"
                 href="{{ url_for('auth.profile') }}"
             >
                 Hồ sơ

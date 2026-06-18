@@ -22,6 +22,14 @@
             <a class="btn btn-outline-secondary" href="{{ url_for('documents.rename_file', file_id=file.id) }}">Đổi tên</a>
             <a class="btn btn-outline-secondary" href="{{ url_for('documents.move_file', file_id=file.id) }}">Di chuyển</a>
             <a class="btn btn-outline-primary" href="{{ url_for('documents.share_file', file_id=file.id) }}">Chia sẻ</a>
+            <button
+                class="btn btn-outline-danger"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteFileModal"
+            >
+                Xóa
+            </button>
         {% endif %}
     </div>
 </div>
@@ -111,4 +119,28 @@
         <a class="btn btn-outline-secondary" href="{{ url_for('documents.shared_with_me') }}">← Được chia sẻ với tôi</a>
     {% endif %}
 </div>
+
+{% if access == 'OWNER' %}
+<div class="modal fade" id="deleteFileModal" tabindex="-1" aria-labelledby="deleteFileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="deleteFileModalLabel">Đưa tệp vào thùng rác?</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Tệp <strong class="text-break">{{ file.original_name }}</strong> sẽ bị ẩn khỏi My Drive, chi tiết, download và chia sẻ thông thường.</p>
+                <p class="text-secondary small mb-0">Đây là xóa mềm: file vật lý vẫn được giữ và bạn có thể khôi phục trong trang Thùng rác.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form method="post" action="{{ url_for('documents.delete_file', file_id=file.id) }}" class="m-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-danger" type="submit">Đưa vào thùng rác</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
