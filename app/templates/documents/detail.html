@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}{{ file.original_name }} | StudyDrive{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <h1 class="h3 mb-0 text-break">{{ file.original_name }}</h1>
+            <span class="badge {% if access == 'OWNER' %}text-bg-primary{% else %}text-bg-info{% endif %}">
+                {{ access }}
+            </span>
+        </div>
+        <p class="text-secondary mb-0">Chi tiết metadata tệp và quyền truy cập hiện tại.</p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="{{ url_for('documents.download_file', file_id=file.id) }}">
+            Download
+        </a>
+        {% if access == 'OWNER' %}
+            <a class="btn btn-outline-secondary" href="{{ url_for('documents.rename_file', file_id=file.id) }}">Đổi tên</a>
+            <a class="btn btn-outline-secondary" href="{{ url_for('documents.move_file', file_id=file.id) }}">Di chuyển</a>
+            <a class="btn btn-outline-primary" href="{{ url_for('documents.share_file', file_id=file.id) }}">Chia sẻ</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-xl-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">Metadata được phép hiển thị</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">File ID</dt>
+                    <dd class="col-sm-8">{{ file.id }}</dd>
+
+                    <dt class="col-sm-4">Tên hiển thị</dt>
+                    <dd class="col-sm-8 text-break">{{ file.original_name }}</dd>
+
+                    <dt class="col-sm-4">Định dạng</dt>
+                    <dd class="col-sm-8">.{{ file.file_extension|lower }}</dd>
+
+                    <dt class="col-sm-4">MIME type</dt>
+                    <dd class="col-sm-8 text-break">{{ file.mime_type }}</dd>
+
+                    <dt class="col-sm-4">Kích thước</dt>
+                    <dd class="col-sm-8">{{ format_file_size(file.file_size) }}</dd>
+
+                    <dt class="col-sm-4">Chủ sở hữu</dt>
+                    <dd class="col-sm-8">{{ file.owner.username }}</dd>
+
+                    {% if access == 'OWNER' %}
+                        <dt class="col-sm-4">Thư mục</dt>
+                        <dd class="col-sm-8">
+                            {% if file.folder %}
+                                <a href="{{ url_for('documents.browse_folder', folder_id=file.folder.id) }}">{{ file.folder.name }}</a>
+                            {% else %}
+                                My Drive
+                            {% endif %}
+                        </dd>
+                    {% endif %}
+
+                    <dt class="col-sm-4">Ngày tạo</dt>
+                    <dd class="col-sm-8">{{ file.created_at.strftime('%d/%m/%Y %H:%M') }}</dd>
+
+                    <dt class="col-sm-4">Cập nhật</dt>
+                    <dd class="col-sm-8">{{ file.updated_at.strftime('%d/%m/%Y %H:%M') }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">
+                {% if access == 'OWNER' %}Đang chia sẻ với{% else %}Quyền của bạn{% endif %}
+            </div>
+            <div class="card-body">
+                {% if access == 'VIEWER' %}
+                    <div class="alert alert-info mb-0">
+                        Bạn có quyền <strong>VIEWER</strong>: chỉ được xem metadata và download. Không được đổi tên, di chuyển, chia sẻ, xóa hoặc export hàng loạt.
+                    </div>
+                {% elif active_shares %}
+                    <div class="list-group list-group-flush">
+                        {% for share in active_shares %}
+                            <div class="list-group-item px-0 d-flex justify-content-between align-items-center gap-3">
+                                <div>
+                                    <div class="fw-semibold">{{ share.shared_with_user.username }}</div>
+                                    <div class="small text-secondary">{{ share.shared_with_user.email }} · VIEWER</div>
+                                </div>
+                                <form method="post" action="{{ url_for('documents.revoke_share', file_id=file.id, share_id=share.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Thu hồi</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary mb-3">Tệp này chưa được chia sẻ cho ai.</p>
+                    <a class="btn btn-outline-primary" href="{{ url_for('documents.share_file', file_id=file.id) }}">Chia sẻ ngay</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{{ url_for('documents.index') }}">← My Drive</a>
+    {% if access == 'VIEWER' %}
+        <a class="btn btn-outline-secondary" href="{{ url_for('documents.shared_with_me') }}">← Được chia sẻ với tôi</a>
+    {% endif %}
+</div>
+{% endblock %}

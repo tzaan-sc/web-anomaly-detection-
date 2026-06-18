@@ -13,7 +13,7 @@ from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
 from app.extensions import db
-from app.models import Folder, StoredFile, User
+from app.models import FileShare, Folder, StoredFile, User
 
 
 class DocumentValidationError(ValueError):
@@ -333,3 +333,214 @@ def format_file_size(size: int) -> str:
             return f"{value:.0f} {unit}" if unit == "B" else f"{value:.1f} {unit}"
         value /= 1024
     return f"{size} B"
+
+
+# Object-level authorization -------------------------------------------------
+
+ACCESS_OWNER = "OWNER"
+ACCESS_VIEWER = "VIEWER"
+ACCESS_NONE = "NONE"
+
+
+def get_file_access(stored_file: StoredFile | None, user_id: int) -> str:
+    """Return OWNER, VIEWER, or NONE for one active file.
+
+    Deleted files are deliberately treated as inaccessible.  This keeps the
+    same rule in HTML routes, download routes, API routes, and future
+    simulators used to generate IDOR/BOLA traffic.
+    """
+    if stored_file is None or stored_file.is_deleted:
+        return ACCESS_NONE
+    if stored_file.owner_id == user_id:
+        return ACCESS_OWNER
+
+    active_share = FileShare.query.filter_by(
+        file_id=stored_file.id,
+        shared_with_user_id=user_id,
+        permission=ACCESS_VIEWER,
+        revoked_at=None,
+    ).first()
+    return ACCESS_VIEWER if active_share is not None else ACCESS_NONE
+
+
+def can_view_file(stored_file: StoredFile | None, user_id: int) -> bool:
+    """True only for OWNER or an active VIEWER share."""
+    return get_file_access(stored_file, user_id) in {ACCESS_OWNER, ACCESS_VIEWER}
+
+
+def can_modify_file(stored_file: StoredFile | None, user_id: int) -> bool:
+    """True only for the active file owner."""
+    return get_file_access(stored_file, user_id) == ACCESS_OWNER
+
+
+def resolve_physical_file(stored_file: StoredFile) -> Path:
+    """Resolve a server-controlled storage path and reject unsafe metadata.
+
+    The client supplies only ``file_id``.  The path always comes from database
+    metadata and must still remain under the configured upload directory.
+    """
+    upload_root = Path(current_app.config["UPLOAD_FOLDER"]).resolve()
+    stored_path = Path(stored_file.storage_path)
+    physical_path = (
+        stored_path.resolve()
+        if stored_path.is_absolute()
+        else (Path(current_app.instance_path) / stored_path).resolve()
+    )
+
+    try:
+        physical_path.relative_to(upload_root)
+    except ValueError as exc:
+        raise FileNotFoundError("Unsafe stored file path") from exc
+
+    # Defense in depth against corrupted or manually edited metadata.
+    if physical_path.name != stored_file.stored_name:
+        raise FileNotFoundError("Stored filename does not match metadata")
+    if not physical_path.is_file():
+        raise FileNotFoundError("Physical file is missing")
+    return physical_path
+
+
+def _validate_display_name(stored_file: StoredFile, new_name: str) -> str:
+    clean_name = (new_name or "").strip()
+    if not clean_name or clean_name in {".", ".."}:
+        raise DocumentValidationError("Tên tệp không hợp lệ.")
+    if len(clean_name) > 255:
+        raise DocumentValidationError("Tên tệp tối đa 255 ký tự.")
+    if "/" in clean_name or "\\" in clean_name:
+        raise DocumentValidationError("Tên tệp không được chứa dấu / hoặc \\.")
+
+    extension = Path(clean_name).suffix.lower().lstrip(".")
+    if extension != stored_file.file_extension.lower():
+        raise DocumentValidationError(
+            f"Tên mới phải giữ nguyên phần mở rộng .{stored_file.file_extension}."
+        )
+    return clean_name
+
+
+def rename_file(*, stored_file: StoredFile, owner: User, new_name: str) -> StoredFile:
+    """Rename display metadata only; never change UUID-backed storage fields."""
+    if not can_modify_file(stored_file, owner.id):
+        raise PermissionError("Only the owner may rename this file")
+
+    clean_name = _validate_display_name(stored_file, new_name)
+    duplicate = StoredFile.query.filter(
+        StoredFile.id != stored_file.id,
+        StoredFile.owner_id == owner.id,
+        StoredFile.folder_id == stored_file.folder_id,
+        StoredFile.is_deleted.is_(False),
+        func.lower(StoredFile.original_name) == clean_name.lower(),
+    ).first()
+    if duplicate is not None:
+        raise DocumentValidationError("Đã có tệp cùng tên tại vị trí này.")
+
+    stored_file.original_name = clean_name
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    return stored_file
+
+
+def move_file(
+    *, stored_file: StoredFile, owner: User, target_folder: Folder | None
+) -> StoredFile:
+    """Move an owned file to root or another active folder of the same owner."""
+    if not can_modify_file(stored_file, owner.id):
+        raise PermissionError("Only the owner may move this file")
+    if target_folder is not None and (
+        target_folder.owner_id != owner.id or target_folder.is_deleted
+    ):
+        raise DocumentValidationError("Bạn không có quyền di chuyển vào thư mục này.")
+
+    target_folder_id = target_folder.id if target_folder else None
+    duplicate = StoredFile.query.filter(
+        StoredFile.id != stored_file.id,
+        StoredFile.owner_id == owner.id,
+        StoredFile.folder_id == target_folder_id,
+        StoredFile.is_deleted.is_(False),
+        func.lower(StoredFile.original_name) == stored_file.original_name.lower(),
+    ).first()
+    if duplicate is not None:
+        raise DocumentValidationError("Thư mục đích đã có tệp cùng tên.")
+
+    stored_file.folder = target_folder
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    return stored_file
+
+
+def share_file(
+    *, stored_file: StoredFile, owner: User, recipient: User
+) -> FileShare:
+    """Grant or restore the single supported permission: VIEWER."""
+    if not can_modify_file(stored_file, owner.id):
+        raise PermissionError("Only the owner may share this file")
+    if recipient.id == owner.id:
+        raise DocumentValidationError("Không thể chia sẻ tệp cho chính chủ sở hữu.")
+    if not recipient.is_active or recipient.role.upper() != "USER":
+        raise DocumentValidationError("Người nhận không hợp lệ hoặc đã bị khóa.")
+
+    existing = FileShare.query.filter_by(
+        file_id=stored_file.id,
+        shared_with_user_id=recipient.id,
+    ).first()
+    if existing is not None and existing.revoked_at is None:
+        raise DocumentValidationError("Tệp đã được chia sẻ cho người dùng này.")
+
+    if existing is None:
+        existing = FileShare(
+            file=stored_file,
+            shared_with_user=recipient,
+            shared_by_user=owner,
+            permission=ACCESS_VIEWER,
+        )
+        db.session.add(existing)
+    else:
+        existing.permission = ACCESS_VIEWER
+        existing.shared_by_user = owner
+        existing.revoked_at = None
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    return existing
+
+
+def revoke_file_share(
+    *, stored_file: StoredFile, owner: User, share: FileShare
+) -> FileShare:
+    """Revoke access immediately while retaining the audit-friendly row."""
+    if not can_modify_file(stored_file, owner.id):
+        raise PermissionError("Only the owner may revoke a share")
+    if share.file_id != stored_file.id or share.revoked_at is not None:
+        raise DocumentValidationError("Lượt chia sẻ không còn hiệu lực.")
+
+    from datetime import datetime, timezone
+
+    share.revoked_at = datetime.now(timezone.utc)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    return share
+
+
+def share_recipient_choices(owner_id: int) -> list[tuple[int, str]]:
+    """Return active normal users except the owner; IDs are rechecked on POST."""
+    users = (
+        User.query.filter(
+            User.id != owner_id,
+            User.is_active.is_(True),
+            func.upper(User.role) == "USER",
+        )
+        .order_by(func.lower(User.username).asc())
+        .all()
+    )
+    return [(user.id, f"{user.username} ({user.email})") for user in users]

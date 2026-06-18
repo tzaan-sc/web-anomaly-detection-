@@ -1,4 +1,4 @@
-"""Routes for StudyDrive folders, safe uploads, and My Files browsing."""
+"""Routes for StudyDrive folders, files, sharing, and authorization."""
 
 from __future__ import annotations
 
@@ -7,25 +7,45 @@ from flask import (
     current_app,
     flash,
     g,
+    jsonify,
     redirect,
     render_template,
     request,
+    send_file,
     url_for,
 )
 from sqlalchemy import func
 
 from app.blueprints.documents import bp
-from app.blueprints.documents.forms import CreateFolderForm, UploadFileForm
+from app.blueprints.documents.forms import (
+    CreateFolderForm,
+    MoveFileForm,
+    RenameFileForm,
+    ShareFileForm,
+    UploadFileForm,
+)
 from app.decorators.authorization import login_required
-from app.models import Folder, StoredFile
+from app.extensions import db
+from app.models import FileShare, Folder, StoredFile, User
 from app.services.document_service import (
+    ACCESS_NONE,
+    ACCESS_OWNER,
     DocumentValidationError,
     active_folder_choices,
+    can_modify_file,
+    can_view_file,
     create_folder as create_folder_record,
     folder_breadcrumb,
     format_file_size,
+    get_file_access,
     get_owned_folder,
+    move_file as move_file_record,
+    rename_file as rename_file_record,
+    resolve_physical_file,
+    revoke_file_share,
     save_uploaded_file,
+    share_file as share_file_record,
+    share_recipient_choices,
 )
 
 
@@ -48,9 +68,28 @@ SORT_OPTIONS = {
 def _folder_or_404(folder_id: int) -> Folder:
     folder = get_owned_folder(folder_id, g.current_user.id)
     if folder is None:
-        # Returning 404 avoids confirming that another user's folder exists.
+        # 404 avoids confirming that another user's folder exists.
         abort(404)
     return folder
+
+
+def _file_record(file_id: int) -> StoredFile | None:
+    return db.session.get(StoredFile, file_id)
+
+
+def _viewable_file_or_404(file_id: int) -> tuple[StoredFile, str]:
+    stored_file = _file_record(file_id)
+    if not can_view_file(stored_file, g.current_user.id):
+        # StudyDrive consistently hides missing, deleted, and unauthorized files.
+        abort(404)
+    return stored_file, get_file_access(stored_file, g.current_user.id)
+
+
+def _owned_file_or_404(file_id: int) -> StoredFile:
+    stored_file = _file_record(file_id)
+    if not can_modify_file(stored_file, g.current_user.id):
+        abort(404)
+    return stored_file
 
 
 def _render_file_list(current_folder: Folder | None = None):
@@ -211,13 +250,11 @@ def create_folder():
                 abort(404)
 
     if form.validate_on_submit():
-        parent = submitted_parent
-
         try:
             folder = create_folder_record(
                 owner=g.current_user,
                 name=form.name.data,
-                parent=parent,
+                parent=submitted_parent,
             )
         except DocumentValidationError as exc:
             form.name.errors.append(str(exc))
@@ -226,8 +263,10 @@ def create_folder():
             flash("Không thể tạo thư mục. Dữ liệu chưa được lưu.", "danger")
         else:
             flash(f"Đã tạo thư mục “{folder.name}” thành công.", "success")
-            if parent is not None:
-                return redirect(url_for("documents.browse_folder", folder_id=parent.id))
+            if submitted_parent is not None:
+                return redirect(
+                    url_for("documents.browse_folder", folder_id=submitted_parent.id)
+                )
             return redirect(url_for("documents.index"))
 
     return render_template("documents/create_folder.html", form=form)
@@ -258,13 +297,11 @@ def upload_file():
                 abort(404)
 
     if form.validate_on_submit():
-        folder = submitted_folder
-
         try:
             stored_file = save_uploaded_file(
                 file_storage=form.file.data,
                 owner=g.current_user,
-                folder=folder,
+                folder=submitted_folder,
             )
         except DocumentValidationError as exc:
             form.file.errors.append(str(exc))
@@ -276,8 +313,10 @@ def upload_file():
             )
         else:
             flash(f"Đã upload “{stored_file.original_name}” thành công.", "success")
-            if folder is not None:
-                return redirect(url_for("documents.browse_folder", folder_id=folder.id))
+            if submitted_folder is not None:
+                return redirect(
+                    url_for("documents.browse_folder", folder_id=submitted_folder.id)
+                )
             return redirect(url_for("documents.index"))
 
     return render_template(
@@ -285,4 +324,238 @@ def upload_file():
         form=form,
         max_size_mb=current_app.config["MAX_CONTENT_LENGTH"] // (1024 * 1024),
         allowed_extensions=sorted(current_app.config["ALLOWED_EXTENSIONS"]),
+    )
+
+
+@bp.get("/files/<int:file_id>")
+@login_required
+def file_detail(file_id: int):
+    stored_file, access = _viewable_file_or_404(file_id)
+    active_shares = []
+    if access == ACCESS_OWNER:
+        active_shares = (
+            FileShare.query.filter_by(
+                file_id=stored_file.id,
+                permission="VIEWER",
+                revoked_at=None,
+            )
+            .order_by(FileShare.created_at.desc())
+            .all()
+        )
+
+    return render_template(
+        "documents/detail.html",
+        file=stored_file,
+        access=access,
+        active_shares=active_shares,
+        format_file_size=format_file_size,
+    )
+
+
+@bp.get("/files/<int:file_id>/download")
+@login_required
+def download_file(file_id: int):
+    stored_file, _access = _viewable_file_or_404(file_id)
+    try:
+        physical_path = resolve_physical_file(stored_file)
+    except FileNotFoundError:
+        current_app.logger.warning(
+            "Physical file missing or unsafe for file_id=%s", stored_file.id
+        )
+        abort(404)
+
+    return send_file(
+        physical_path,
+        as_attachment=True,
+        download_name=stored_file.original_name,
+        mimetype=stored_file.mime_type,
+        conditional=True,
+        max_age=0,
+    )
+
+
+@bp.get("/api/files/<int:file_id>")
+@login_required
+def file_api(file_id: int):
+    stored_file = _file_record(file_id)
+    if not can_view_file(stored_file, g.current_user.id):
+        # JSON 404 has the same body for nonexistent and unauthorized IDs.
+        return jsonify({"error": "file_not_found"}), 404
+    access = get_file_access(stored_file, g.current_user.id)
+
+    payload = {
+        "id": stored_file.id,
+        "original_name": stored_file.original_name,
+        "file_extension": stored_file.file_extension,
+        "mime_type": stored_file.mime_type,
+        "file_size": stored_file.file_size,
+        "access": access,
+        "owner": {"id": stored_file.owner_id, "username": stored_file.owner.username},
+        "created_at": stored_file.created_at.isoformat(),
+        "updated_at": stored_file.updated_at.isoformat(),
+    }
+    if access == ACCESS_OWNER:
+        payload["folder"] = (
+            {"id": stored_file.folder.id, "name": stored_file.folder.name}
+            if stored_file.folder is not None
+            else None
+        )
+    return jsonify(payload)
+
+
+@bp.route("/files/<int:file_id>/rename", methods=["GET", "POST"])
+@login_required
+def rename_file(file_id: int):
+    stored_file = _owned_file_or_404(file_id)
+    form = RenameFileForm()
+    if request.method == "GET":
+        form.original_name.data = stored_file.original_name
+
+    if form.validate_on_submit():
+        try:
+            rename_file_record(
+                stored_file=stored_file,
+                owner=g.current_user,
+                new_name=form.original_name.data,
+            )
+        except DocumentValidationError as exc:
+            form.original_name.errors.append(str(exc))
+        except Exception:
+            current_app.logger.exception("Không thể đổi tên file_id=%s", file_id)
+            flash("Không thể đổi tên tệp. Dữ liệu chưa thay đổi.", "danger")
+        else:
+            flash("Đã đổi tên tệp. Tên UUID lưu trên server không thay đổi.", "success")
+            return redirect(url_for("documents.file_detail", file_id=file_id))
+
+    return render_template("documents/rename.html", form=form, file=stored_file)
+
+
+@bp.route("/files/<int:file_id>/move", methods=["GET", "POST"])
+@login_required
+def move_file(file_id: int):
+    stored_file = _owned_file_or_404(file_id)
+    form = MoveFileForm()
+    form.folder_id.choices = active_folder_choices(g.current_user.id)
+    if request.method == "GET":
+        form.folder_id.data = stored_file.folder_id or 0
+
+    target_folder = None
+    if request.method == "POST":
+        raw_folder_id = request.form.get("folder_id", "0")
+        try:
+            submitted_folder_id = int(raw_folder_id)
+        except (TypeError, ValueError):
+            abort(400)
+        if submitted_folder_id:
+            target_folder = get_owned_folder(submitted_folder_id, g.current_user.id)
+            if target_folder is None:
+                abort(404)
+
+    if form.validate_on_submit():
+        try:
+            move_file_record(
+                stored_file=stored_file,
+                owner=g.current_user,
+                target_folder=target_folder,
+            )
+        except DocumentValidationError as exc:
+            form.folder_id.errors.append(str(exc))
+        except Exception:
+            current_app.logger.exception("Không thể di chuyển file_id=%s", file_id)
+            flash("Không thể di chuyển tệp. Dữ liệu chưa thay đổi.", "danger")
+        else:
+            destination = target_folder.name if target_folder else "My Drive"
+            flash(f"Đã di chuyển tệp đến “{destination}”.", "success")
+            return redirect(url_for("documents.file_detail", file_id=file_id))
+
+    return render_template("documents/move.html", form=form, file=stored_file)
+
+
+@bp.route("/files/<int:file_id>/share", methods=["GET", "POST"])
+@login_required
+def share_file(file_id: int):
+    stored_file = _owned_file_or_404(file_id)
+    form = ShareFileForm()
+    form.recipient_id.choices = share_recipient_choices(g.current_user.id)
+
+    recipient = None
+    if request.method == "POST":
+        raw_recipient_id = request.form.get("recipient_id", "")
+        try:
+            recipient_id = int(raw_recipient_id)
+        except (TypeError, ValueError):
+            abort(400)
+        recipient = db.session.get(User, recipient_id)
+        if recipient is None:
+            abort(404)
+
+    if form.validate_on_submit():
+        try:
+            share_file_record(
+                stored_file=stored_file,
+                owner=g.current_user,
+                recipient=recipient,
+            )
+        except DocumentValidationError as exc:
+            form.recipient_id.errors.append(str(exc))
+        except Exception:
+            current_app.logger.exception("Không thể share file_id=%s", file_id)
+            flash("Không thể chia sẻ tệp. Dữ liệu chưa thay đổi.", "danger")
+        else:
+            flash(
+                f"Đã chia sẻ “{stored_file.original_name}” cho {recipient.username} với quyền VIEWER.",
+                "success",
+            )
+            return redirect(url_for("documents.file_detail", file_id=file_id))
+
+    return render_template("documents/share.html", form=form, file=stored_file)
+
+
+@bp.post("/files/<int:file_id>/shares/<int:share_id>/revoke")
+@login_required
+def revoke_share(file_id: int, share_id: int):
+    stored_file = _owned_file_or_404(file_id)
+    share = FileShare.query.filter_by(id=share_id, file_id=stored_file.id).first()
+    if share is None or share.revoked_at is not None:
+        abort(404)
+
+    try:
+        revoke_file_share(
+            stored_file=stored_file,
+            owner=g.current_user,
+            share=share,
+        )
+    except DocumentValidationError:
+        abort(404)
+    except Exception:
+        current_app.logger.exception("Không thể thu hồi share_id=%s", share_id)
+        flash("Không thể thu hồi quyền chia sẻ.", "danger")
+    else:
+        flash(
+            f"Đã thu hồi quyền VIEWER của {share.shared_with_user.username}.",
+            "success",
+        )
+    return redirect(url_for("documents.file_detail", file_id=file_id))
+
+
+@bp.get("/shared-with-me")
+@login_required
+def shared_with_me():
+    page = max(request.args.get("page", 1, type=int), 1)
+    query = (
+        FileShare.query.join(StoredFile, FileShare.file_id == StoredFile.id)
+        .filter(
+            FileShare.shared_with_user_id == g.current_user.id,
+            FileShare.permission == "VIEWER",
+            FileShare.revoked_at.is_(None),
+            StoredFile.is_deleted.is_(False),
+        )
+        .order_by(FileShare.created_at.desc(), FileShare.id.desc())
+    )
+    pagination = query.paginate(page=page, per_page=10, error_out=False)
+    return render_template(
+        "documents/shared_with_me.html",
+        shares=pagination.items,
+        pagination=pagination,
+        format_file_size=format_file_size,
     )

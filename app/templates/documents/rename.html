@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Đổi tên tệp | StudyDrive{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-2">Đổi tên tệp</h1>
+                <p class="text-secondary">Chỉ đổi <code>original_name</code>. Tên UUID và đường dẫn lưu vật lý không thay đổi.</p>
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.original_name.label(class="form-label") }}
+                        {{ form.original_name(class="form-control" + (" is-invalid" if form.original_name.errors else ""), maxlength="255") }}
+                        {% for error in form.original_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                        <div class="form-text">Phải giữ nguyên phần mở rộng .{{ file.file_extension }}.</div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a class="btn btn-outline-secondary" href="{{ url_for('documents.file_detail', file_id=file.id) }}">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

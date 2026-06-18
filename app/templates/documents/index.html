@@ -183,16 +183,10 @@
                                 </td>
                                 <td>{{ file.updated_at.strftime('%d/%m/%Y %H:%M') }}</td>
                                 <td class="text-end">
-                                    {% if file.folder %}
-                                        <a
-                                            class="btn btn-sm btn-outline-secondary"
-                                            href="{{ url_for('documents.browse_folder', folder_id=file.folder.id) }}"
-                                        >
-                                            Mở thư mục
-                                        </a>
-                                    {% else %}
-                                        <span class="text-secondary small">Tệp ở thư mục gốc</span>
-                                    {% endif %}
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Thao tác tệp">
+                                        <a class="btn btn-outline-primary" href="{{ url_for('documents.file_detail', file_id=file.id) }}">Chi tiết</a>
+                                        <a class="btn btn-primary" href="{{ url_for('documents.download_file', file_id=file.id) }}">Download</a>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
