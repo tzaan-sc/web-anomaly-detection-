@@ -90,16 +90,22 @@ def register_blueprints(app: Flask) -> None:
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
-    app.register_blueprint(documents_bp, url_prefix="/documents")
+    app.register_blueprint(documents_bp)
     app.register_blueprint(admin_bp, url_prefix="/admin")
     app.register_blueprint(alerts_bp, url_prefix="/alerts")
 
 
 def register_error_handlers(app: Flask) -> None:
-    from app.errors import forbidden, page_not_found, server_error
+    from app.errors import (
+        forbidden,
+        page_not_found,
+        request_entity_too_large,
+        server_error,
+    )
 
     app.register_error_handler(403, forbidden)
     app.register_error_handler(404, page_not_found)
+    app.register_error_handler(413, request_entity_too_large)
     app.register_error_handler(500, server_error)
 
 def register_cli_commands(app: Flask) -> None:

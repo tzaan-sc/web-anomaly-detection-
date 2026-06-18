@@ -9,3 +9,19 @@ code {
 .navbar-brand {
     letter-spacing: 0.2px;
 }
+
+.min-width-0 {
+    min-width: 0;
+}
+
+.folder-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.folder-card:hover {
+    transform: translateY(-2px);
+}
+
+.table th {
+    white-space: nowrap;
+}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Upload tệp | StudyDrive{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h1 class="h2 mb-1">Upload tệp an toàn</h1>
+                <p class="text-secondary mb-0">File vật lý nằm ngoài <code>static</code> và được đổi sang tên UUID.</p>
+            </div>
+            <a class="btn btn-outline-secondary" href="{{ url_for('documents.index') }}">Quay lại</a>
+        </div>
+
+        <div class="alert alert-info">
+            Tối đa <strong>{{ max_size_mb }} MB</strong>. Định dạng cho phép:
+            {{ allowed_extensions|join(', ') }}.
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.file.label(class="form-label") }}
+                        {{ form.file(class="form-control" + (" is-invalid" if form.file.errors else ""), accept="." + ",.".join(allowed_extensions)) }}
+                        {% for error in form.file.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">
+                            Hệ thống kiểm tra phần mở rộng, MIME type và chữ ký tệp trước khi lưu.
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.folder_id.label(class="form-label") }}
+                        {{ form.folder_id(class="form-select" + (" is-invalid" if form.folder_id.errors else "")) }}
+                        {% for error in form.folder_id.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a class="btn btn-outline-secondary" href="{{ url_for('documents.index') }}">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

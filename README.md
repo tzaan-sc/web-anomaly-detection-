@@ -494,3 +494,42 @@ python -m scripts.reset_demo
 - Không import Flask app toàn cục trong model/service/route.
 - Blueprint được đăng ký trong app factory.
 - Không commit `.env`, `.venv`, `__pycache__`, database dump chứa secret hoặc file upload cá nhân.
+
+---
+
+## 14. Folder, upload an toàn và My Files
+
+Các endpoint đã triển khai:
+
+```text
+GET  /files
+GET  /folders/<folder_id>
+GET  /folders/create
+POST /folders/create
+GET  /files/upload
+POST /files/upload
+```
+
+Đặc điểm an toàn chính:
+
+- Giới hạn upload 20 MB bằng `MAX_CONTENT_LENGTH` và trang lỗi 413.
+- Kiểm tra extension, MIME type và chữ ký cơ bản của tệp.
+- Làm sạch tên client bằng `secure_filename`, nhưng tên lưu thật luôn là UUID.
+- File vật lý nằm trong `instance/uploads/<user_id>/`, không nằm trong `static`.
+- Folder đích luôn được truy vấn kèm `owner_id` của user đăng nhập.
+- Nếu DB commit thất bại, transaction rollback và file vật lý vừa ghi bị xóa.
+- `/files` hỗ trợ search, filter folder/extension, sort và pagination giữ query parameters.
+
+Hướng dẫn chi tiết và test matrix: `docs/implementation_day15_16.md`.
+
+Chạy test:
+
+```powershell
+pytest -q
+```
+
+Kết quả hiện tại:
+
+```text
+15 passed
+```
