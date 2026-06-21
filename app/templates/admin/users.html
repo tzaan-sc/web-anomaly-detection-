@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Admin users | StudyDrive{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1">Quản lý user</h1>
+        <p class="text-secondary mb-0">Tìm kiếm, phân trang và khóa/mở khóa tài khoản.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin.index') }}">← Dashboard admin</a>
+</div>
+
+<div class="card border-0 shadow-sm mb-4"><div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-12 col-lg-6">
+            <label class="form-label" for="q">Search username/email/role</label>
+            <input class="form-control" id="q" name="q" value="{{ search_text }}" maxlength="255" placeholder="VD: user1 hoặc ADMIN">
+        </div>
+        <div class="col-auto"><button class="btn btn-dark" type="submit">Tìm</button></div>
+        <div class="col-auto"><a class="btn btn-outline-secondary" href="{{ url_for('admin.users') }}">Xóa lọc</a></div>
+    </form>
+</div></div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light"><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Trạng thái</th><th>Ngày tạo</th><th class="text-end">Thao tác</th></tr></thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td class="fw-semibold">{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>{% if user.is_active %}<span class="badge text-bg-success">active</span>{% else %}<span class="badge text-bg-secondary">locked</span>{% endif %}</td>
+                    <td>{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td class="text-end">
+                        <form method="post" action="{{ url_for('admin.toggle_user_active', user_id=user.id) }}" class="m-0" onsubmit="return confirm('Đổi trạng thái tài khoản {{ user.username }}?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            {% if user.is_active %}
+                                <button class="btn btn-sm btn-outline-danger" type="submit" {% if user.id == current_user.id %}disabled{% endif %}>Khóa</button>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline-success" type="submit">Mở khóa</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="7" class="text-center text-secondary py-4">Không tìm thấy user.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="mt-4" aria-label="Phân trang user">
+    <ul class="pagination justify-content-center flex-wrap">
+        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}"><a class="page-link" href="{{ page_url(pagination.prev_num) if pagination.has_prev else '#' }}">Trước</a></li>
+        <li class="page-item disabled"><span class="page-link">Trang {{ pagination.page }}/{{ pagination.pages }}</span></li>
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}"><a class="page-link" href="{{ page_url(pagination.next_num) if pagination.has_next else '#' }}">Sau</a></li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

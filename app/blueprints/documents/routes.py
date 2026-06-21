@@ -42,11 +42,8 @@ from app.services.document_service import (
     move_file as move_file_record,
     rename_file as rename_file_record,
     resolve_physical_file,
-    restore_file as restore_file_record,
     revoke_file_share,
     save_uploaded_file,
-    soft_delete_file as soft_delete_file_record,
-    permanently_delete_file as permanently_delete_file_record,
     share_file as share_file_record,
     share_recipient_choices,
 )
@@ -94,19 +91,6 @@ def _owned_file_or_404(file_id: int) -> StoredFile:
         abort(404)
     return stored_file
 
-
-
-def _owned_file_any_state_or_404(file_id: int) -> StoredFile:
-    """Return an owned file even when it is already in trash.
-
-    Normal detail/download/share routes deliberately use can_view_file(), which
-    hides deleted files.  Trash lifecycle routes need a separate owner-only
-    lookup so repeated delete/restore operations remain safe and predictable.
-    """
-    stored_file = _file_record(file_id)
-    if stored_file is None or stored_file.owner_id != g.current_user.id:
-        abort(404)
-    return stored_file
 
 def _render_file_list(current_folder: Folder | None = None):
     user_id = g.current_user.id
@@ -554,89 +538,6 @@ def revoke_share(file_id: int, share_id: int):
     return redirect(url_for("documents.file_detail", file_id=file_id))
 
 
-@bp.route("/files/<int:file_id>/delete", methods=["POST", "DELETE"])
-@login_required
-def delete_file(file_id: int):
-    stored_file = _owned_file_any_state_or_404(file_id)
-    try:
-        was_deleted = stored_file.is_deleted
-        soft_delete_file_record(stored_file=stored_file, owner=g.current_user)
-    except Exception:
-        current_app.logger.exception("Không thể xóa mềm file_id=%s", file_id)
-        flash("Không thể đưa tệp vào thùng rác. Dữ liệu chưa thay đổi.", "danger")
-        return redirect(url_for("documents.file_detail", file_id=file_id))
-
-    if was_deleted:
-        flash("Tệp này đã nằm trong thùng rác từ trước.", "info")
-    else:
-        flash(f"Đã đưa “{stored_file.original_name}” vào thùng rác.", "success")
-    return redirect(url_for("documents.trash"))
-
-
-@bp.get("/trash")
-@login_required
-def trash():
-    page = max(request.args.get("page", 1, type=int), 1)
-    query = (
-        StoredFile.query.filter(
-            StoredFile.owner_id == g.current_user.id,
-            StoredFile.is_deleted.is_(True),
-        )
-        .order_by(StoredFile.deleted_at.desc(), StoredFile.id.desc())
-    )
-    pagination = query.paginate(page=page, per_page=10, error_out=False)
-
-    def page_url(page_number: int) -> str:
-        return url_for("documents.trash", page=page_number)
-
-    return render_template(
-        "documents/trash.html",
-        files=pagination.items,
-        pagination=pagination,
-        page_url=page_url,
-        format_file_size=format_file_size,
-    )
-
-
-@bp.post("/files/<int:file_id>/restore")
-@login_required
-def restore_file(file_id: int):
-    stored_file = _owned_file_any_state_or_404(file_id)
-    try:
-        was_deleted = stored_file.is_deleted
-        restore_file_record(stored_file=stored_file, owner=g.current_user)
-    except DocumentValidationError as exc:
-        flash(str(exc), "danger")
-        return redirect(url_for("documents.trash"))
-    except Exception:
-        current_app.logger.exception("Không thể khôi phục file_id=%s", file_id)
-        flash("Không thể khôi phục tệp. Dữ liệu chưa thay đổi.", "danger")
-        return redirect(url_for("documents.trash"))
-
-    if was_deleted:
-        flash(f"Đã khôi phục “{stored_file.original_name}”.", "success")
-    else:
-        flash("Tệp này đã được khôi phục từ trước.", "info")
-    return redirect(url_for("documents.file_detail", file_id=file_id))
-
-
-@bp.post("/files/<int:file_id>/permanent-delete")
-@login_required
-def permanent_delete_file(file_id: int):
-    stored_file = _owned_file_any_state_or_404(file_id)
-    file_name = stored_file.original_name
-    try:
-        permanently_delete_file_record(stored_file=stored_file, owner=g.current_user)
-    except DocumentValidationError as exc:
-        flash(str(exc), "danger")
-    except Exception:
-        current_app.logger.exception("Không thể xóa vĩnh viễn file_id=%s", file_id)
-        flash("Không thể xóa vĩnh viễn tệp. Dữ liệu chưa thay đổi.", "danger")
-    else:
-        flash(f"Đã xóa vĩnh viễn “{file_name}”.", "success")
-    return redirect(url_for("documents.trash"))
-
-
 @bp.get("/shared-with-me")
 @login_required
 def shared_with_me():
@@ -658,3 +559,211 @@ def shared_with_me():
         pagination=pagination,
         format_file_size=format_file_size,
     )
+
+
+@bp.get("/trash")
+@login_required
+def trash():
+    page = max(request.args.get("page", 1, type=int), 1)
+    pagination = (
+        StoredFile.query.filter_by(owner_id=g.current_user.id, is_deleted=True)
+        .order_by(StoredFile.deleted_at.desc(), StoredFile.id.desc())
+        .paginate(page=page, per_page=10, error_out=False)
+    )
+    return render_template(
+        "documents/trash.html",
+        files=pagination.items,
+        pagination=pagination,
+        format_file_size=format_file_size,
+    )
+
+
+@bp.post("/files/<int:file_id>/delete")
+@login_required
+def delete_file(file_id: int):
+    from app.services.document_service import soft_delete_file
+
+    stored_file = _file_record(file_id)
+    try:
+        soft_delete_file(stored_file=stored_file, owner=g.current_user)
+    except PermissionError:
+        abort(404)
+    except Exception:
+        current_app.logger.exception("Không thể soft delete file_id=%s", file_id)
+        flash("Không thể đưa tệp vào thùng rác.", "danger")
+        return redirect(url_for("documents.file_detail", file_id=file_id))
+
+    flash("Đã đưa tệp vào thùng rác. Bạn có thể khôi phục tại mục Thùng rác.", "success")
+    return redirect(url_for("documents.index"))
+
+
+@bp.post("/files/<int:file_id>/restore")
+@login_required
+def restore_file(file_id: int):
+    from app.services.document_service import restore_file as restore_file_record
+
+    stored_file = _file_record(file_id)
+    try:
+        restore_file_record(stored_file=stored_file, owner=g.current_user)
+    except PermissionError:
+        abort(404)
+    except Exception:
+        current_app.logger.exception("Không thể restore file_id=%s", file_id)
+        flash("Không thể khôi phục tệp.", "danger")
+    else:
+        flash("Đã khôi phục tệp về My Drive.", "success")
+    return redirect(url_for("documents.trash"))
+
+
+@bp.post("/files/<int:file_id>/permanent-delete")
+@login_required
+def permanent_delete_file(file_id: int):
+    from app.services.document_service import permanently_delete_file
+
+    stored_file = _file_record(file_id)
+    try:
+        permanently_delete_file(stored_file=stored_file, owner=g.current_user)
+    except PermissionError:
+        abort(404)
+    except DocumentValidationError as exc:
+        flash(str(exc), "warning")
+    except Exception:
+        current_app.logger.exception("Không thể xóa vĩnh viễn file_id=%s", file_id)
+        flash("Không thể xóa vĩnh viễn tệp.", "danger")
+    else:
+        flash("Đã xóa vĩnh viễn tệp khỏi thùng rác.", "success")
+    return redirect(url_for("documents.trash"))
+
+
+def _apply_export_filters(query):
+    """Apply My Drive filters to an owner-only export query."""
+    search_text = request.values.get("q", "", type=str).strip()[:255]
+    extension = request.values.get("extension", "", type=str).strip().lower()[:20]
+    folder_value = request.values.get("folder", "", type=str).strip()
+
+    if search_text:
+        escaped_search = search_text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        query = query.filter(
+            func.lower(StoredFile.original_name).like(
+                f"%{escaped_search.lower()}%", escape="\\"
+            )
+        )
+
+    if extension:
+        allowed_extensions = {
+            value.lower() for value in current_app.config.get("ALLOWED_EXTENSIONS", set())
+        }
+        if extension not in allowed_extensions:
+            abort(400)
+        query = query.filter(StoredFile.file_extension == extension)
+
+    if folder_value == "root":
+        query = query.filter(StoredFile.folder_id.is_(None))
+    elif folder_value:
+        try:
+            folder_id = int(folder_value)
+        except ValueError:
+            abort(400)
+        folder = get_owned_folder(folder_id, g.current_user.id)
+        if folder is None:
+            abort(404)
+        query = query.filter(StoredFile.folder_id == folder.id)
+
+    return query
+
+
+def _parse_selected_file_ids() -> list[int]:
+    raw_values = request.form.getlist("file_ids")
+    if not raw_values:
+        raw_csv = request.form.get("file_ids_csv", "")
+        raw_values = [value.strip() for value in raw_csv.split(",") if value.strip()]
+
+    selected_ids: list[int] = []
+    for raw_value in raw_values:
+        try:
+            selected_ids.append(int(raw_value))
+        except (TypeError, ValueError):
+            abort(400)
+    return sorted(set(selected_ids))
+
+
+@bp.post("/files/export")
+@login_required
+def export_files_csv():
+    """Export metadata only for active files owned by the current user.
+
+    VIEWER shares are deliberately excluded because the app only grants viewers
+    view/download permissions, not bulk export permissions.
+    """
+    import csv
+    import io
+    from datetime import datetime, timezone
+
+    selected_ids = _parse_selected_file_ids()
+    query = StoredFile.query.filter(
+        StoredFile.owner_id == g.current_user.id,
+        StoredFile.is_deleted.is_(False),
+    )
+    if selected_ids:
+        query = query.filter(StoredFile.id.in_(selected_ids))
+    else:
+        query = _apply_export_filters(query)
+
+    files = query.order_by(StoredFile.id.asc()).all()
+
+    output = io.StringIO(newline="")
+    writer = csv.writer(output)
+    writer.writerow(
+        [
+            "file_id",
+            "original_name",
+            "extension",
+            "mime_type",
+            "size_bytes",
+            "folder",
+            "owner_username",
+            "created_at",
+            "updated_at",
+        ]
+    )
+    for stored_file in files:
+        writer.writerow(
+            [
+                stored_file.id,
+                stored_file.original_name,
+                stored_file.file_extension,
+                stored_file.mime_type,
+                stored_file.file_size,
+                stored_file.folder.name if stored_file.folder else "My Drive",
+                stored_file.owner.username,
+                stored_file.created_at.isoformat(),
+                stored_file.updated_at.isoformat(),
+            ]
+        )
+
+    from app.models import ExportJob, ExportJobItem
+
+    job = ExportJob(
+        requested_by_user=g.current_user,
+        export_type="CSV",
+        status="COMPLETED",
+        item_count=len(files),
+        total_size=sum(stored_file.file_size or 0 for stored_file in files),
+        completed_at=datetime.now(timezone.utc),
+    )
+    db.session.add(job)
+    db.session.flush()
+    for stored_file in files:
+        db.session.add(ExportJobItem(export_job=job, file=stored_file))
+    db.session.commit()
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    filename = f"studydrive_metadata_{timestamp}.csv"
+    csv_text = "\ufeff" + output.getvalue()
+    response = current_app.response_class(
+        csv_text,
+        mimetype="text/csv; charset=utf-8",
+    )
+    response.headers["Content-Disposition"] = f"attachment; filename*=UTF-8''{filename}"
+    response.headers["X-Export-Job-Id"] = str(job.id)
+    return response

@@ -3,6 +3,60 @@
 {% block title %}Quản trị | StudyDrive{% endblock %}
 
 {% block content %}
-<h1 class="h3">Quản trị hệ thống</h1>
-<p class="text-secondary">Blueprint <code>admin</code> đã được đăng ký thành công.</p>
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1">Quản trị hệ thống</h1>
+        <p class="text-secondary mb-0">Dashboard tối thiểu cho user và metadata file/folder. Admin không download nội dung tệp tại đây.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="{{ url_for('admin.users') }}">Quản lý user</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('admin.files') }}">Metadata file</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('admin.folders') }}">Metadata folder</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="text-secondary small">Tổng user</div><div class="display-6 fw-semibold">{{ user_count }}</div><div class="small text-success">{{ active_user_count }} đang hoạt động</div></div></div></div>
+    <div class="col-6 col-xl-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="text-secondary small">Tổng file</div><div class="display-6 fw-semibold">{{ file_count }}</div><div class="small text-secondary">{{ active_file_count }} active · {{ deleted_file_count }} deleted</div></div></div></div>
+    <div class="col-6 col-xl-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="text-secondary small">Folder</div><div class="display-6 fw-semibold">{{ folder_count }}</div></div></div></div>
+    <div class="col-6 col-xl-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="text-secondary small">Share còn hiệu lực</div><div class="display-6 fw-semibold">{{ share_count }}</div></div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-xl-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">User mới</div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light"><tr><th>Username</th><th>Role</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                    {% for user in recent_users %}
+                        <tr><td>{{ user.username }}</td><td>{{ user.role }}</td><td>{% if user.is_active %}<span class="badge text-bg-success">active</span>{% else %}<span class="badge text-bg-secondary">locked</span>{% endif %}</td></tr>
+                    {% else %}
+                        <tr><td colspan="3" class="text-center text-secondary py-4">Chưa có user.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">File mới</div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light"><tr><th>Tên file</th><th>Owner</th><th>Kích thước</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                    {% for file in recent_files %}
+                        <tr><td class="text-break">{{ file.original_name }}</td><td>{{ file.owner.username }}</td><td>{{ format_file_size(file.file_size) }}</td><td>{% if file.is_deleted %}<span class="badge text-bg-warning">deleted</span>{% else %}<span class="badge text-bg-success">active</span>{% endif %}</td></tr>
+                    {% else %}
+                        <tr><td colspan="4" class="text-center text-secondary py-4">Chưa có file.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
