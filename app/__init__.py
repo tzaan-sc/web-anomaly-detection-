@@ -27,6 +27,7 @@ def create_app(config_name: str | None = None) -> Flask:
     os.makedirs(app.instance_path, exist_ok=True)
 
     register_extensions(app)
+    register_logging_middleware(app)
     register_request_hooks(app)
     register_blueprints(app)
     register_error_handlers(app)
@@ -39,6 +40,12 @@ def register_extensions(app: Flask) -> None:
     """Attach Flask extensions to the current app instance."""
     db.init_app(app)
     csrf.init_app(app)
+
+def register_logging_middleware(app: Flask) -> None:
+    """Attach structured request logging hooks."""
+    from app.middleware.request_logging import register_request_logging
+
+    register_request_logging(app)
 
 def register_request_hooks(app: Flask) -> None:
     """Load logged-in user and prevent caching protected HTML pages."""

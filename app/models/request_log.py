@@ -47,6 +47,8 @@ class RequestLog(db.Model):
     # Request đang dùng method nào và đi tới endpoint nào.
     http_method = db.Column(db.String(10), nullable=False, index=True)
     endpoint = db.Column(db.String(255), nullable=True, index=True)
+    # URL path không gồm query string để tránh lưu dữ liệu nhạy cảm từ tham số.
+    path = db.Column(db.String(1024), nullable=True)
     # Hành động nghiệp vụ của request.
     action = db.Column(db.String(80), nullable=True, index=True)
     # Loại tài nguyên và id tài nguyên bị tác động.
