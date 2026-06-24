@@ -18,14 +18,25 @@ class RequestLog(db.Model):
         db.Index("ix_request_logs_user_timestamp", "user_id", "timestamp"),
         # Tìm nhanh theo session và thời gian.
         db.Index("ix_request_logs_session_timestamp", "session_id_hash", "timestamp"),
-        # Tìm nhanh theo action và thời gian.
+        # Tìm nhanh theo action chi tiết và thời gian.
         db.Index("ix_request_logs_action_timestamp", "action", "timestamp"),
+        # Tìm nhanh theo action_type nhóm lớn và thời gian.
+        db.Index("ix_request_logs_action_type_timestamp", "action_type", "timestamp"),
         # Tìm nhanh theo status code và thời gian.
         db.Index("ix_request_logs_status_timestamp", "status_code", "timestamp"),
+        # Index ghép đúng checklist ngày 23: session + action_type + status.
+        db.Index(
+            "ix_request_logs_session_action_status",
+            "session_id_hash",
+            "action_type",
+            "status_code",
+        ),
         # Tìm nhanh theo loại tài nguyên và id tài nguyên.
         db.Index("ix_request_logs_resource", "resource_type", "resource_id"),
         # Tìm nhanh theo kết quả phân quyền và thời gian.
         db.Index("ix_request_logs_auth_result", "authorization_result", "timestamp"),
+        # Tìm nhanh các request nhạy cảm.
+        db.Index("ix_request_logs_sensitive_timestamp", "is_sensitive", "timestamp"),
     )
 
     # Mã định danh riêng cho mỗi request.
@@ -37,6 +48,8 @@ class RequestLog(db.Model):
     user_id = db.Column(
         db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
     )
+    # Đã đăng nhập hay chưa tại thời điểm request.
+    is_authenticated = db.Column(db.Boolean, nullable=False, default=False, index=True)
     # Vai trò của user tại thời điểm request.
     role = db.Column(db.String(20), nullable=True)
     # Mã hash của session để theo dõi phiên làm việc.
@@ -49,15 +62,21 @@ class RequestLog(db.Model):
     endpoint = db.Column(db.String(255), nullable=True, index=True)
     # URL path không gồm query string để tránh lưu dữ liệu nhạy cảm từ tham số.
     path = db.Column(db.String(1024), nullable=True)
-    # Hành động nghiệp vụ của request.
+    # Hành động chi tiết của request, ví dụ rename/download/toggle_user.
     action = db.Column(db.String(80), nullable=True, index=True)
+    # Nhóm hành động chuẩn dùng cho feature ML: login/list/create/view_detail/edit/export/delete/restore/admin/other.
+    action_type = db.Column(db.String(80), nullable=True, index=True)
+    # Request nhạy cảm, ví dụ export/delete/admin hoặc detail trái quyền.
+    is_sensitive = db.Column(db.Boolean, nullable=False, default=False, index=True)
     # Loại tài nguyên và id tài nguyên bị tác động.
     resource_type = db.Column(db.String(50), nullable=True, index=True)
     resource_id = db.Column(db.String(100), nullable=True, index=True)
     # Ai là chủ sở hữu tài nguyên và quyền của request.
     owner_id = db.Column(db.Integer, nullable=True, index=True)
     permission = db.Column(db.String(20), nullable=True, index=True)
-    # Kết quả phân quyền: allowed hay denied.
+    # OWNER/VIEWER/NONE/NOT_FOUND/ADMIN/ANONYMOUS/UNKNOWN tại thời điểm ghi log.
+    ownership_result = db.Column(db.String(20), nullable=True, index=True)
+    # Kết quả phân quyền theo response: allowed/denied/error.
     authorization_result = db.Column(db.String(20), nullable=True, index=True)
     # HTTP status trả về cho request.
     status_code = db.Column(db.Integer, nullable=False, index=True)
@@ -73,6 +92,6 @@ class RequestLog(db.Model):
 
     def __repr__(self) -> str:
         return (
-            f"<RequestLog request_id={self.request_id!r} action={self.action!r} "
+            f"<RequestLog request_id={self.request_id!r} action_type={self.action_type!r} "
             f"status={self.status_code}>"
         )
