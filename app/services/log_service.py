@@ -84,6 +84,9 @@ ACTION_BY_ENDPOINT = {
     "admin.toggle_user_active": "admin_toggle_user",
     "admin.files": "admin_list_files",
     "admin.folders": "admin_list_folders",
+    "admin.logs": "admin_list_logs",
+    "admin.log_detail": "admin_view_log_detail",
+    "admin.logs_export": "admin_export_logs_csv",
     "alerts.index": "admin_list_alerts",
 }
 
@@ -117,6 +120,9 @@ ACTION_TYPE_BY_ENDPOINT = {
     "admin.toggle_user_active": "admin",
     "admin.files": "admin",
     "admin.folders": "admin",
+    "admin.logs": "admin",
+    "admin.log_detail": "admin",
+    "admin.logs_export": "admin",
     "alerts.index": "admin",
 }
 

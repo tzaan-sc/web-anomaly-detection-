@@ -174,3 +174,30 @@ def test_delete_log_has_delete_action_type_and_sensitive_context(client, app, lo
         assert log.resource_id == str(file_id)
         assert log.ownership_result == "OWNER"
         assert log.is_sensitive is True
+
+
+
+def test_404_request_is_logged_with_denied_result(client, app):
+    response = client.get("/missing-page")
+
+    assert response.status_code == 404
+    with app.app_context():
+        log = latest_request_log()
+        assert log.status_code == 404
+        assert log.authorization_result == "denied"
+        assert log.response_time_ms >= 0
+
+
+def test_request_id_is_unique_and_boolean_fields_are_stable(client, app):
+    for _ in range(5):
+        response = client.get("/health")
+        assert response.status_code == 200
+
+    with app.app_context():
+        logs = RequestLog.query.order_by(RequestLog.id.desc()).limit(5).all()
+        request_ids = [log.request_id for log in logs]
+        assert len(request_ids) == len(set(request_ids))
+        assert all(log.timestamp is not None for log in logs)
+        assert all(isinstance(log.response_time_ms, float) for log in logs)
+        assert {log.is_authenticated for log in logs} <= {False, True}
+        assert {log.is_sensitive for log in logs} <= {False, True}

@@ -533,3 +533,85 @@ Kết quả hiện tại:
 ```text
 15 passed
 ```
+
+---
+
+## 19. Tuần 3 — Admin logs, export log và simulator dữ liệu
+
+### 19.1. Admin quản lý log
+
+Sau khi đăng nhập admin, mở:
+
+```text
+http://127.0.0.1:5000/admin/logs
+```
+
+Trang này hỗ trợ:
+
+- Lọc theo thời gian, user, `action_type`, `status_code`, `sensitive`, keyword trong path.
+- Sort theo mới/cũ, response time, status hoặc action.
+- Pagination và giữ query parameters khi chuyển trang.
+- Chi tiết log: `request_id`, `session_id_hash`, user-agent, security context và link user/file/folder nếu xác định được.
+- Export CSV theo bộ lọc hiện tại.
+
+Test user thường bị chặn:
+
+```text
+Đăng nhập user1 → truy cập /admin/logs → phải nhận 403.
+```
+
+### 19.2. Export request logs bằng script
+
+```powershell
+python -m scripts.export_logs --output data/raw/request_logs_raw.csv
+```
+
+Lọc ví dụ:
+
+```powershell
+python -m scripts.export_logs --action-type export --sensitive yes --output data/raw/export_logs.csv
+python -m scripts.export_logs --status-code 404 --path-keyword /files --output data/raw/bola_like_logs.csv
+```
+
+Audit bằng Pandas:
+
+```powershell
+python -m scripts.audit_logs --input data/raw/request_logs_raw.csv --output docs/data_audit.md
+```
+
+### 19.3. Chạy simulator normal/anomaly
+
+Terminal 1:
+
+```powershell
+python run.py
+```
+
+Terminal 2:
+
+```powershell
+python -m scripts.reset_demo
+python -m scripts.simulate_normal --fast --requests 300
+python -m scripts.simulate_export_abuse --fast --severity mild
+python -m scripts.simulate_delete_abuse --fast --severity mild
+python -m scripts.simulate_bola_scan --fast --mode burst
+python -m scripts.export_logs --output data/raw/request_logs_raw.csv
+python -m scripts.audit_logs --input data/raw/request_logs_raw.csv --output docs/data_audit.md
+```
+
+Sinh raw dataset v1:
+
+```powershell
+python -m scripts.generate_raw_dataset_v1 --fast --normal-requests 5000
+```
+
+Đầu ra chính:
+
+```text
+data/raw/request_logs_raw.csv
+data/raw/ground_truth.csv
+data/raw/generation_metadata.json
+docs/data_audit.md
+```
+
+> Lưu ý: các simulator chỉ được chạy trên StudyDrive local của dự án. `simulate_bola_scan.py` chỉ tạo request đổi `file_id`; server vẫn phải trả 404/denied và không lộ dữ liệu user khác.

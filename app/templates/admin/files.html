@@ -14,6 +14,7 @@
 <div class="card border-0 shadow-sm mb-4"><div class="card-body">
     <form method="get" class="row g-3 align-items-end">
         <div class="col-12 col-lg-3"><label class="form-label" for="owner">Owner ID/username</label><input class="form-control" id="owner" name="owner" value="{{ owner }}" maxlength="255"></div>
+        <div class="col-6 col-lg-2"><label class="form-label" for="file_id">File ID</label><input class="form-control" id="file_id" name="file_id" value="{{ file_id }}" inputmode="numeric" maxlength="30"></div>
         <div class="col-6 col-lg-2"><label class="form-label" for="extension">Extension</label><select class="form-select" id="extension" name="extension"><option value="">Tất cả</option>{% for item in extension_options %}<option value="{{ item }}" {% if extension == item %}selected{% endif %}>.{{ item }}</option>{% endfor %}</select></div>
         <div class="col-6 col-lg-2"><label class="form-label" for="deleted">Deleted</label><select class="form-select" id="deleted" name="deleted"><option value="active" {% if deleted == 'active' %}selected{% endif %}>Chưa xóa</option><option value="yes" {% if deleted == 'yes' %}selected{% endif %}>Đã xóa</option><option value="all" {% if deleted == 'all' %}selected{% endif %}>Tất cả</option></select></div>
         <div class="col-auto"><button class="btn btn-dark" type="submit">Lọc</button></div>
