@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Alert #{{ alert.id }} | StudyDrive{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1">Chi tiết alert #{{ alert.id }}</h1>
+        <p class="text-secondary mb-0">Cửa sổ bất thường được phát hiện bởi {{ alert.model_version }}.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-primary" href="{{ log_filter_url }}">Xem log gốc</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('alerts.index') }}">← Danh sách alert</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-xl-7">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white fw-semibold">Thông tin alert</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Window ID</dt><dd class="col-sm-8"><code class="text-break">{{ alert.window_id }}</code></dd>
+                    <dt class="col-sm-4">Thời gian</dt><dd class="col-sm-8">{{ alert.window_start.strftime('%d/%m/%Y %H:%M:%S') if alert.window_start else '-' }} → {{ alert.window_end.strftime('%d/%m/%Y %H:%M:%S') if alert.window_end else '-' }}</dd>
+                    <dt class="col-sm-4">User</dt><dd class="col-sm-8">{% if alert.user %}{{ alert.user.username }} #{{ alert.user_id }}{% else %}-{% endif %}</dd>
+                    <dt class="col-sm-4">Anomaly score</dt><dd class="col-sm-8"><strong>{{ '%.6f'|format(alert.anomaly_score or 0) }}</strong></dd>
+                    <dt class="col-sm-4">Hint</dt><dd class="col-sm-8"><span class="badge text-bg-warning">{{ alert.scenario_hint or 'general_anomaly' }}</span></dd>
+                    <dt class="col-sm-4">Status</dt><dd class="col-sm-8">{{ alert.status }}</dd>
+                    <dt class="col-sm-4">Created</dt><dd class="col-sm-8">{{ alert.created_at.strftime('%d/%m/%Y %H:%M:%S') if alert.created_at else '-' }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">Log gốc trong window</div>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light"><tr><th>Time</th><th>Action</th><th>Path</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                    {% for log in related_logs %}
+                        <tr>
+                            <td>{{ log.timestamp.strftime('%H:%M:%S') if log.timestamp else '-' }}</td>
+                            <td>{{ log.action_type or 'other' }}</td>
+                            <td><code class="small text-break">{{ log.path }}</code></td>
+                            <td>{{ log.status_code }}</td>
+                            <td><a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.log_detail', log_id=log.id) }}">Log</a></td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="5" class="text-center text-secondary py-3">Không tìm thấy log gốc.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">Feature nổi bật</div>
+            <div class="card-body">
+                {% if feature_payload.top_features %}
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>Feature</th><th class="text-end">Value</th></tr></thead>
+                            <tbody>
+                            {% for name, value in feature_payload.top_features.items() %}
+                                <tr><td><code>{{ name }}</code></td><td class="text-end">{{ value }}</td></tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <pre class="small bg-light p-3 rounded"><code>{{ feature_payload }}</code></pre>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

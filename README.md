@@ -615,3 +615,177 @@ docs/data_audit.md
 ```
 
 > Lưu ý: các simulator chỉ được chạy trên StudyDrive local của dự án. `simulate_bola_scan.py` chỉ tạo request đổi `file_id`; server vẫn phải trả 404/denied và không lộ dữ liệu user khác.
+
+---
+
+## 20. Pipeline từ ngày 29/06 đến 19/07: ML + Alert + Demo
+
+Chi tiết từng ngày nằm trong:
+
+```text
+docs/day/week4_5_6_daily_guide.md
+```
+
+### 20.1. Build feature dataset `features_v1`
+
+Sau khi đã có:
+
+```text
+data/raw/request_logs_raw.csv
+data/raw/ground_truth.csv
+```
+
+Chạy:
+
+```powershell
+python -m ml.build_features --logs data/raw/request_logs_raw.csv --ground-truth data/raw/ground_truth.csv --output-dir data/processed/features_v1
+```
+
+Đầu ra:
+
+```text
+data/processed/features_v1/clean_logs.csv
+data/processed/features_v1/windowed_logs.csv
+data/processed/features_v1/window_mapping.csv
+data/processed/features_v1/features_all.csv
+data/processed/features_v1/train_features.csv
+data/processed/features_v1/validation_features.csv
+data/processed/features_v1/test_features.csv
+data/processed/features_v1/feature_list.json
+data/processed/features_v1/feature_dictionary.md
+data/processed/features_v1/split_manifest.json
+data/processed/features_v1/processing_report.json
+```
+
+Test nhanh:
+
+```powershell
+python - <<'PY'
+import pandas as pd, json
+base='data/processed/features_v1'
+f=pd.read_csv(base+'/features_all.csv')
+print(f.shape)
+print(f[['window_id','label','scenario','request_count','export_count','delete_count','forbidden_rate']].head())
+print(json.load(open(base+'/split_manifest.json', encoding='utf-8')))
+PY
+```
+
+### 20.2. EDA feature
+
+```powershell
+python -m ml.eda --features data/processed/features_v1/features_all.csv --output-dir artifacts/figures/eda_features_v1
+```
+
+Đầu ra:
+
+```text
+artifacts/figures/eda_features_v1/*.png
+artifacts/figures/eda_features_v1/eda_notes.md
+```
+
+### 20.3. Train Isolation Forest
+
+Baseline:
+
+```powershell
+python -m ml.train --features-dir data/processed/features_v1 --output-dir artifacts/models/iforest_v1
+```
+
+Tuning bằng validation:
+
+```powershell
+python -m ml.train --features-dir data/processed/features_v1 --output-dir artifacts/models/iforest_v1 --tune
+```
+
+Đầu ra:
+
+```text
+artifacts/models/iforest_v1/model.joblib
+artifacts/models/iforest_v1/model_metadata.json
+artifacts/models/iforest_v1/feature_list.json
+artifacts/metrics/tuning_results.csv
+```
+
+### 20.4. Evaluate holdout test
+
+```powershell
+python -m ml.evaluate --model artifacts/models/iforest_v1/model.joblib --test data/processed/features_v1/test_features.csv --output-dir artifacts/metrics
+```
+
+Đầu ra:
+
+```text
+artifacts/metrics/test_metrics.json
+artifacts/metrics/scenario_metrics.csv
+artifacts/metrics/test_predictions.csv
+artifacts/metrics/confusion_matrix.png
+artifacts/metrics/score_distribution.png
+```
+
+### 20.5. Detect offline bằng CSV feature
+
+```powershell
+python -m ml.detect --model artifacts/models/iforest_v1/model.joblib --features data/processed/features_v1/test_features.csv --output artifacts/metrics/detect_predictions.csv
+```
+
+### 20.6. Tích hợp web: Run detection và xem alert
+
+Chạy detection từ database log hiện tại:
+
+```powershell
+python -m scripts.run_detection
+```
+
+Hoặc vào web bằng tài khoản admin:
+
+```text
+/alerts → Run detection
+```
+
+Kiểm tra alert:
+
+```powershell
+python - <<'PY'
+from app import create_app
+from app.models import Alert
+app=create_app('development')
+with app.app_context():
+    print('alerts =', Alert.query.count())
+    for a in Alert.query.order_by(Alert.anomaly_score.desc()).limit(5):
+        print(a.id, a.user_id, a.anomaly_score, a.scenario_hint, a.model_version)
+PY
+```
+
+### 20.7. Demo end-to-end một lệnh
+
+Terminal 1:
+
+```powershell
+python run.py
+```
+
+Terminal 2:
+
+```powershell
+python -m scripts.run_demo_scenario --scenario all --fast --normal-requests 800
+```
+
+Sau đó mở:
+
+```text
+/admin/logs
+/alerts
+```
+
+`/alerts/<id>` hiển thị feature nổi bật và link về log gốc trong window.
+
+### 20.8. Gói nộp cuối
+
+PowerShell gợi ý:
+
+```powershell
+Compress-Archive -Path app,ml,scripts,docs,data,artifacts,tests,README.md,requirements.txt,run.py,pytest.ini -DestinationPath final_submission_2026-07-19.zip -Force
+Get-FileHash final_submission_2026-07-19.zip -Algorithm SHA256
+```
+
+Không đưa vào ZIP: `.env`, `.venv`, `.git`, `__pycache__`, dữ liệu cá nhân hoặc secret thật.

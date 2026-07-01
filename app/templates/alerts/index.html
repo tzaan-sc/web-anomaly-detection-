@@ -1,8 +1,176 @@
 {% extends "base.html" %}
 
-{% block title %}Cảnh báo | StudyDrive{% endblock %}
+{% block title %}Cảnh báo bất thường | StudyDrive{% endblock %}
 
 {% block content %}
-<h1 class="h3">Cảnh báo bất thường</h1>
-<p class="text-secondary">Blueprint <code>alerts</code> đã được đăng ký thành công.</p>
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1">Dashboard cảnh báo bất thường</h1>
+        <p class="text-secondary mb-0">Kết quả từ pipeline log → feature window → Isolation Forest → Alert.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin.logs') }}">Xem request logs</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin.index') }}">← Admin dashboard</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <div class="text-secondary small">Tổng request log</div>
+            <div class="fs-3 fw-bold">{{ total_logs }}</div>
+        </div></div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <div class="text-secondary small">Tổng alert</div>
+            <div class="fs-3 fw-bold">{{ total_alerts }}</div>
+        </div></div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <div class="text-secondary small">Alert mới</div>
+            <div class="fs-3 fw-bold">{{ new_alerts }}</div>
+        </div></div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-xl-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">Lọc cảnh báo</div>
+            <div class="card-body">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="start">Từ</label>
+                        <input class="form-control" type="datetime-local" id="start" name="start" value="{{ filters.start }}">
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="end">Đến</label>
+                        <input class="form-control" type="datetime-local" id="end" name="end" value="{{ filters.end }}">
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="user">User</label>
+                        <input class="form-control" id="user" name="user" value="{{ filters.user }}" placeholder="id/username/email">
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="hint">Hint</label>
+                        <select class="form-select" id="hint" name="hint">
+                            <option value="">Tất cả</option>
+                            {% for hint in hint_options %}
+                                <option value="{{ hint }}" {% if filters.hint == hint %}selected{% endif %}>{{ hint }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="model_version">Model</label>
+                        <select class="form-select" id="model_version" name="model_version">
+                            <option value="">Tất cả</option>
+                            {% for model in model_options %}
+                                <option value="{{ model }}" {% if filters.model_version == model %}selected{% endif %}>{{ model }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="status">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">Tất cả</option>
+                            {% for value in ['NEW', 'REVIEWING', 'RESOLVED'] %}
+                                <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="sort">Sort</label>
+                        <select class="form-select" id="sort" name="sort">
+                            {% for key, label in sort_options %}
+                                <option value="{{ key }}" {% if filters.sort == key %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="per_page">Per page</label>
+                        <select class="form-select" id="per_page" name="per_page">
+                            {% for value in [10, 20, 50, 100] %}
+                                <option value="{{ value }}" {% if per_page == value %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-auto"><button class="btn btn-dark" type="submit">Lọc alert</button></div>
+                    <div class="col-auto"><a class="btn btn-outline-secondary" href="{{ url_for('alerts.index') }}">Xóa lọc</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white fw-semibold">Chạy detection</div>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('alerts.run_detection_action') }}" class="row g-3">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="col-12">
+                        <label class="form-label" for="detect_start">Từ</label>
+                        <input class="form-control" type="datetime-local" id="detect_start" name="start">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="detect_end">Đến</label>
+                        <input class="form-control" type="datetime-local" id="detect_end" name="end">
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-warning w-100" type="submit">Run detection</button>
+                    </div>
+                    <p class="small text-secondary mb-0">Để trống thời gian nếu muốn quét toàn bộ log hiện có. Chạy lại không nhân đôi alert nhờ window_id + model_version.</p>
+                </form>
+            </div>
+        </div>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">Tóm tắt nhanh</div>
+            <div class="list-group list-group-flush">
+                {% for hint, count in hint_counts %}
+                    <div class="list-group-item d-flex justify-content-between"><span>{{ hint or 'unknown' }}</span><span class="badge text-bg-secondary">{{ count }}</span></div>
+                {% else %}
+                    <div class="list-group-item text-secondary">Chưa có alert.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th><th>Window</th><th>User</th><th>Score</th><th>Hint</th><th>Model</th><th>Status</th><th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for alert in alerts %}
+                <tr>
+                    <td>#{{ alert.id }}</td>
+                    <td><div>{{ alert.window_start.strftime('%d/%m/%Y %H:%M') if alert.window_start else '-' }}</div><code class="small">{{ alert.window_id }}</code></td>
+                    <td>{% if alert.user %}{{ alert.user.username }} #{{ alert.user_id }}{% else %}-{% endif %}</td>
+                    <td class="fw-semibold">{{ '%.4f'|format(alert.anomaly_score or 0) }}</td>
+                    <td><span class="badge text-bg-warning">{{ alert.scenario_hint or 'general' }}</span></td>
+                    <td><code>{{ alert.model_version }}</code></td>
+                    <td><span class="badge text-bg-light border">{{ alert.status }}</span></td>
+                    <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('alerts.detail', alert_id=alert.id) }}">Chi tiết</a></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="8" class="text-center text-secondary py-4">Chưa có alert hoặc không khớp bộ lọc.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="mt-4" aria-label="Phân trang alert">
+    <ul class="pagination justify-content-center flex-wrap">
+        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}"><a class="page-link" href="{{ page_url(pagination.prev_num) if pagination.has_prev else '#' }}">Trước</a></li>
+        <li class="page-item disabled"><span class="page-link">Trang {{ pagination.page }}/{{ pagination.pages }}</span></li>
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}"><a class="page-link" href="{{ page_url(pagination.next_num) if pagination.has_next else '#' }}">Sau</a></li>
+    </ul>
+</nav>
+{% endif %}
 {% endblock %}
