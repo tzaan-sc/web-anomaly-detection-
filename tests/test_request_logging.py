@@ -142,7 +142,7 @@ def test_unauthorized_file_detail_is_sensitive_and_has_none_context(client, app,
     login_as(other_user_id)
     response = client.get(f"/files/{file_id}")
 
-    assert response.status_code == 404
+    assert response.status_code == 403
     with app.app_context():
         log = latest_request_log()
         assert log.action_type == "view_detail"

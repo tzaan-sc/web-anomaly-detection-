@@ -25,7 +25,6 @@
                     <dt class="col-sm-4">User</dt><dd class="col-sm-8">{% if alert.user %}{{ alert.user.username }} #{{ alert.user_id }}{% else %}-{% endif %}</dd>
                     <dt class="col-sm-4">Anomaly score</dt><dd class="col-sm-8"><strong>{{ '%.6f'|format(alert.anomaly_score or 0) }}</strong></dd>
                     <dt class="col-sm-4">Hint</dt><dd class="col-sm-8"><span class="badge text-bg-warning">{{ alert.scenario_hint or 'general_anomaly' }}</span></dd>
-                    <dt class="col-sm-4">Status</dt><dd class="col-sm-8">{{ alert.status }}</dd>
                     <dt class="col-sm-4">Created</dt><dd class="col-sm-8">{{ alert.created_at.strftime('%d/%m/%Y %H:%M:%S') if alert.created_at else '-' }}</dd>
                 </dl>
             </div>
@@ -55,6 +54,29 @@
     </div>
 
     <div class="col-12 col-xl-5">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white fw-semibold">Xử lý Cảnh báo</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('alerts.update_alert', alert_id=alert.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Trạng thái</label>
+                        <select name="status" class="form-select">
+                            <option value="NEW" {% if alert.status == 'NEW' %}selected{% endif %}>NEW (Mới)</option>
+                            <option value="PROCESSING" {% if alert.status == 'PROCESSING' %}selected{% endif %}>PROCESSING (Đang xử lý)</option>
+                            <option value="RESOLVED" {% if alert.status == 'RESOLVED' %}selected{% endif %}>RESOLVED (Đã xử lý)</option>
+                            <option value="FALSE_POSITIVE" {% if alert.status == 'FALSE_POSITIVE' %}selected{% endif %}>FALSE POSITIVE (Báo động giả)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Ghi chú của Admin</label>
+                        <textarea name="admin_notes" class="form-control" rows="3" placeholder="Nhập ghi chú xử lý...">{{ alert.admin_notes or '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Cập nhật Alert</button>
+                </form>
+            </div>
+        </div>
+
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white fw-semibold">Feature nổi bật</div>
             <div class="card-body">

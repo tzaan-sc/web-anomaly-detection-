@@ -188,3 +188,24 @@ def detail(alert_id: int):
         related_logs=related_logs,
         log_filter_url=url_for("admin.logs", **log_args),
     )
+
+
+@bp.post("/<int:alert_id>/update")
+@admin_required
+def update_alert(alert_id: int):
+    alert = db.session.get(Alert, alert_id)
+    if alert is None:
+        abort(404)
+    
+    status = request.form.get("status")
+    admin_notes = request.form.get("admin_notes")
+    
+    if status in ("NEW", "PROCESSING", "RESOLVED", "FALSE_POSITIVE"):
+        alert.status = status
+    if admin_notes is not None:
+        alert.admin_notes = admin_notes.strip()
+        
+    db.session.commit()
+    flash("Cập nhật Alert thành công.", "success")
+    return redirect(url_for("alerts.detail", alert_id=alert.id))
+

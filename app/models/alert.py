@@ -41,6 +41,8 @@ class Alert(db.Model):
     features_json = db.Column(db.Text, nullable=False, default="{}")
     # Trạng thái xử lý của cảnh báo.
     status = db.Column(db.String(30), nullable=False, default="NEW", index=True)
+    # Ghi chú của Admin khi xử lý.
+    admin_notes = db.Column(db.Text, nullable=True)
     # Thời gian tạo và cập nhật.
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utc_now)
     updated_at = db.Column(

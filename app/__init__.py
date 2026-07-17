@@ -69,6 +69,9 @@ def register_request_hooks(app: Flask) -> None:
 
         g.current_user = user
 
+    from app.middleware.active_defense import check_active_defense
+    app.before_request(check_active_defense)
+
     @app.after_request
     def prevent_html_cache(response):
         # Tránh browser hiển thị lại dashboard sau khi logout bằng nút Back.

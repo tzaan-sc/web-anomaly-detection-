@@ -79,16 +79,19 @@ def _file_record(file_id: int) -> StoredFile | None:
 
 def _viewable_file_or_404(file_id: int) -> tuple[StoredFile, str]:
     stored_file = _file_record(file_id)
-    if not can_view_file(stored_file, g.current_user.id):
-        # StudyDrive consistently hides missing, deleted, and unauthorized files.
+    if stored_file is None or stored_file.is_deleted:
         abort(404)
+    if not can_view_file(stored_file, g.current_user.id):
+        abort(403)
     return stored_file, get_file_access(stored_file, g.current_user.id)
 
 
 def _owned_file_or_404(file_id: int) -> StoredFile:
     stored_file = _file_record(file_id)
-    if not can_modify_file(stored_file, g.current_user.id):
+    if stored_file is None or stored_file.is_deleted:
         abort(404)
+    if not can_modify_file(stored_file, g.current_user.id):
+        abort(403)
     return stored_file
 
 

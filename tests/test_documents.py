@@ -338,15 +338,15 @@ def test_viewer_can_only_view_and_download_while_none_gets_same_404(
     assert api_payload["access"] == "VIEWER"
     assert "folder" not in api_payload
 
-    assert client.get(f"/files/{file_id}/rename").status_code == 404
+    assert client.get(f"/files/{file_id}/rename").status_code == 403
     assert client.post(
         f"/files/{file_id}/move", data={"folder_id": "0"}
-    ).status_code == 404
-    assert client.get(f"/files/{file_id}/share").status_code == 404
+    ).status_code == 403
+    assert client.get(f"/files/{file_id}/share").status_code == 403
 
     login_as(outsider_id)
-    assert client.get(f"/files/{file_id}").status_code == 404
-    assert client.get(f"/files/{file_id}/download").status_code == 404
+    assert client.get(f"/files/{file_id}").status_code == 403
+    assert client.get(f"/files/{file_id}/download").status_code == 403
     denied_api = client.get(f"/api/files/{file_id}")
     missing_api = client.get("/api/files/999999")
     assert denied_api.status_code == missing_api.status_code == 404
@@ -474,8 +474,8 @@ def test_share_duplicate_revoke_and_shared_with_me_access_changes_immediately(
 
     login_as(viewer_id)
     assert "grant.txt" not in client.get("/shared-with-me").get_data(as_text=True)
-    assert client.get(f"/files/{file_id}").status_code == 404
-    assert client.get(f"/files/{file_id}/download").status_code == 404
+    assert client.get(f"/files/{file_id}").status_code == 403
+    assert client.get(f"/files/{file_id}/download").status_code == 403
 
     # Re-sharing restores the existing row instead of violating the unique key.
     login_as(app.config["TEST_USER_A_ID"])

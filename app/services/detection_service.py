@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable
 
@@ -17,7 +17,7 @@ import pandas as pd
 from sqlalchemy import and_
 
 from app.extensions import db
-from app.models import Alert, RequestLog
+from app.models import Alert, RequestLog, User
 from ml.build_features import aggregate_features, assign_windows, clean_logs
 from ml.detect import DEFAULT_MODEL_PATH, load_detector, predict_feature_dataframe
 
@@ -208,6 +208,14 @@ def run_detection(
         )
         db.session.add(alert)
         created += 1
+
+        # Active Defense: Auto-block user if anomaly score is high or explicit attack scenario
+        if alert.user_id is not None:
+            if alert.anomaly_score > 0.7 or alert.scenario_hint in ("bola_scan", "export_abuse", "delete_abuse"):
+                user = db.session.get(User, alert.user_id)
+                if user and not user.is_admin:
+                    user.locked_until = datetime.now(timezone.utc) + timedelta(minutes=60)
+                    db.session.add(user)
 
     try:
         db.session.commit()
