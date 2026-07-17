@@ -395,3 +395,90 @@ main.container {
     border-color: var(--border) !important;
 }
 
+/* Dark Mode Variables and Overrides */
+[data-bs-theme="dark"] {
+    --background: #121212;
+    --surface: #1e1e1e;
+    --navbar: #1a1a1a;
+    --sidebar: #252525;
+    --text-main: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --border: #333333;
+    
+    /* Slightly adapt primary colors for dark mode to not be overly bright */
+    --primary-light: #5c2335;
+    
+    /* Bootstrap variable overrides for dark mode */
+    --bs-body-bg: var(--background);
+    --bs-body-color: var(--text-main);
+    --bs-border-color: var(--border);
+    --bs-card-bg: var(--surface);
+    --bs-card-cap-bg: var(--surface);
+    --bs-tertiary-bg: var(--surface);
+}
+
+[data-bs-theme="dark"] .bg-white {
+    background-color: var(--surface) !important;
+}
+
+[data-bs-theme="dark"] .bg-light, [data-bs-theme="dark"] .text-bg-light {
+    background-color: #2a2a2a !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border) !important;
+}
+
+[data-bs-theme="dark"] .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-main);
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
+}
+
+[data-bs-theme="dark"] .table th {
+    background-color: var(--navbar) !important;
+}
+
+[data-bs-theme="dark"] .table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-bs-theme="dark"] .card, 
+[data-bs-theme="dark"] .pastel-navbar {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-bs-theme="dark"] .form-control, [data-bs-theme="dark"] .form-select {
+    background-color: #2a2a2a;
+    color: var(--text-main);
+    border-color: var(--border);
+}
+
+[data-bs-theme="dark"] .form-control:focus, [data-bs-theme="dark"] .form-select:focus {
+    background-color: #2a2a2a;
+    color: var(--text-main);
+}
+
+/* Fix Alerts in Dark Mode for Contrast */
+[data-bs-theme="dark"] .alert-success {
+    background-color: #1e3a2f !important;
+    border-color: #275443 !important;
+    color: #a3e3c6 !important;
+}
+
+[data-bs-theme="dark"] .alert-danger {
+    background-color: #3b1d1d !important;
+    border-color: #572a2a !important;
+    color: #f7aba6 !important;
+}
+
+[data-bs-theme="dark"] .alert-info {
+    background-color: #351a24 !important;
+    border-color: #4a2432 !important;
+    color: var(--primary) !important;
+}
+
+
+
