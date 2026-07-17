@@ -38,7 +38,7 @@
                         <div class="d-flex flex-wrap justify-content-end gap-2">
                             <form method="post" action="{{ url_for('documents.restore_file', file_id=file.id) }}" class="m-0">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-success" type="submit">Khôi phục</button>
+                                <button class="btn btn-sm btn-primary" type="submit">Khôi phục</button>
                             </form>
                             <form method="post" action="{{ url_for('documents.permanent_delete_file', file_id=file.id) }}" class="m-0" onsubmit="return confirm('Xóa vĩnh viễn tệp này? Hành động này không thể hoàn tác.');">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

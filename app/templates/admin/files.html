@@ -17,7 +17,7 @@
         <div class="col-6 col-lg-2"><label class="form-label" for="file_id">File ID</label><input class="form-control" id="file_id" name="file_id" value="{{ file_id }}" inputmode="numeric" maxlength="30"></div>
         <div class="col-6 col-lg-2"><label class="form-label" for="extension">Extension</label><select class="form-select" id="extension" name="extension"><option value="">Tất cả</option>{% for item in extension_options %}<option value="{{ item }}" {% if extension == item %}selected{% endif %}>.{{ item }}</option>{% endfor %}</select></div>
         <div class="col-6 col-lg-2"><label class="form-label" for="deleted">Đã xóa</label><select class="form-select" id="deleted" name="deleted"><option value="active" {% if deleted == 'active' %}selected{% endif %}>Chưa xóa</option><option value="yes" {% if deleted == 'yes' %}selected{% endif %}>Đã xóa</option><option value="all" {% if deleted == 'all' %}selected{% endif %}>Tất cả</option></select></div>
-        <div class="col-auto"><button class="btn btn-dark" type="submit">Lọc</button></div>
+        <div class="col-auto"><button class="btn btn-primary" type="submit">Lọc</button></div>
         <div class="col-auto"><a class="btn btn-outline-secondary" href="{{ url_for('admin.files') }}">Xóa lọc</a></div>
     </form>
 </div></div>

@@ -16,7 +16,7 @@
         <div class="col-12 col-lg-4"><label class="form-label" for="owner">Owner ID/username</label><input class="form-control" id="owner" name="owner" value="{{ owner }}" maxlength="255"></div>
         <div class="col-6 col-lg-2"><label class="form-label" for="folder_id">Folder ID</label><input class="form-control" id="folder_id" name="folder_id" value="{{ folder_id }}" inputmode="numeric" maxlength="30"></div>
         <div class="col-6 col-lg-2"><label class="form-label" for="deleted">Đã xóa</label><select class="form-select" id="deleted" name="deleted"><option value="active" {% if deleted == 'active' %}selected{% endif %}>Chưa xóa</option><option value="yes" {% if deleted == 'yes' %}selected{% endif %}>Đã xóa</option><option value="all" {% if deleted == 'all' %}selected{% endif %}>Tất cả</option></select></div>
-        <div class="col-auto"><button class="btn btn-dark" type="submit">Lọc</button></div>
+        <div class="col-auto"><button class="btn btn-primary" type="submit">Lọc</button></div>
         <div class="col-auto"><a class="btn btn-outline-secondary" href="{{ url_for('admin.folders') }}">Xóa lọc</a></div>
     </form>
 </div></div>

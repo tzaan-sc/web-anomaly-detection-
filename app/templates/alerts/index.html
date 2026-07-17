@@ -96,7 +96,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-auto"><button class="btn btn-dark" type="submit">Lọc alert</button></div>
+                    <div class="col-auto"><button class="btn btn-primary" type="submit">Lọc alert</button></div>
                     <div class="col-auto"><a class="btn btn-outline-secondary" href="{{ url_for('alerts.index') }}">Xóa lọc</a></div>
                 </form>
             </div>
@@ -117,7 +117,7 @@
                         <input class="form-control" type="datetime-local" id="detect_end" name="end">
                     </div>
                     <div class="col-12">
-                        <button class="btn btn-warning w-100" type="submit">Run detection</button>
+                        <button class="btn btn-primary w-100" type="submit">Run detection</button>
                     </div>
                     <p class="small text-secondary mb-0">Để trống thời gian nếu muốn quét toàn bộ log hiện có. Chạy lại không nhân đôi alert nhờ window_id + model_version.</p>
                 </form>

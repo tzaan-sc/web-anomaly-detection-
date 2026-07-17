@@ -71,7 +71,7 @@
             </div>
 
             <div class="col-6 col-lg-auto d-flex gap-2">
-                <button class="btn btn-dark" type="submit">Áp dụng</button>
+                <button class="btn btn-primary" type="submit">Áp dụng</button>
                 <a class="btn btn-outline-secondary" href="{{ request.path }}">Xóa lọc</a>
             </div>
         </form>
@@ -118,8 +118,8 @@
             <input type="hidden" name="folder" value="{{ selected_folder_filter }}">
 
             <div class="d-flex flex-wrap gap-2 mb-3">
-                <button class="btn btn-success btn-sm" type="submit">Export CSV theo tệp đã chọn</button>
-                <button class="btn btn-outline-success btn-sm" type="submit" onclick="document.querySelectorAll('input[name=file_ids]').forEach(cb => cb.checked = false);">Export CSV theo bộ lọc hiện tại</button>
+                <button class="btn btn-primary btn-sm" type="submit">Export CSV theo tệp đã chọn</button>
+                <button class="btn btn-pastel-outline btn-sm" type="submit" onclick="document.querySelectorAll('input[name=file_ids]').forEach(cb => cb.checked = false);">Export CSV theo bộ lọc hiện tại</button>
             </div>
 
             <div class="card border-0 shadow-sm">
