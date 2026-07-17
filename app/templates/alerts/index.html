@@ -5,12 +5,12 @@
 {% block content %}
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
     <div>
-        <h1 class="h2 mb-1">Dashboard cảnh báo bất thường</h1>
+        <h1 class="h2 mb-1">Bảng điều khiển cảnh báo bất thường</h1>
         <p class="text-secondary mb-0">Kết quả từ pipeline log → feature window → Isolation Forest → Alert.</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
         <a class="btn btn-outline-secondary" href="{{ url_for('admin.logs') }}">Xem request logs</a>
-        <a class="btn btn-outline-secondary" href="{{ url_for('admin.index') }}">← Admin dashboard</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin.index') }}">← Bảng điều khiển quản trị viên</a>
     </div>
 </div>
 
@@ -50,11 +50,11 @@
                         <input class="form-control" type="datetime-local" id="end" name="end" value="{{ filters.end }}">
                     </div>
                     <div class="col-12 col-md-3">
-                        <label class="form-label" for="user">User</label>
+                        <label class="form-label" for="user">Người dùng</label>
                         <input class="form-control" id="user" name="user" value="{{ filters.user }}" placeholder="id/username/email">
                     </div>
                     <div class="col-12 col-md-3">
-                        <label class="form-label" for="hint">Hint</label>
+                        <label class="form-label" for="hint">Dấu hiệu</label>
                         <select class="form-select" id="hint" name="hint">
                             <option value="">Tất cả</option>
                             {% for hint in hint_options %}
@@ -63,7 +63,7 @@
                         </select>
                     </div>
                     <div class="col-12 col-md-3">
-                        <label class="form-label" for="model_version">Model</label>
+                        <label class="form-label" for="model_version">Mô hình</label>
                         <select class="form-select" id="model_version" name="model_version">
                             <option value="">Tất cả</option>
                             {% for model in model_options %}
@@ -72,7 +72,7 @@
                         </select>
                     </div>
                     <div class="col-12 col-md-3">
-                        <label class="form-label" for="status">Status</label>
+                        <label class="form-label" for="status">Trạng thái</label>
                         <select class="form-select" id="status" name="status">
                             <option value="">Tất cả</option>
                             {% for value in ['NEW', 'REVIEWING', 'RESOLVED'] %}
@@ -141,7 +141,7 @@
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>ID</th><th>Window</th><th>User</th><th>Score</th><th>Hint</th><th>Model</th><th>Status</th><th class="text-end">Thao tác</th>
+                    <th>ID</th><th>Khoảng thời gian</th><th>Người dùng</th><th>Điểm bất thường</th><th>Dấu hiệu</th><th>Mô hình</th><th>Trạng thái</th><th class="text-end">Thao tác</th>
                 </tr>
             </thead>
             <tbody>

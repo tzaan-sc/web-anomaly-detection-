@@ -21,11 +21,11 @@
             <div class="card-body">
                 <dl class="row mb-0">
                     <dt class="col-sm-4">Request ID</dt><dd class="col-sm-8"><code class="text-break">{{ log.request_id }}</code></dd>
-                    <dt class="col-sm-4">Timestamp</dt><dd class="col-sm-8">{{ timestamp_for_display(log.timestamp) }}</dd>
+                    <dt class="col-sm-4">Thời gian</dt><dd class="col-sm-8">{{ timestamp_for_display(log.timestamp) }}</dd>
                     <dt class="col-sm-4">Method / path</dt><dd class="col-sm-8"><span class="badge text-bg-secondary">{{ log.http_method }}</span> <code class="text-break">{{ log.path }}</code></dd>
                     <dt class="col-sm-4">Endpoint</dt><dd class="col-sm-8"><code>{{ log.endpoint or '-' }}</code></dd>
-                    <dt class="col-sm-4">Action</dt><dd class="col-sm-8"><span class="badge text-bg-light border">{{ log.action_type or 'other' }}</span> {{ log.action or '-' }} {% if log.is_sensitive %}<span class="badge text-bg-warning">sensitive</span>{% endif %}</dd>
-                    <dt class="col-sm-4">Status</dt><dd class="col-sm-8">{{ log.status_code }} · {{ log.authorization_result or '-' }}</dd>
+                    <dt class="col-sm-4">Hành động</dt><dd class="col-sm-8"><span class="badge text-bg-light border">{{ log.action_type or 'other' }}</span> {{ log.action or '-' }} {% if log.is_sensitive %}<span class="badge text-bg-warning">sensitive</span>{% endif %}</dd>
+                    <dt class="col-sm-4">Trạng thái</dt><dd class="col-sm-8">{{ log.status_code }} · {{ log.authorization_result or '-' }}</dd>
                     <dt class="col-sm-4">Response time</dt><dd class="col-sm-8">{{ '%.3f'|format(log.response_time_ms or 0) }} ms</dd>
                     <dt class="col-sm-4">IP address</dt><dd class="col-sm-8"><code>{{ log.ip_address or '-' }}</code></dd>
                     <dt class="col-sm-4">User-Agent</dt><dd class="col-sm-8"><code class="text-break">{{ log.user_agent or '-' }}</code></dd>
@@ -38,9 +38,9 @@
             <div class="card-body">
                 <dl class="row mb-0">
                     <dt class="col-sm-4">Authenticated</dt><dd class="col-sm-8">{{ 1 if log.is_authenticated else 0 }}</dd>
-                    <dt class="col-sm-4">Role</dt><dd class="col-sm-8">{{ log.role or '-' }}</dd>
+                    <dt class="col-sm-4">Vai trò</dt><dd class="col-sm-8">{{ log.role or '-' }}</dd>
                     <dt class="col-sm-4">Session hash</dt><dd class="col-sm-8"><code class="text-break">{{ log.session_id_hash or '-' }}</code></dd>
-                    <dt class="col-sm-4">Resource</dt><dd class="col-sm-8">{{ log.resource_type or '-' }} {% if log.resource_id %}#{{ log.resource_id }}{% endif %}</dd>
+                    <dt class="col-sm-4">Tài nguyên</dt><dd class="col-sm-8">{{ log.resource_type or '-' }} {% if log.resource_id %}#{{ log.resource_id }}{% endif %}</dd>
                     <dt class="col-sm-4">Owner ID</dt><dd class="col-sm-8">{{ log.owner_id if log.owner_id is not none else '-' }}</dd>
                     <dt class="col-sm-4">Permission</dt><dd class="col-sm-8">{{ log.permission or '-' }}</dd>
                     <dt class="col-sm-4">Ownership result</dt><dd class="col-sm-8">{{ log.ownership_result or '-' }}</dd>
