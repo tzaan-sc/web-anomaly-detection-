@@ -1,0 +1,13 @@
+{
+  "dataset_version": "raw_v1",
+  "run_id": "raw_v1_20260717_142134",
+  "started_at": "2026-07-17T14:21:34.000000+00:00",
+  "ended_at": "2026-07-17T14:28:00.000000+00:00",
+  "base_url": "http://127.0.0.1:5000",
+  "normal_requests": 5000,
+  "fast": true,
+  "raw_output": "data/raw/request_logs_raw.csv",
+  "ground_truth": "data/raw/ground_truth.csv",
+  "audit_output": "docs/data_audit.md",
+  "notes": "Normal sessions first, then export/delete/bola anomaly sessions. Simulators only target local StudyDrive."
+}

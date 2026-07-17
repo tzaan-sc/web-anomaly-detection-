@@ -132,7 +132,11 @@ def run_action(session: requests.Session, base_url: str, user_data, action: str,
         )
         return 2
     if action == "delete" and owned_id:
-        post_with_csrf(session, base_url, f"/files/{owned_id}", post_path=f"/files/{owned_id}/delete")
+        try:
+            post_with_csrf(session, base_url, f"/files/{owned_id}", post_path=f"/files/{owned_id}/delete")
+        finally:
+            if owned_id in user_data.owned_file_ids:
+                user_data.owned_file_ids.remove(owned_id)
         return 2
 
     request_with_timeout(session, "GET", f"{base_url}/files")
@@ -149,7 +153,12 @@ def simulate_for_user(args, username: str, profile: str, request_budget: int, ru
 
     for i in range(request_budget):
         action = weighted_action(profile)
-        request_count += run_action(session, args.base_url, user_data, action, i)
+        try:
+            request_count += run_action(session, args.base_url, user_data, action, i)
+        except Exception as e:
+            request_count += 1
+            # Quietly log the warning instead of raising to keep the loop going
+            print(f"  [Warning] User {username} action {action} failed (ID: {owned_id if 'owned_id' in locals() else 'N/A'}): {e}")
         sleep_random(fast=args.fast)
 
     ended_at = datetime.now(timezone.utc)

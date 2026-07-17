@@ -1,5 +1,7 @@
-"""Delete abuse simulator placeholder."""
-"""Simulate local Delete Abuse by soft-deleting many files owned by one user."""
+"""Delete abuse simulator placeholder.
+
+Simulate local Delete Abuse by soft-deleting many files owned by one user.
+"""
 
 from __future__ import annotations
 

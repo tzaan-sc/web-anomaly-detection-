@@ -1,0 +1,30 @@
+{
+  "dataset_version": "features_v1",
+  "random_seed": 20260705,
+  "split_group": "user_id|session_id_hash",
+  "train_groups": [
+    "-1|anonymous",
+    "2|0ace177a47f5af4140dddaefae1fe38d8a25c178ae76fc06dad6be16ad614dee",
+    "3|23b1773964a3b09ba16358e2f1613a844257b29604ce3a95682539f1918ed5a2"
+  ],
+  "validation_groups": [
+    "2|f0d7a9c2cdc85d79a40935c4e649331777d7f7cd007889e1f05ec95746d9fd58",
+    "3|8ed8cae549bd386650bb8c580c33e49cb392c3e9535b87b6e71a0d3973f38ac2",
+    "4|084f70f37d8c16e37747f4010586fd58f5945db9f8e5807b722899325515023d",
+    "5|cf320a7cbdd08ab8d9a9e671bc4591cc7fd704e43d80ba0dc0bc8127361c2171",
+    "6|99d9d3a6c56adfce630f153fa23d3fbc74c802e33a60ee083c585dae66a6bc2e"
+  ],
+  "test_groups": [
+    "2|588cb50bba3d5260e257743d7962c1b414c92fbd26058b46a5afc5712a14aa78",
+    "3|751e61c47d18a2d009425ae2b30af18d6a0bde610a39dfb590c977dc74d8916c",
+    "4|d30c87e33fa06078306a36a67bc5b2a9f4f7155491a42c8931e14fd79f634eb5",
+    "5|10d60d4cad531b9bf6b97b0b2bb6301acca000ea9009fb17408ba2a36aebe1bf",
+    "6|6fdc642259692a6ac85ff2fb39ba9edc92454253b4983a9506995b08a7b11a3a"
+  ],
+  "train_rows": 4,
+  "validation_rows": 5,
+  "test_rows": 6,
+  "train_anomaly_rows": 0,
+  "validation_anomaly_rows": 4,
+  "test_anomaly_rows": 3
+}

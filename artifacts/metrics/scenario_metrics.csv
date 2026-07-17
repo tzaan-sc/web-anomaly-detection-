@@ -1,0 +1,4 @@
+﻿scenario,rows,anomaly_rows,detected_anomaly_rows,detection_rate,false_positive_rows,mean_score
+bola_scan,1,1,0,0.0,0,0.47654582476140245
+export_abuse,2,2,2,1.0,0,0.5012482143601074
+normal,3,0,0,0.0,1,0.4755195128426795
