@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
 
 :root {
     /* Cute Pastel Theme Overrides */
@@ -14,15 +14,15 @@
 
     --border: #F8D7E3;
 
-    --text-main: #5A4A52;
-    --text-secondary: #8A7B83;
+    --text-main: #2b2327;
+    --text-secondary: #6B5F65;
 
     --success: #7de1bc;
     --warning: #fab98e;
     --danger: #f98b85;
     
     /* Bootstrap overrides */
-    --bs-font-sans-serif: 'Outfit', sans-serif;
+    --bs-font-sans-serif: 'Nunito', sans-serif;
     --bs-body-bg: var(--background);
     --bs-body-color: var(--text-main);
     --bs-primary: var(--primary-dark);

@@ -6,7 +6,6 @@
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
     <div>
         <h1 class="h2 mb-1">Bảng điều khiển cảnh báo bất thường</h1>
-        <p class="text-secondary mb-0">Kết quả từ pipeline log → feature window → Isolation Forest → Alert.</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
         <a class="btn btn-outline-secondary" href="{{ url_for('admin.logs') }}">Xem request logs</a>
@@ -119,7 +118,6 @@
                     <div class="col-12">
                         <button class="btn btn-primary w-100" type="submit">Run detection</button>
                     </div>
-                    <p class="small text-secondary mb-0">Để trống thời gian nếu muốn quét toàn bộ log hiện có. Chạy lại không nhân đôi alert nhờ window_id + model_version.</p>
                 </form>
             </div>
         </div>
