@@ -40,7 +40,7 @@
             <div class="card-header bg-white fw-semibold">Metadata được phép hiển thị</div>
             <div class="card-body">
                 <dl class="row mb-0">
-                    <dt class="col-sm-4">File ID</dt>
+                    <dt class="col-sm-4">Mã tệp</dt>
                     <dd class="col-sm-8">{{ file.id }}</dd>
 
                     <dt class="col-sm-4">Tên hiển thị</dt>
@@ -87,7 +87,7 @@
             <div class="card-body">
                 {% if access == 'VIEWER' %}
                     <div class="alert alert-info mb-0">
-                        Bạn có quyền <strong>VIEWER</strong>: chỉ được xem metadata và download. Không được đổi tên, di chuyển, chia sẻ, xóa hoặc export hàng loạt.
+                        Bạn có quyền <strong>NGƯỜI XEM</strong>: chỉ được xem metadata và download. Không được đổi tên, di chuyển, chia sẻ, xóa hoặc xuất dữ liệu hàng loạt.
                     </div>
                 {% elif active_shares %}
                     <div class="list-group list-group-flush">

@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}My Files | StudyDrive{% endblock %}
+{% block title %}Tài liệu của tôi | StudyDrive{% endblock %}
 
 {% block content %}
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
     <div>
         <h1 class="h2 mb-1">
-            {% if current_folder %}{{ current_folder.name }}{% else %}My Files{% endif %}
+            {% if current_folder %}{{ current_folder.name }}{% else %}Tài liệu của tôi{% endif %}
         </h1>
     </div>
 
     <div class="d-flex flex-wrap gap-2">
         <a class="btn btn-outline-primary" href="{{ url_for('documents.create_folder', parent_id=current_folder.id if current_folder else 0) }}">+ Tạo thư mục</a>
-        <a class="btn btn-primary" href="{{ url_for('documents.upload_file', folder_id=current_folder.id if current_folder else 0) }}">↑ Upload tệp</a>
+        <a class="btn btn-primary" href="{{ url_for('documents.upload_file', folder_id=current_folder.id if current_folder else 0) }}">↑ Tải lên tệp</a>
     </div>
 </div>
 
@@ -105,7 +105,7 @@
             <span class="text-secondary small">{{ pagination.total }} kết quả</span>
         </div>
         {% if files %}
-            <div class="text-secondary small">Export chỉ xuất metadata tệp bạn sở hữu và chưa xóa.</div>
+            <div class="text-secondary small">Chức năng này chỉ xuất metadata tệp bạn sở hữu và chưa xóa.</div>
         {% endif %}
     </div>
 
@@ -117,8 +117,8 @@
             <input type="hidden" name="folder" value="{{ selected_folder_filter }}">
 
             <div class="d-flex flex-wrap gap-2 mb-3">
-                <button class="btn btn-primary btn-sm" type="submit">Export CSV theo tệp đã chọn</button>
-                <button class="btn btn-pastel-outline btn-sm" type="submit" onclick="document.querySelectorAll('input[name=file_ids]').forEach(cb => cb.checked = false);">Export CSV theo bộ lọc hiện tại</button>
+                <button class="btn btn-primary btn-sm" type="submit">Xuất CSV theo tệp đã chọn</button>
+                <button class="btn btn-pastel-outline btn-sm" type="submit" onclick="document.querySelectorAll('input[name=file_ids]').forEach(cb => cb.checked = false);">Xuất CSV theo bộ lọc hiện tại</button>
             </div>
 
             <div class="card border-0 shadow-sm">
@@ -156,7 +156,7 @@
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm" role="group" aria-label="Thao tác tệp">
                                             <a class="btn btn-outline-primary" href="{{ url_for('documents.file_detail', file_id=file.id) }}">Chi tiết</a>
-                                            <a class="btn btn-primary" href="{{ url_for('documents.download_file', file_id=file.id) }}">Download</a>
+                                            <a class="btn btn-primary" href="{{ url_for('documents.download_file', file_id=file.id) }}">Tải xuống</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -194,7 +194,7 @@
                         Thư mục này chưa có tệp. Bạn có thể upload tệp đầu tiên ngay bây giờ.
                     {% endif %}
                 </p>
-                <a class="btn btn-primary" href="{{ url_for('documents.upload_file', folder_id=current_folder.id if current_folder else 0) }}">Upload tệp</a>
+                <a class="btn btn-primary" href="{{ url_for('documents.upload_file', folder_id=current_folder.id if current_folder else 0) }}">Tải lên tệp</a>
             </div>
         </div>
     {% endif %}
