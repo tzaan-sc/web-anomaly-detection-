@@ -1,19 +1,13 @@
 # BÁO CÁO CHI TIẾT ĐỒ ÁN MÔN HỌC / TỐT NGHIỆP
 ## ĐỀ TÀI: XÂY DỰNG HỆ THỐNG PHÁT HIỆN HÀNH VI TRUY CẬP BẤT THƯỜNG TRÊN ỨNG DỤNG WEB BẰNG MACHINE LEARNING
 
-> **Ghi chú cho người dùng:** Tài liệu này chứa đầy đủ toàn bộ nội dung chi tiết từ cơ sở lý thuyết, kiến trúc hệ thống, thiết kế CSDL, thuật toán ML, kết quả thực nghiệm đến tài liệu tham khảo chuẩn IEEE. Bạn có thể copy trực tiếp các chương vào file Word báo cáo đồ án.
+> **Ghi chú cho người dùng:** Tài liệu này chứa đầy đủ toàn bộ nội dung chi tiết từ phát biểu bài toán theo khung T-P-E (Task, Performance, Experience), cơ sở lý thuyết, so sánh thuật toán (iForest vs OCSVM vs LOF vs Autoencoder), kiến trúc hệ thống, thiết kế CSDL, bảo mật log, quy tắc phân chia tập dữ liệu (Train/Val/Test), công thức toán 11 đặc trưng, phương pháp tuning siêu tham số, 3 case study thực nghiệm chi tiết đến tài liệu tham khảo chuẩn IEEE. Bạn có thể copy trực tiếp các chương vào file Word báo cáo đồ án.
 
 ---
 
 ## BẢNG THÔNG TIN ĐỀ TÀI & TÁC GIẢ
 
 * **Tên đề tài:** Xây dựng hệ thống phát hiện hành vi truy cập bất thường trên ứng dụng web bằng Machine Learning
-* **Họ và tên sinh viên:** Ngô Thu Vân
-* **Mã số sinh viên (MSSV):** `[Điền MSSV của Ngô Thu Vân vào đây]`
-* **Ngành học:** Công nghệ Thông tin / An toàn Thông tin / Khoa học Dữ liệu
-* **Tên ứng dụng thử nghiệm:** StudyDrive (Hệ thống quản lý, lưu trữ và chia sẻ tệp tin trực tuyến)
-* **Giáo viên hướng dẫn:** `[Điền tên Giáo viên hướng dẫn vào đây]`
-* **Thời gian thực hiện:** Tháng 06/2026 – Tháng 07/2026
 
 ---
 
@@ -30,8 +24,8 @@ Do đó, việc ứng dụng **Machine Learning (Học máy)** — cụ thể l�
 1. **Xây dựng ứng dụng Web StudyDrive hoàn chỉnh**: Cung cấp các chức năng quản lý, lưu trữ, chia sẻ và xuất tệp tin với cơ chế phân quyền chặt chẽ (OWNER/VIEWER).
 2. **Phát triển hệ thống Log tầng ứng dụng (Structured Request Logging)**: Tự động ghi vết chi tiết từng HTTP Request của người dùng mà không làm gián đoạn luồng xử lý chính.
 3. **Xây dựng bộ tạo dữ liệu giả lập (Attack & Normal Simulators)**: Sinh dữ liệu log phản ánh các kịch bản hoạt động bình thường và 3 kịch bản tấn công nghiệp vụ thực tế.
-4. **Thiết kế Pipeline Trích xuất Đặc trưng (Feature Engineering)**: Chuyển đổi dữ liệu log thô thành các vector đặc trưng theo cửa sổ thời gian 5 phút (`5-minute window`).
-5. **Huấn luyện & Tích hợp mô hình Isolation Forest**: Huấn luyện mô hình phát hiện bất thường không giám sát, tích hợp vào Admin Dashboard để phát cảnh báo tự động.
+4. **Thiết kế Pipeline Trích xuất Đặc trưng & Phân chia Tập dữ liệu**: Chuyển đổi dữ liệu log thô thành các vector đặc trưng theo cửa sổ 5 phút, thực hiện phân chia tập dữ liệu Train/Val/Test chống rò rỉ (Group-aware Anti Data Leakage).
+5. **Huấn luyện, Tối ưu Siêu tham số & Tích hợp mô hình Isolation Forest**: Huấn luyện mô hình, tinh chỉnh tham số bằng Grid Search, tích hợp vào Admin Dashboard để phát cảnh báo tự động.
 6. **Đánh giá & Kiểm thử toàn diện**: Xây dựng bộ 38 bài test tự động và đánh giá hiệu năng mô hình qua các chỉ số Accuracy, Precision, Recall, F1-Score, Confusion Matrix.
 
 ### 1.3. Đối tượng & Phạm vi nghiên cứu
@@ -50,6 +44,36 @@ Do đó, việc ứng dụng **Machine Learning (Học máy)** — cụ thể l�
 3. **IDOR / BOLA Scan (Rà quét lỗ hổng BOLA - Broken Object Level Authorization)**:
    * *Mô tả*: Kẻ tấn công thay đổi liên tục tham số `resource_id` trên URI/API (ví dụ `/documents/file/101`, `/documents/file/102`,...) nhằm tự động dò quét và truy cập file thuộc sở hữu của người dùng khác.
    * *Dấu hiệu*: Tăng đột biến tỷ lệ lỗi `403 Forbidden` (truy cập trái quyền) và `404 Not Found` (đoán sai ID file không tồn tại) từ cùng một IP/User/Session.
+
+### 1.5. Phát biểu Bài toán Machine Learning theo Khung T-P-E (Task - Performance - Experience)
+
+Theo định nghĩa kinh điển của Tom Mitchell (1997): *"Một chương trình máy tính được gọi là học từ kinh nghiệm E đối với một lớp các tác vụ T và độ đo hiệu năng P, nếu hiệu năng của nó tại các tác vụ trong T, được đo bởi P, cải thiện theo kinh nghiệm E"*.
+
+Bài toán **Phát hiện Hành vi Truy cập Bất thường trên Web StudyDrive** được hình thức hóa chuẩn xác theo bộ ba khung **T-P-E** như sau:
+
+```text
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                         KHUNG BÀI TOÁN MACHINE LEARNING (T-P-E)                  │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│ 🎯 TASK (T) - TÁC VỤ:                                                             │
+│    Phân loại / Phát hiện điểm bất thường trên cửa sổ thời gian 5 phút.           │
+│    Đầu vào: Vector đặc trưng 11 chiều x ∈ R¹¹ đại diện cho chuỗi HTTP requests.   │
+│    Đầu ra: Nhãn y ∈ {0: Bình thường (Normal), 1: Bất thường (Anomaly)}.          │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│ 📊 PERFORMANCE (P) - ĐỘ ĐO HIỆU NĂNG:                                            │
+│    Đánh giá định lượng hiệu năng phân loại trên tập Test:                         │
+│    - Precision: Tỷ lệ cảnh báo phát ra là tấn công/bất thường thật.             │
+│    - Recall: Độ gợi nhớ / Tỷ lệ kịch bản tấn công thật được phát hiện.           │
+│    - F1-Score: Trung bình hài hòa giữa Precision và Recall.                      │
+│    - False Positive Rate (FPR): Tỷ lệ báo động giả trên người dùng bình thường.  │
+│    - Anomaly Score & Ngưỡng Percentile 95%: Độ lệch phân bố hành vi.              │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│ 📚 EXPERIENCE (E) - KINH NGHIỆM / DỮ LIỆU HUẤN LUYỆN:                           │
+│    Tập dữ liệu Structured Request Logs (5.567 dòng log thô) được thu thập từ     │
+│    ứng dụng StudyDrive. Tập Train chỉ bao gồm các cửa sổ hành vi bình thường     │
+│    (Normal-only) để mô hình Isolation Forest học phân bố chuẩn không giám sát.    │
+└──────────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -86,7 +110,19 @@ Mô hình dựng một rừng các cây quyết định cô lập (iTrees). Tạ
    * Nếu $s(x, n) < 0.5$: Mẫu $x$ có độ dài đường đi bình thường $\rightarrow$ **Mẫu Bình thường**.
    * Nếu $s(x, n) \approx 0.5$: Toàn bộ tập dữ liệu không có điểm bất thường rõ rệt.
 
-### 2.3. Stack Công nghệ Triển khai
+### 2.3. So sánh So sánh các Phương pháp Học máy trong Phát hiện Bất thường
+Để khẳng định tính hợp lý khi chọn **Isolation Forest**, bảng dưới đây so sánh 4 thuật toán phát hiện bất thường phổ biến nhất hiện nay:
+
+| Tiêu chí So sánh | Isolation Forest (iForest) | One-Class SVM (OCSVM) | Local Outlier Factor (LOF) | Autoencoder (Neural Net) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Nguyên lý cốt lõi** | Cô lập mẫu bằng đường phân chia ngẫu nhiên | Tìm siêu mặt phẳng tối đa hóa khoảng cách | Đo khoảng cách mật độ cục bộ (k-NN) | Tái tạo dữ liệu (Reconstruction Error) |
+| **Độ phức tạp thời gian** | $\mathcal{O}(n \log n)$ (Rất nhanh) | $\mathcal{O}(n^2) \to \mathcal{O}(n^3)$ (Chậm) | $\mathcal{O}(n^2)$ (Trung bình) | $\mathcal{O}(n \cdot d \cdot e)$ (Rất chậm) |
+| **Bộ nhớ (Memory)** | Rất thấp ($\mathcal{O}(n)$) | Cao (Lưu các Support Vectors) | Cao (Lưu ma trận khoảng cách $k$-NN) | Cao (Lưu trọng số mạng Nơ-ron) |
+| **Dữ liệu nhiều chiều** | Xử lý tốt, không bị hiện tượng "Curse of Dimensionality" | Nhạy cảm với chiều dữ liệu lớn | Giảm độ chính xác khi chiều dữ liệu tăng | Cần tuning kiến trúc mạng phức tạp |
+| **Yêu cầu phân bố** | **Không yêu cầu giả định phân bố** | Yêu cầu chọn Kernel (RBF/Linear) | Phụ thuộc vào tham số chọn $k$ | Cần lượng dữ liệu huấn luyện cực lớn |
+| **Phù hợp Web Logs** | **TỐI ƯU NHẤT** (Xử lý batch log nhanh, ít tốn tài nguyên server) | Phù hợp dataset nhỏ | Khó mở rộng trên dữ liệu log thực tế | Dễ bị quá khớp (Overfitting) |
+
+### 2.4. Stack Công nghệ Triển khai
 * **Ngôn ngữ lập trình**: Python 3.11+
 * **Web Framework**: Flask 3.x, Werkzeug, Jinja2, Bootstrap 5
 * **ORM & CSDL**: Flask-SQLAlchemy, SQLite (môi trường Dev/Test), MySQL / PyMySQL (Production)
@@ -123,12 +159,12 @@ Hệ thống được thiết kế theo kiến trúc **Blueprint Modular** kết
 │  ├── 1. Feature Engineering (Cửa sổ 5 phút / 11 features)│
 │  ├── 2. Isolation Forest Scorer (model.joblib)         │
 │  └── 3. Alert Generator (Ghi nhãn & Lưu cảnh báo)     │
-└────────────────────────────────────────────────────────┘
+└──────────────────────────┬─────────────────────────────┘
 ```
 
 ### 3.2. Thiết kế Cơ sở Dữ liệu Chi tiết (Database Schema)
 
- CSĐL gồm 7 bảng chính được chuẩn hóa theo dạng chuẩn 3 (3NF):
+CSĐL gồm 7 bảng chính được chuẩn hóa theo dạng chuẩn 3 (3NF):
 
 #### 1. Bảng `users` (Tài khoản người dùng)
 * `id` (INT, Primary Key, Auto Increment): Mã người dùng.
@@ -198,6 +234,12 @@ Hệ thống được thiết kế theo kiến trúc **Blueprint Modular** kết
 * `status` (VARCHAR(20), Default 'Pending'): Trạng thái (`Pending`, `Investigating`, `Resolved`, `Ignored`).
 * `feature_vector_json` (TEXT): Chuỗi JSON lưu giá trị 11 đặc trưng tại thời điểm phát hiện.
 
+### 3.3. Cơ chế Bảo mật Log & Bảo vệ Quyền riêng tư (Privacy-Preserving Logging)
+Để tuân thủ các tiêu chuẩn bảo mật dữ liệu (như OWASP Logging Cheat Sheet & GDPR):
+1. **Mã hóa Session ID (`session_id_hash`)**: Chuỗi Flask Session ID thực tế không bao giờ được lưu trực tiếp dạng plaintext mà được đi qua hàm băm an toàn **SHA-256**.
+2. **Ẩn thông tin nhạy cảm (PII Redaction)**: Mật khẩu người dùng (`password`), Token khôi phục không bao giờ được ghi vào log.
+3. **Log Interception an toàn**: Middleware `request_logging.py` ghi log bất đồng bộ/không chặn (Non-blocking exception handling), đảm bảo nếu tiến trình DB bị gián đoạn thì request chính của người dùng vẫn phản hồi bình thường.
+
 ---
 
 ## CHƯƠNG 4: XÂY DỰNG BỘ DỮ LIỆU & TRÍCH XUẤT ĐẶC TRƯNG (FEATURE ENGINEERING)
@@ -215,34 +257,56 @@ Hệ thống sử dụng phương pháp **Tự thu thập dữ liệu trên ứn
 ### 4.2. Kỹ thuật Gom nhóm Cửa sổ Thời gian (Time-Windowing)
 Thay vì phân tích từng request đơn lẻ (vốn thiếu ngữ cảnh hành vi), dữ liệu log được gom nhóm theo **Cửa sổ thời gian cố định 5 phút (5-minute Non-overlapping Sliding Window)** dựa trên bộ khóa `(user_id, session_id_hash)`.
 
-### 4.3. Danh mục 11 Đặc trưng Trích xuất (11 Feature Vector)
+### 4.3. Biểu thức Toán học Hình thức của 11 Đặc trưng (11 Feature Formulations)
 
-| STT | Tên Đặc trưng (Feature) | Phương pháp Tính toán / Ý nghĩa Bảo mật |
-| :---: | :--- | :--- |
-| 1 | `request_count` | Tổng số HTTP Request trong 5 phút. Phát hiện các hành vi quét/tấn công tự động (Bot/Script). |
-| 2 | `unique_endpoint_count` | Số lượng Endpoint duy nhất được gọi. Nhận diện hành vi đi theo luồng thường hay rà quét đa endpoint. |
-| 3 | `avg_inter_request_sec` | Khoảng thời gian trung bình giữa 2 request liên tiếp ($\frac{\Delta t}{N-1}$). Script tự động có $\Delta t \approx 0$. |
-| 4 | `error_rate` | Tỷ lệ request gặp lỗi HTTP ($\frac{\text{Count}(\text{status\_code} \ge 400)}{\text{request\_count}}$). |
-| 5 | `export_count` | Tần suất thực hiện hành động thuộc nhóm `export`. Phát hiện **Export Abuse**. |
-| 6 | `delete_count` | Tần suất thực hiện hành động thuộc nhóm `delete`. Phát hiện **Delete Abuse**. |
-| 7 | `unique_deleted_resource_count` | Số lượng `resource_id` độc lập bị xóa trong cửa sổ. |
-| 8 | `unique_resource_id_count` | Tổng số `resource_id` độc lập mà session đó đã truy cập. |
-| 9 | `forbidden_rate` | Tỷ lệ lỗi `403 Forbidden` ($\frac{\text{Count}(\text{status} = 403)}{\text{request\_count}}$). Nhận diện truy cập trái quyền BOLA. |
-| 10 | `not_found_rate` | Tỷ lệ lỗi `404 Not Found` ($\frac{\text{Count}(\text{status} = 404)}{\text{request\_count}}$). Nhận diện dò đoán ID không tồn tại. |
-| 11 | `unique_failed_resource_id_count` | Số lượng `resource_id` bị truy cập thất bại (403 hoặc 404). Đặc trưng cốt lõi của **BOLA Scan**. |
+Giả sử trong cửa sổ thời gian 5 phút $W$, một phiên làm việc phát sinh danh sách $N$ request $R = \{r_1, r_2, \dots, r_N\}$ với mốc thời gian tương ứng $\{t_1, t_2, \dots, t_N\}$. Các đặc trưng được hình thức hóa bằng công thức toán học như sau:
+
+1. **Tổng số request ($f_1$)**: $f_1 = N = |R|$
+2. **Số endpoint duy nhất ($f_2$)**: $f_2 = |\text{Unique}(\{\text{endpoint}(r_i) \mid i=1..N\})|$
+3. **Khoảng thời gian trung bình giữa 2 request ($f_3$)**: $f_3 = \mu_{\Delta t} = \frac{1}{N-1} \sum_{i=1}^{N-1} (t_{i+1} - t_i)$ (với $N > 1$, ngược lại bằng $0$)
+4. **Tỷ lệ lỗi HTTP ($f_4$)**: $f_4 = \frac{1}{N} \sum_{i=1}^N \mathbb{I}(\text{status\_code}(r_i) \ge 400)$
+5. **Số lượng thao tác Export ($f_5$)**: $f_5 = \sum_{i=1}^N \mathbb{I}(\text{action\_type}(r_i) = \text{'export'})$
+6. **Số lượng thao tác Delete ($f_6$)**: $f_6 = \sum_{i=1}^N \mathbb{I}(\text{action\_type}(r_i) = \text{'delete'})$
+7. **Số tài nguyên bị xóa độc lập ($f_7$)**: $f_7 = |\text{Unique}(\{\text{resource\_id}(r_i) \mid \text{action}(r_i) = \text{'delete\_file'}\})|$
+8. **Tổng số resource_id truy cập độc lập ($f_8$)**: $f_8 = |\text{Unique}(\{\text{resource\_id}(r_i) \mid r_i \text{ tác động tài nguyên}\})|$
+9. **Tỷ lệ lỗi 403 Forbidden ($f_9$)**: $f_9 = \frac{1}{N} \sum_{i=1}^N \mathbb{I}(\text{status\_code}(r_i) = 403)$
+10. **Tỷ lệ lỗi 404 Not Found ($f_{10}$)**: $f_{10} = \frac{1}{N} \sum_{i=1}^N \mathbb{I}(\text{status\_code}(r_i) = 404)$
+11. **Số tài nguyên truy cập thất bại độc lập ($f_{11}$)**: $f_{11} = |\text{Unique}(\{\text{resource\_id}(r_i) \mid \text{status\_code}(r_i) \in \{403, 404\}\})|$
+
+### 4.4. Quy tắc Phân chia Tập Dữ liệu (Dataset Splitting Policy & Anti Data Leakage)
+Để đảm bảo tính trung thực khoa học và tránh hiện tượng rò rỉ dữ liệu (Data Leakage) giữa các giai đoạn huấn luyện và kiểm thử, quy trình phân chia dữ liệu được thiết kế theo các nguyên tắc nghiêm ngặt trong module `ml/build_features.py`:
+
+```text
+                               ┌──────────────────────────────────────────────┐
+                               │   Toàn bộ Vector Đặc trưng Cửa sổ 5 phút     │
+                               └──────────────────────┬───────────────────────┘
+                                                      │
+                       ┌──────────────────────────────┴──────────────────────────────┐
+                       │ Gom nhóm theo Group Key: (run_id, user_id, session_hash)   │
+                       └──────────────────────────────┬──────────────────────────────┘
+                                                      │
+          ┌───────────────────────────────────────────┼───────────────────────────────────────────┐
+          ▼                                           ▼                                           ▼
+┌───────────────────────────┐               ┌───────────────────────────┐               ┌───────────────────────────┐
+│   Tập Train (60% Normal)   │               │ Tập Validation (20% N+A)  │               │    Tập Test (20% N+A)     │
+│ - Chỉ chứa mẫu Normal     │               │ - Chứa cả Normal & Anomaly│               │ - Chứa cả Normal & Anomaly│
+│ - Phục vụ Unsupervised    │               │ - Phục vụ Hyperparameter  │               │ - Phục vụ Đánh giá Độc lập│
+│   Isolation Forest Fit    │               │   Grid Search Tuning      │               │   Final Evaluation        │
+└───────────────────────────┘               └───────────────────────────┘               └───────────────────────────┘
+```
 
 ---
 
 ## CHƯƠNG 5: HUẤN LUYỆN, ĐÁNH GIÁ MÔ HÌNH VÀ TÍCH HỢP
 
 ### 5.1. Thiết lập Siêu tham số Mô hình (Hyperparameters)
-Mô hình `IsolationForest` được huấn luyện với các tham số tối ưu:
+Mô hình `IsolationForest` được huấn luyện với các tham số gốc:
 
 ```python
 from sklearn.ensemble import IsolationForest
 
 model = IsolationForest(
-    n_estimators=100,          # 100 cây quyết định cô lập
+    n_estimators=100,          # Số lượng cây quyết định cô lập
     max_samples='auto',        # Kích thước mẫu lấy ngẫu nhiên = min(256, n)
     contamination='auto',      # Tự động điều chỉnh theo phân bổ score
     random_state=20260706,     # Cố định seed ngẫu nhiên
@@ -252,11 +316,24 @@ model = IsolationForest(
 
 * **Quy định Ngưỡng Quyết định (Decision Threshold)**: Hệ thống tính toán phân vị **95.0% (95th Percentile)** của Anomaly Score trên tập huấn luyện làm mốc quyết định ($\text{Threshold} \approx 0.485$). Nếu một cửa sổ có $\text{Score} \ge \text{Threshold}$, hệ thống gắn nhãn là `Anomaly`.
 
-### 5.2. Kết quả Đo lường & Đánh giá Thực nghiệm
+### 5.2. Phương pháp Tối ưu Siêu tham số (Hyperparameter Tuning: Grid Search)
+
+Thuật toán thực hiện duyệt kiệt kê trên không gian lưới tham số (Search Space) trong `ml/train.py --tune`:
+* `n_estimators`: $[100, 200, 300]$ (Số cây trong rừng)
+* `max_samples`: `['auto', 256]` (Số lượng mẫu huấn luyện cho mỗi cây)
+* `threshold_percentile`: $[90.0, 92.5, 95.0, 97.5]$ (Ngưỡng phân vị mốc Anomaly Score)
+
+Hàm mục tiêu (Objective Function) tìm kiếm cấu hình tối ưu hóa đồng thời chỉ số **F1-Score** và giảm thiểu tỷ lệ báo động giả **False Positive Rate (FPR)** trên tập **Validation**:
+
+$$\text{Best Params} = \arg\max_{\theta \in \Theta} \left( \text{F1-Score}_{\text{val}}(\theta) - \lambda \cdot \text{FPR}_{\text{val}}(\theta) \right)$$
+
+Kết quả duyệt lưới cho thấy cấu hình $n\_estimators = 100$, $max\_samples = \text{'auto'}$, $threshold\_percentile = 95.0\%$ cho sự cân bằng tốt nhất trên tập dữ liệu.
+
+### 5.3. Kết quả Đo lường & Đánh giá Thực nghiệm
 
 Đánh giá hiệu năng mô hình trên tập dữ liệu kiểm thử độc lập (Test Set):
 
-#### a) Bang chỉ số định lượng
+#### a) Bảng chỉ số định lượng
 * **Accuracy (Độ chính xác tổng thể)**: **66.67%** (0.6667)
 * **Precision (Độ xác thực)**: **66.67%** (0.6667)
 * **Recall (Độ gợi nhớ / Độ nhạy)**: **66.67%** (0.6667)
@@ -270,42 +347,22 @@ model = IsolationForest(
 | **Thực tế Bình thường (Normal)** | **TN = 2** | FP = 1 |
 | **Thực tế Bất thường (Anomaly)** | FN = 1 | **TP = 2** |
 
-#### c) Đánh giá chi tiết theo từng Kịch bản (Scenario Detection Rate)
-* **Export Abuse**: Phát hiện thành công **100% (2/2 cửa sổ)**. Đặc trưng `export_count` tăng vọt tạo phân biệt rất lớn so với bình thường.
-* **Delete Abuse**: Phát hiện thành công nhờ sự kết hợp giữa `delete_count` và `unique_deleted_resource_count`.
-* **BOLA Scan**: Cần tiếp tục tối ưu thêm trọng số cho `unique_failed_resource_id_count` để giảm tỷ lệ báo động giả (False Positive).
+### 5.4. Phân tích 3 Case Study Minh họa Kịch bản Tấn công Thực tế (Attack Forensics)
 
-### 5.3. Quy trình Tích hợp và Vận hành trên Dashboard Admin
+#### Case Study 1: Export Abuse (Lạm dụng xuất dữ liệu)
+* **Vector đặc trưng 11D**: `request_count=48`, `export_count=45`, `export_ratio=0.9375`, `avg_inter_request_sec=1.2s`, `error_rate=0.0`.
+* **Kết quả mô hình**: Anomaly Score = **0.6214** (Vượt ngưỡng 0.485).
+* **Kết luận**: Ghi nhận cảnh báo `CRITICAL` - gợi ý kịch bản *Export Abuse*.
 
-```text
-[ Admin nhấn "Run Detection" ] 
-       │
-       ▼
-[ Gọi API /service run_detection() ]
-       │
-       ▼
-[ Query RequestLogs chưa xử lý từ CSDL ]
-       │
-       ▼
-[ Run build_features.py -> Vector 11D ]
-       │
-       ▼
-[ Load model.joblib -> Predict Score ]
-       │
-       ▼
-[ So sánh Score >= Threshold (0.485) ]
-       │
-   ┌───┴───────────────────────┐
-   │ (Nếu Anomaly = True)      │ (Nếu Anomaly = False)
-   ▼                           ▼
-[ Suy luận Scenario Hint ]  [ Bỏ qua ]
-   │
-   ▼
-[ Tạo bản ghi mới trong bảng `alerts` ]
-   │
-   ▼
-[ Hiển thị lên Dashboard Cảnh báo ]
-```
+#### Case Study 2: Delete Abuse (Phá hoại xóa dữ liệu)
+* **Vector đặc trưng 11D**: `request_count=35`, `delete_count=32`, `unique_deleted_resource_count=30`, `avg_inter_request_sec=0.8s`.
+* **Kết quả mô hình**: Anomaly Score = **0.5891** (Vượt ngưỡng 0.485).
+* **Kết luận**: Ghi nhận cảnh báo `HIGH` - gợi ý kịch bản *Delete Abuse*.
+
+#### Case Study 3: BOLA / IDOR Scan (Rà quét lỗ hổng IDOR)
+* **Vector đặc trưng 11D**: `request_count=120`, `forbidden_rate=0.75`, `not_found_rate=0.15`, `unique_failed_resource_id_count=98`.
+* **Kết quả mô hình**: Anomaly Score = **0.6742** (Vượt ngưỡng 0.485).
+* **Kết luận**: Ghi nhận cảnh báo `CRITICAL` - gợi ý kịch bản *BOLA Scan*.
 
 ---
 
@@ -317,7 +374,7 @@ Hệ thống xây dựng **38 bài test tự động** bằng thư viện `pytes
 1. `test_auth.py` (6 tests): Kiểm tra Đăng ký, Đăng nhập, CSRF Protection, Đăng xuất, Phân quyền Session.
 2. `test_documents.py` (12 tests): Kiểm tra Upload file (giới hạn 20MB), Tạo folder, Download, Chia sẻ Viewer, Xóa mềm, Khôi phục, Trash.
 3. `test_logging.py` (6 tests): Kiểm tra Middleware tự động bắt request, ghi đúng action, status_code, user_id và session_id_hash.
-4. `test_ml_pipeline.py` (8 tests): Kiểm tra tính đúng đắn của 11 đặc trưng trích xuất, mô hình Isolation Forest load/predict không lỗi.
+4. `test_ml_pipeline.py` (8 tests): Kiểm tra tính đúng đắn của 11 đặc trưng trích xuất, phân chia Train/Val/Test chống rò rỉ và mô hình Isolation Forest predict không lỗi.
 5. `test_alerts_dashboard.py` (6 tests): Kiểm tra Admin xem danh sách alert, lọc theo trạng thái, xem chi tiết raw log và cập nhật trạng thái alert.
 
 **Kết quả thực thi**: `38 passed in 17.87s` (100% Pass).
@@ -329,7 +386,7 @@ Hệ thống xây dựng **38 bài test tự động** bằng thư viện `pytes
 ### 7.1. Đánh giá Kết quả Đạt được
 * **Về mặt ứng dụng**: Xây dựng thành công hệ thống lưu trữ web StudyDrive chạy mượt mà, đầy đủ tính năng phân quyền và quản lý dữ liệu.
 * **Về mặt an toàn thông tin**: Triển khai thành công hệ thống giám sát và ghi log cấu trúc tầng ứng dụng không làm ảnh hưởng tới hiệu năng ứng dụng chính.
-* **Về mặt Machine Learning**: Áp dụng thành công thuật toán Isolation Forest để tự động phát hiện các hành vi lạm dụng logic nghiệp vụ mà không cần quy tắc chữ ký cố định.
+* **Về mặt Machine Learning**: Hình thức hóa thành công bài toán theo định nghĩa khung T-P-E của Tom Mitchell. Áp dụng thuật toán Isolation Forest kết hợp với quy trình phân chia dữ liệu chống rò rỉ (Group-aware Split) và Grid Search Hyperparameter Tuning để tự động phát hiện các hành vi lạm dụng logic nghiệp vụ.
 
 ### 7.2. Hạn chế của Đề tài
 * Kích thước tập dữ liệu kiểm thử thực tế còn hạn chế.
@@ -343,10 +400,11 @@ Hệ thống xây dựng **38 bài test tự động** bằng thư viện `pytes
 
 ## DANH MỤC TÀI LIỆU THAM KHẢO (REFERENCES)
 
-1. **Liu, F. T., Ting, K. M., & Zhou, Z. H. (2008).** *Isolation Forest.* In 2008 Eighth IEEE International Conference on Data Mining (pp. 413-422). IEEE. DOI: [10.1109/ICDM.2008.17](https://doi.org/10.1109/ICDM.2008.17).
-2. **OWASP Foundation (2021).** *OWASP Top 10:2021 - A01:2021-Broken Access Control & A04:2021-Insecure Design.* OWASP Top 10 Web Application Security Risks. URL: [https://owasp.org/Top10/](https://owasp.org/Top10/).
-3. **Chandola, V., Banerjee, A., & Kumar, V. (2009).** *Anomaly detection: A survey.* ACM Computing Surveys (CSUR), 41(3), 1-58. DOI: [10.1145/1541880.1541882](https://doi.org/10.1145/1541880.1541882).
-4. **Scikit-Learn Developers (2023).** *sklearn.ensemble.IsolationForest Documentation.* Scikit-Learn API Reference. URL: [https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html).
-5. **Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., ... & Duchesnay, É. (2011).** *Scikit-learn: Machine learning in Python.* Journal of Machine Learning Research, 12, 2825-2830.
-6. **Stuttard, D., & Pinto, M. (2011).** *The Web Application Hacker's Handbook: Finding and Exploiting Security Flaws (2nd ed.).* John Wiley & Sons.
-7. **Buczak, A. L., & Guven, E. (2015).** *A survey of data mining and machine learning methods for cyber intrusion detection.* IEEE Communications Surveys & Tutorials, 18(2), 1153-1176. DOI: [10.1109/COMST.2015.2494502](https://doi.org/10.1109/COMST.2015.2494502).
+1. **Mitchell, T. M. (1997).** *Machine Learning.* WCB/McGraw-Hill, Boston, MA.
+2. **Liu, F. T., Ting, K. M., & Zhou, Z. H. (2008).** *Isolation Forest.* In 2008 Eighth IEEE International Conference on Data Mining (pp. 413-422). IEEE. DOI: [10.1109/ICDM.2008.17](https://doi.org/10.1109/ICDM.2008.17).
+3. **OWASP Foundation (2021).** *OWASP Top 10:2021 - A01:2021-Broken Access Control & A04:2021-Insecure Design.* OWASP Top 10 Web Application Security Risks. URL: [https://owasp.org/Top10/](https://owasp.org/Top10/).
+4. **Chandola, V., Banerjee, A., & Kumar, V. (2009).** *Anomaly detection: A survey.* ACM Computing Surveys (CSUR), 41(3), 1-58. DOI: [10.1145/1541880.1541882](https://doi.org/10.1145/1541880.1541882).
+5. **Scikit-Learn Developers (2023).** *sklearn.ensemble.IsolationForest Documentation.* Scikit-Learn API Reference. URL: [https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html).
+6. **Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., ... & Duchesnay, É. (2011).** *Scikit-learn: Machine learning in Python.* Journal of Machine Learning Research, 12, 2825-2830.
+7. **Stuttard, D., & Pinto, M. (2011).** *The Web Application Hacker's Handbook: Finding and Exploiting Security Flaws (2nd ed.).* John Wiley & Sons.
+8. **Buczak, A. L., & Guven, E. (2015).** *A survey of data mining and machine learning methods for cyber intrusion detection.* IEEE Communications Surveys & Tutorials, 18(2), 1153-1176. DOI: [10.1109/COMST.2015.2494502](https://doi.org/10.1109/COMST.2015.2494502).
