@@ -1,8 +1,8 @@
 # Data audit — request logs
 
 - File: `data\raw\request_logs_raw.csv`
-- Audit time UTC: `2026-08-10T06:52:18.306062+00:00`
-- Shape: `21401` rows × `27` columns
+- Audit time UTC: `2026-08-10T07:56:07.753645+00:00`
+- Shape: `52700` rows × `27` columns
 
 ## Dtype
 
@@ -51,11 +51,11 @@ dtype: object
 id                          0
 request_id                  0
 timestamp                   0
-user_id                  5152
-username                 5152
+user_id                    12
+username                   12
 is_authenticated            0
-role                     5152
-session_id_hash          5152
+role                       12
+session_id_hash            12
 ip_address                  0
 user_agent                  0
 http_method                 0
@@ -64,17 +64,17 @@ path                        0
 action                      0
 action_type                 0
 is_sensitive                0
-resource_type           12310
-resource_id             12310
-owner_id                13378
-permission               8015
-ownership_result         8015
+resource_type           32776
+resource_id             32776
+owner_id                32802
+permission              32724
+ownership_result        32724
 authorization_result        0
 status_code                 0
 response_time_ms            0
-file_size               14350
-export_item_count       21401
-export_total_size       21401
+file_size               36014
+export_item_count       52700
+export_total_size       52700
 dtype: int64
 ```
 
@@ -82,15 +82,15 @@ dtype: int64
 
 ```text
 action_type
-list           9705
-view_detail    7467
-login          2561
-create          824
-edit            454
-export          160
-other            93
-admin            92
-delete           45
+list           33229
+view_detail    15784
+create          2324
+edit             848
+export           371
+delete            80
+login             24
+admin             20
+other             20
 Name: count, dtype: int64
 ```
 
@@ -98,11 +98,11 @@ Name: count, dtype: int64
 
 ```text
 status_code
-200    18001
-302     3246
-304       91
+200    50939
+302     1678
 404       32
 403       31
+304       20
 Name: count, dtype: int64
 ```
 
@@ -110,13 +110,13 @@ Name: count, dtype: int64
 
 ```text
 user_id
-<null>    5152
-3.0       3396
-6.0       3267
-4.0       3188
-5.0       3176
-2.0       3037
-1.0        185
+3.0       10692
+6.0       10614
+2.0       10479
+4.0       10457
+5.0       10406
+1.0          40
+<null>       12
 Name: count, dtype: int64
 ```
 
@@ -124,20 +124,20 @@ Name: count, dtype: int64
 
 ```text
 session_id_hash
-<null>                                                              5152
-592f63953ceae157e91381d222098e5739bc2240a67cc1c5726f54041e820f74    3310
-c9879ba495eb7d18d9e24141ab18587c74fe78c41fa41acb86fcbbc28cc1e216    3240
-d5765b05e07b810fe64ff5c47a4071f74186305c9ebcb9686f80ce25d9335efe    3163
-54591b2e6fa9b327247f9c4d4f459dc20303046959ae22cb61140168620597b3    3120
-509d59c0344fa41cba89cf2ec1f84f916ad6821eaf0f58d0d67fefa8936a5c6a    2998
-3e2fcb86522105613111ab82e5c35242de4cbb818c39572f85efece739900119     185
-fce27a85fce604f864ec347354f6da3b9ad2cf579f571b6241a19ae5f60954cc      68
-7e6ef1b9196c8965fb158ca836a53ea77db59c5f3c2a4c9c43467f11e2176b99      53
-23097eb7495dd07fddfda3157c7ef470d0e02badb7c81a31fd15ec021e2bcf21      33
-28161fc8b9b93b2135f5ca095a72c157cf52f14d2deb87bd6cf90175c88bddab      27
-b741825fcae24f139a6bd7a99e0ac2a61157db44e936c6a7796a998e7ae5acd6      23
-bb441055f51ef734aa1dccdb8dd6ccc4bd8779acb592324d3907b22198f90f7e      16
-10142d277b8b2e91df8a0d5a8c974ffbcf5ad995b2c4d1601f73d53dd2847485      13
+ab8d22d11121d30478ce7bd5ee207f20a119aff94b9991260bef1c63350c2f41    10606
+2777c0e01221da77efe2ab46587be497c0f79df63f48bf1384da81582b41af79    10587
+5678d99b79dc68c3418421e564a75da82261b33753399fa7caab303c23e8ac43    10440
+fda49cfe378e258b96a7050aa68618a3042a72416e168eb30c06ddbf4eecb68a    10393
+a3dd711c421737b6a117c3216633d25ceb616f573b67c08a2b542db7b130cc15    10389
+fb887f4c0a707ede1a27e44c463ddc44c1aef4ece3b191692e0cc59b0aa01b18       68
+8bdf952a7d30910d910f2acd868258ac04276fe41d8e555aa7681e1e5fb44495       53
+3e2fcb86522105613111ab82e5c35242de4cbb818c39572f85efece739900119       40
+a1c3d9823bb1618af382992bfa0fc9af1f4c9e7900ff5e3048b4c694c7954f4b       33
+49f40f9e8505bc5bfb46f2731cd08719b044aa6728b460648f11578912e09544       27
+fffd28fb5b64b47a9a8ef44fc925ef1557b3b2c667eb661f0bc110ed7117a858       23
+c6f9c69d54f188695114a041bf3c49ca4abdb50a83479a831dc0e679fe4cfb33       16
+9e4483951e8425c738d14198bedcb2f096cbe4ac02790317325440b8eb966d8e       13
+<null>                                                                 12
 Name: count, dtype: int64
 ```
 
@@ -145,7 +145,7 @@ Name: count, dtype: int64
 
 ```text
 authorization_result
-allowed    21338
+allowed    52637
 denied        63
 Name: count, dtype: int64
 ```
