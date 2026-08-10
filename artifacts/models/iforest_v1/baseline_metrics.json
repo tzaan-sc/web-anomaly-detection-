@@ -2,7 +2,7 @@
   "model_version": "iforest_v1",
   "dataset_version": "features_v1",
   "features_dir": "data/processed/features_v1",
-  "trained_at_utc": "2026-08-10T07:57:41.434863+00:00",
+  "trained_at_utc": "2026-08-10T08:56:05.699551+00:00",
   "random_state": 20260706,
   "feature_list": [
     "request_count",
@@ -31,7 +31,7 @@
     "resource_id_change_rate",
     "max_sensitive_streak"
   ],
-  "threshold": 0.618001020946364,
+  "threshold": 0.5358457177802017,
   "threshold_percentile": 95.0,
   "parameters": {
     "n_estimators": 200,
@@ -39,27 +39,27 @@
     "contamination": "auto"
   },
   "train_metrics": {
-    "rows": 22,
+    "rows": 6,
     "precision": 0.0,
     "recall": 0.0,
     "f1": 0.0,
-    "accuracy": 0.9090909090909091,
-    "false_positive_rate": 0.09090909090909091,
-    "tn": 20,
-    "fp": 2,
+    "accuracy": 0.8333333333333334,
+    "false_positive_rate": 0.16666666666666666,
+    "tn": 5,
+    "fp": 1,
     "fn": 0,
     "tp": 0
   },
   "validation_metrics": {
-    "rows": 9,
-    "precision": 1.0,
-    "recall": 0.3333333333333333,
-    "f1": 0.5,
-    "accuracy": 0.7777777777777778,
-    "false_positive_rate": 0.0,
-    "tn": 6,
-    "fp": 0,
-    "fn": 2,
-    "tp": 1
+    "rows": 6,
+    "precision": 0.75,
+    "recall": 1.0,
+    "f1": 0.8571428571428571,
+    "accuracy": 0.8333333333333334,
+    "false_positive_rate": 0.3333333333333333,
+    "tn": 2,
+    "fp": 1,
+    "fn": 0,
+    "tp": 3
   }
 }

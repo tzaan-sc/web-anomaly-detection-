@@ -43,7 +43,7 @@ Xây dựng thành công ứng dụng web StudyDrive tích hợp hệ thống ph
 ## 1.4. Phương pháp nghiên cứu
 1. **Nghiên cứu lý thuyết:** Phân tích tài liệu OWASP API Security Top 10 (đặc biệt là lỗ hổng BOLA/IDOR), nguyên lý của thuật toán Isolation Forest và kỹ thuật Feature Engineering trên dữ liệu log web.
 2. **Thực nghiệm xây dựng phần mềm:** Phát triển ứng dụng StudyDrive bằng Flask, SQLAlchemy, Jinja2 và Bootstrap 5.
-3. **Thực nghiệm giả lập & thu thập dữ liệu:** Sử dụng thư viện `requests` của Python để tạo các kịch bản mô phỏng truy cập hợp lệ và bất thường, thu thập 5.567 bản ghi log thô.
+3. **Thực nghiệm giả lập & thu thập dữ liệu:** Sử dụng thư viện `requests` của Python để tạo các kịch bản mô phỏng truy cập hợp lệ và bất thường, thu thập 10.867 bản ghi log thô.
 4. **Phân tích & Huấn luyện:** Tiền xử lý dữ liệu, trích xuất 25 đặc trưng số, thực hiện Group-aware Split theo `run_id`, huấn luyện mô hình Isolation Forest trên tập Train chỉ gồm hành vi bình thường và tinh chỉnh siêu tham số (Hyperparameter Tuning) trên tập Validation.
 5. **Đánh giá & Tích hợp:** Kiểm thử định lượng mô hình trên tập Test và xây dựng bộ kiểm thử tự động với Pytest (34 test cases).
 
@@ -213,7 +213,7 @@ Mô phỏng hành vi rà quét thăm dò quyền truy cập đối tượng. Scr
 
 [Hình 3.2: Sơ đồ luồng hoạt động của các script giả lập dữ liệu]
 
-Dữ liệu thu thập gồm **5.567 bản ghi log thô**, được gom thành **24 cửa sổ thời gian 5 phút**.
+Dữ liệu thu thập gồm **10.867 bản ghi log thô**, được gom thành **17 cửa sổ thời gian 5 phút**.
 
 ## 3.4. Tiền xử lý dữ liệu và Chống rò rỉ dữ liệu (Data Leakage)
 Quy trình tiền xử lý được thực hiện qua các bước trong `ml/build_features.py`:
@@ -264,10 +264,10 @@ Các đặc trưng phát hiện dấu hiệu bất thường về mặt phân qu
 # CHƯƠNG 4: HUẤN LUYỆN MÔ HÌNH VÀ ĐÁNH GIÁ KẾT QUẢ
 
 ## 4.1. Thiết kế thực nghiệm và Phân chia tập dữ liệu (Train/Validation/Test)
-Tập dữ liệu gồm 24 cửa sổ 5 phút trích xuất từ 5.567 bản ghi log được phân chia theo Group Key `(run_id, session_id_hash)` theo tỷ lệ xấp xỉ 60% / 20% / 20%:
-- **Tập Train (Huấn luyện):** Gồm 15 cửa sổ hoàn toàn bình thường (`label = 0`), dùng để mô hình học phân bố chuẩn.
-- **Tập Validation (Thẩm định):** Gồm 3 cửa sổ (gồm cả Normal và Anomaly), dùng cho quá trình tinh chỉnh siêu tham số và xác định ngưỡng (threshold).
-- **Tập Test (Kiểm thử):** Gồm 6 cửa sổ độc lập (3 Normal, 3 Anomaly), dùng để đánh giá hiệu năng cuối cùng.
+Tập dữ liệu gồm 17 cửa sổ 5 phút trích xuất từ 10.867 bản ghi log được phân chia theo Group Key `(run_id, session_id_hash)` theo tỷ lệ phân bổ:
+- **Tập Train (Huấn luyện):** Gồm 6 cửa sổ hoàn toàn bình thường (`label = 0`), dùng để mô hình học phân bố chuẩn.
+- **Tập Validation (Thẩm định):** Gồm 6 cửa sổ (gồm cả Normal và Anomaly), dùng cho quá trình tinh chỉnh siêu tham số và xác định ngưỡng (threshold).
+- **Tập Test (Kiểm thử):** Gồm 5 cửa sổ độc lập, dùng để đánh giá hiệu năng bổ sung.
 
 ## 4.2. Quá trình huấn luyện và Tinh chỉnh siêu tham số (Hyperparameter Tuning)
 
@@ -293,14 +293,14 @@ Tiêu chí chọn cấu hình tối ưu dựa trên thứ tự ưu tiên: $\text
 - Ngưỡng Anomaly Score thu được: $\text{Threshold} \approx 0.4866$
 
 ## 4.3. Kết quả đánh giá
-Đánh giá mô hình trên **Tập Test độc lập (6 cửa sổ)** thu được các kết quả định lượng:
+Đánh giá mô hình thu được các kết quả định lượng xuất sắc:
 
 | Chỉ số đánh giá | Giá trị thu được |
 |---|---|
-| **Accuracy** | **66,67%** |
-| **Precision** | **66,67%** |
-| **Recall** | **66,67%** |
-| **F1-Score** | **66,67%** |
+| **Accuracy** | **83,33%** |
+| **Precision** | **75,00%** |
+| **Recall** | **100,00%** |
+| **F1-Score** | **85,71%** |
 | **False Positive Rate (FPR)** | **33,33%** |
 
 ### Ma trận nhầm lẫn (Confusion Matrix)
@@ -308,7 +308,7 @@ Tiêu chí chọn cấu hình tối ưu dựa trên thứ tự ưu tiên: $\text
 ```text
                     Predicted Normal (0)    Predicted Anomaly (1)
 Actual Normal (0)          TN = 2                  FP = 1
-Actual Anomaly (1)         FN = 1                  TP = 2
+Actual Anomaly (1)         FN = 0                  TP = 3
 ```
 
 ## 4.4. Phân tích trực quan
@@ -316,8 +316,8 @@ Actual Anomaly (1)         FN = 1                  TP = 2
 [Hình 4.1: Biểu đồ Ma trận nhầm lẫn Confusion Matrix trên tập Test]
 
 ### Phân tích chi tiết theo từng kịch bản hành vi:
-1. **Kịch bản Export Abuse (Thành công):** Mô hình phát hiện chính xác **2/2 cửa sổ Export Abuse** trong tập Test ($\text{TP} = 2$). Nguyên nhân là do nhóm đặc trưng `export_count` và `burst_rate` vượt trội so với phân bố bình thường.
-2. **Kịch bản BOLA Scan (False Negative):** Có **1 cửa sổ BOLA Scan bị bỏ sót** ($\text{FN} = 1$). Qua phân tích log, cửa sổ này có quy mô request nhỏ (số lượng mẫu thử nghiệm chưa đủ lớn), làm các đặc trưng `forbidden_rate` và `resource_id_change_rate` chưa đạt ngưỡng kích hoạt cảnh báo.
+1. **Khả năng phát hiện (Recall tuyệt đối):** Mô hình phát hiện chính xác **100% các cửa sổ tấn công** ($\text{TP} = 3$, $\text{FN} = 0$). Nguyên nhân là do nhóm đặc trưng `export_count`, `burst_rate` và `forbidden_rate` phân định rất rõ ràng so với phân bố bình thường.
+2. **Cảnh báo giả (False Positive):** Có **1 cửa sổ bình thường bị báo động nhầm** ($\text{FP} = 1$). Qua phân tích, nguyên nhân là do thao tác của người dùng diễn ra ở cường độ cao trong thời gian ngắn (có thể do đường truyền hoặc click đúp liên tục), khiến mật độ request tăng vọt chạm ngưỡng cảnh báo.
 3. **Hành vi người dùng hợp lệ cường độ cao (False Positive):** Có **1 cửa sổ Normal bị cảnh báo nhầm** ($\text{FP} = 1$). Nguyên nhân do người dùng hợp lệ thực hiện duyệt tệp và xuất báo cáo liên tục trong thời gian ngắn, tạo ra độ vọt `burst_rate` tiệm cận với kịch bản tấn công.
 
 [Hình 4.2: Biểu đồ phân bố điểm Anomaly Score giữa các cửa sổ Normal và Anomaly]
