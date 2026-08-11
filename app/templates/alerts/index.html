@@ -2,6 +2,66 @@
 
 {% block title %}Cảnh báo bất thường | StudyDrive{% endblock %}
 
+{% block modals %}
+{# ===== Modal: Kết quả Run Detection ===== #}
+{% if detection_result %}
+<div class="modal fade" id="detectionResultModal" tabindex="-1" aria-labelledby="detectionResultModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header text-white border-0 rounded-top-3" style="background: linear-gradient(135deg, #FF8FB1, #F06292);">
+                <h5 class="modal-title fw-bold" id="detectionResultModalLabel">
+                    {% if detection_result.ok %}
+                        Phát hiện bất thường hoàn tất
+                    {% else %}
+                        Detection gặp sự cố
+                    {% endif %}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-3">
+                <p class="text-secondary mb-3">{{ detection_result.message }}</p>
+                <div class="row g-3 text-center">
+                    <div class="col-6">
+                        <div class="border rounded-3 p-3 h-100">
+                            <div class="display-6 fw-bold text-primary">{{ detection_result.windows_scored }}</div>
+                            <div class="small text-secondary mt-1">Cửa sổ đã quét</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded-3 p-3 h-100 {% if detection_result.anomalies_found > 0 %}border-danger bg-danger bg-opacity-10{% endif %}">
+                            <div class="display-6 fw-bold {% if detection_result.anomalies_found > 0 %}text-danger{% else %}text-success{% endif %}">
+                                {{ detection_result.anomalies_found }}
+                            </div>
+                            <div class="small text-secondary mt-1">Bất thường phát hiện</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded-3 p-3 h-100 {% if detection_result.alerts_created > 0 %}border-warning bg-warning bg-opacity-10{% endif %}">
+                            <div class="display-6 fw-bold {% if detection_result.alerts_created > 0 %}text-warning{% else %}text-secondary{% endif %}">
+                                {{ detection_result.alerts_created }}
+                            </div>
+                            <div class="small text-secondary mt-1">Cảnh báo mới tạo</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded-3 p-3 h-100">
+                            <div class="display-6 fw-bold text-secondary">{{ detection_result.alerts_skipped_duplicate }}</div>
+                            <div class="small text-secondary mt-1">Trùng lặp (bỏ qua)</div>
+                        </div>
+                    </div>
+                </div>
+                {% if detection_result.model_version and detection_result.model_version != '-' %}
+                <div class="mt-3 text-center">
+                    <span class="badge text-bg-secondary">Mô hình: {{ detection_result.model_version }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
     <div>
@@ -33,6 +93,7 @@
         </div></div>
     </div>
 </div>
+
 
 <div class="row g-4 mb-4">
     <div class="col-12 col-xl-8">
@@ -122,7 +183,7 @@
             </div>
         </div>
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white fw-semibold">Tóm tắt nhanh</div>
+            <div class="card-header bg-white fw-semibold">Thống kê Kịch bản Tấn công</div>
             <div class="list-group list-group-flush">
                 {% for hint, count in hint_counts %}
                     <div class="list-group-item d-flex justify-content-between"><span>{{ hint or 'unknown' }}</span><span class="badge text-bg-secondary">{{ count }}</span></div>
@@ -130,6 +191,11 @@
                     <div class="list-group-item text-secondary">Chưa có alert.</div>
                 {% endfor %}
             </div>
+            {% if hint_counts %}
+            <div class="card-body pt-0">
+                <canvas id="scenarioDoughnutChart" style="max-height: 220px;"></canvas>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -171,4 +237,44 @@
     </ul>
 </nav>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const doughnutDataRaw = {{ doughnut_data_json | safe }};
+    const scatterDataRaw = {{ scatter_data_json | safe }};
+
+    // --- Vẽ Doughnut Chart ---
+    const doughnutCtx = document.getElementById('scenarioDoughnutChart');
+    if (doughnutCtx && doughnutDataRaw.length > 0) {
+        const labels = doughnutDataRaw.map(d => d.hint);
+        const data = doughnutDataRaw.map(d => d.count);
+        const backgroundColors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#64748b'];
+        new Chart(doughnutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 0, hoverOffset: 4 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' } }
+                },
+                cutout: '70%'
+            }
+        });
+    }
+
+    {% if detection_result %}
+    // Tự động mở Modal kết quả Detection khi trang load xong
+    const detectionModal = new bootstrap.Modal(document.getElementById('detectionResultModal'));
+    detectionModal.show();
+    {% endif %}
+});
+</script>
 {% endblock %}

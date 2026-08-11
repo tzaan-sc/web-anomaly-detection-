@@ -173,6 +173,9 @@
     {% block content %}{% endblock %}
 </main>
 
+{# Block dành riêng cho Modal – nằm ngoài container để tránh z-index bị chặn #}
+{% block modals %}{% endblock %}
+
 <footer class="border-top bg-white py-3 mt-auto">
     <div class="container text-center text-secondary small">
         StudyDrive · Đồ án phát hiện hành vi truy cập bất thường

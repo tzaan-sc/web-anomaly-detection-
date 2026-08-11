@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from datetime import datetime
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, session as flask_session, url_for
 from sqlalchemy import func
 
 from app.blueprints.alerts import bp
@@ -98,6 +98,19 @@ def index():
     base_args = request.args.to_dict(flat=True)
     base_args.pop("page", None)
 
+    # Lấy kết quả detection từ URL query params (nếu vừa bấm Run Detection)
+    detection_result = None
+    if request.args.get("dr_ok") is not None:
+        detection_result = {
+            "ok": request.args.get("dr_ok") == "1",
+            "message": request.args.get("dr_msg", ""),
+            "windows_scored": int(request.args.get("dr_windows", 0)),
+            "anomalies_found": int(request.args.get("dr_anomalies", 0)),
+            "alerts_created": int(request.args.get("dr_created", 0)),
+            "alerts_skipped_duplicate": int(request.args.get("dr_dup", 0)),
+            "model_version": request.args.get("dr_model", "-"),
+        }
+
     def page_url(page_number: int) -> str:
         return url_for("alerts.index", **base_args, page=page_number)
 
@@ -125,6 +138,19 @@ def index():
         if row[0]
     ]
 
+    # Chuẩn bị dữ liệu cho biểu đồ Chart.js
+    doughnut_data = [{"hint": h or "unknown", "count": c} for h, c in hint_counts]
+    
+    chart_alerts = Alert.query.order_by(Alert.window_start.desc()).limit(100).all()
+    scatter_data = [
+        {
+            "x": alert.window_start.isoformat() if alert.window_start else "",
+            "y": alert.anomaly_score or 0.0,
+            "hint": alert.scenario_hint or "unknown"
+        }
+        for alert in chart_alerts
+    ]
+
     return render_template(
         "alerts/index.html",
         alerts=pagination.items,
@@ -137,8 +163,11 @@ def index():
         new_alerts=new_alerts,
         top_users=top_users,
         hint_counts=hint_counts,
+        doughnut_data_json=json.dumps(doughnut_data),
+        scatter_data_json=json.dumps(scatter_data),
         hint_options=hint_options,
         model_options=model_options,
+        detection_result=detection_result,
         sort_options=[
             ("score_desc", "Score cao nhất"),
             ("score_asc", "Score thấp nhất"),
@@ -154,13 +183,17 @@ def run_detection_action():
     start = _parse_datetime(request.form.get("start"))
     end = _parse_datetime(request.form.get("end"))
     result = run_detection(start=start, end=end)
-    category = "success" if result.ok else "warning"
-    flash(
-        f"{result.message} Windows={result.windows_scored}, anomalies={result.anomalies_found}, "
-        f"created={result.alerts_created}, duplicate={result.alerts_skipped_duplicate}.",
-        category,
-    )
-    return redirect(url_for("alerts.index"))
+    # Truyền kết quả qua URL query param để hiển thị Modal popup
+    return redirect(url_for(
+        "alerts.index",
+        dr_ok="1" if result.ok else "0",
+        dr_msg=result.message,
+        dr_windows=result.windows_scored,
+        dr_anomalies=result.anomalies_found,
+        dr_created=result.alerts_created,
+        dr_dup=result.alerts_skipped_duplicate,
+        dr_model=result.model_version or "-",
+    ))
 
 
 @bp.get("/<int:alert_id>")
