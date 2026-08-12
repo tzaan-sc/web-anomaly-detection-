@@ -1,10 +1,10 @@
 {
   "dataset_version": "features_v1",
-  "created_at_utc": "2026-08-10T08:55:59.029826+00:00",
+  "created_at_utc": "2026-08-12T06:25:06.040028+00:00",
   "raw_logs_path": "data\\raw\\request_logs_raw.csv",
-  "raw_logs_sha256": "3ac12a8c85ee0ab4b75af30cee9fe5cbe0c88fc2c501d30335e61eefb3a63bc4",
+  "raw_logs_sha256": "d04caeabcb984ac3be707273d5171006a29d8cbeb816e74ea7579eb35f708812",
   "ground_truth_path": "data/raw/ground_truth.csv",
-  "ground_truth_sha256": "e430771d755113e9d881df6727c4e6e1fc0dffd62777c64637b4f91aa03bedd1",
+  "ground_truth_sha256": "e0e849b627825abadce94104ff48519962838df9a76fbae2b9ac95b52eb92574",
   "window_minutes": 5,
   "feature_count": 25,
   "feature_columns": [
@@ -35,20 +35,20 @@
     "max_sensitive_streak"
   ],
   "cleaning": {
-    "original_rows": 10867,
-    "rows_after_cleaning": 10867,
+    "original_rows": 10875,
+    "rows_after_cleaning": 10875,
     "dropped_bad_timestamp_rows": 0,
     "dropped_duplicate_request_id_rows": 0,
-    "timestamp_min": "2026-08-10T08:40:21+00:00",
-    "timestamp_max": "2026-08-10T08:50:09+00:00"
+    "timestamp_min": "2026-08-12T05:42:13+00:00",
+    "timestamp_max": "2026-08-12T05:52:55+00:00"
   },
-  "window_count": 17,
+  "window_count": 19,
   "label_distribution": {
-    "0": 11,
+    "0": 13,
     "1": 6
   },
   "scenario_distribution": {
-    "normal": 11,
+    "normal": 13,
     "export_abuse": 3,
     "bola_scan": 2,
     "delete_abuse": 1
@@ -59,25 +59,25 @@
     "split_group": "user_id|session_id_hash",
     "train_groups": [
       "-1|anonymous",
-      "1|3e2fcb86522105613111ab82e5c35242de4cbb818c39572f85efece739900119",
-      "2|0102d50e807764919b20c62c7fbda02c35b1f656845d3873c83ab02500f2eb8d",
-      "3|72634081a9945a46da1e2849594d3ec4b5ed79fb1d6b2eabb38752031ac52c0c"
+      "1|50aad02d8baf4da68ec29e8f1f10278198bbc5d968d13ced75986679b339a490",
+      "2|29d88ae6a299305f8047c62b16bd2011036839d5b04eca30b87aa0e58f9e8813",
+      "3|ea237752f73623591adc1111f6d71b8412fba4c49fadf45201a95ea6fec53e95"
     ],
     "validation_groups": [
-      "2|dd3dd52cde4e213ebf7fb8fdbc9556085edf3cf54b028c27f4a28fa23174f9db",
-      "3|5156868d99542344dc7be015a6fdc62db8a2ab446856211e99376199bcc398e2",
-      "4|c3936029d5d99f541ffd7497741f1b2a797c496310fa645b04d93eace22b2cfe",
-      "5|ee38e16729272e933822f44f52f731c40ce8839288b6d825ba34f5e2dd9c25f4",
-      "6|f9680eea217c5cedfca879317c8deb9a58f5ad19d694d8d34ad50b68488a06ee"
+      "2|fe6081df967830c19a8cf3ac0073aab5d3870e568aa0d8fad3e964f1f41a5c5f",
+      "3|d6e82b13644b4b16a58619d636ad44cb7eae21269e5bc7f770558ff25ea0f5a6",
+      "4|9b2e94d44d1ef8520af2d3e8fe05a1e9191da31c96716f08b60e18a5f9b23c51",
+      "5|22658b822da6f21ec09fd1ad6b5d75261f4531a860caa308f270460116b0eba2",
+      "6|37821511d5ccaa4062b6d1e011702d6f1fb2d3e244aabcdf2ec033476da88c88"
     ],
     "test_groups": [
-      "2|559a1c61c7e01750dc28366b1247cfbd2eebe9b5256da6833010cafbe8385f29",
-      "3|6ee3a82a1a1f293e97cf9dc999bb8fee8679707cecac50c3025041c5219c0fd8",
-      "4|bb544f60127abacd013d0bc2b781acfb83d51696b96faa38353b52b675b41fdf",
-      "5|5049dbac75d53f8e64099746d3fdfd8cfe8f43207398f4596b6ba85527709f5e",
-      "6|718af66ee1399327895f1baf208bbaabf04b87a72a13231795f71dc13a16f1a2"
+      "2|83308f7d4e8abc141be6f169eade95592880093fca42fa6084cc95f4463106ff",
+      "3|160885efd5b9405dd7fcca21cc122712198c072979a65a4dd845e1a0e52b91b2",
+      "4|919f0dfa4b897ce1b6197e65137397942d602aa65a0092bb1e6b2283a0cfef84",
+      "5|b1a3367d04a80dbcdd8813068aefc18d909dd7ecae6efd64d518fe7cfc951892",
+      "6|b478ac99dd0ce00200d46f877a548aeb082634ac1fde71d074629386713108a4"
     ],
-    "train_rows": 6,
+    "train_rows": 8,
     "validation_rows": 6,
     "test_rows": 5,
     "train_anomaly_rows": 0,
