@@ -87,3 +87,58 @@ class ChangePasswordForm(FlaskForm):
     )
 
     submit = SubmitField("Đổi mật khẩu")
+
+
+class RegisterForm(FlaskForm):
+    username = StringField(
+        "Tên đăng nhập",
+        validators=[
+            DataRequired(message="Vui lòng nhập tên đăng nhập."),
+            Length(
+                min=3,
+                max=80,
+                message="Tên đăng nhập phải có từ 3 đến 80 ký tự.",
+            ),
+            Regexp(
+                r"^[A-Za-z0-9_.-]+$",
+                message="Tên đăng nhập chỉ được chứa chữ, số, dấu chấm, gạch dưới và gạch ngang.",
+            ),
+        ],
+    )
+
+    email = StringField(
+        "Email",
+        validators=[
+            DataRequired(message="Vui lòng nhập email."),
+            Length(max=255, message="Email không được quá 255 ký tự."),
+            Regexp(
+                r"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+                message="Email không đúng định dạng.",
+            ),
+        ],
+    )
+
+    password = PasswordField(
+        "Mật khẩu",
+        validators=[
+            DataRequired(message="Vui lòng nhập mật khẩu."),
+            Length(
+                min=8,
+                max=128,
+                message="Mật khẩu phải có ít nhất 8 ký tự.",
+            ),
+        ],
+    )
+
+    confirm_password = PasswordField(
+        "Xác nhận mật khẩu",
+        validators=[
+            DataRequired(message="Vui lòng xác nhận mật khẩu."),
+            EqualTo(
+                "password",
+                message="Mật khẩu xác nhận không khớp.",
+            ),
+        ],
+    )
+
+    submit = SubmitField("Đăng ký")

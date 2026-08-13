@@ -58,6 +58,7 @@ ACTION_BY_ENDPOINT = {
     "main.dashboard": "dashboard",
     "main.health": "health",
     "auth.login": "login",
+    "auth.register": "register",
     "auth.logout": "logout",
     "auth.profile": "profile",
     "auth.change_password": "change_password",
@@ -93,7 +94,9 @@ ACTION_BY_ENDPOINT = {
 # Action type nhóm lớn: dùng cho ML/feature engineering.
 ACTION_TYPE_BY_ENDPOINT = {
     "auth.login": "login",
+    "auth.register": "login",
     "auth.logout": "login",
+
     "main.dashboard": "list",
     "documents.legacy_index": "list",
     "documents.index": "list",

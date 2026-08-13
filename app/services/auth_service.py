@@ -5,7 +5,9 @@ import secrets
 
 from sqlalchemy import func, or_
 
+from app.extensions import db
 from app.models import User
+
 
 
 def find_user_by_identifier(identifier: str) -> User | None:
@@ -46,3 +48,25 @@ def create_session_hash() -> str:
     return hashlib.sha256(
         raw_value.encode("utf-8")
     ).hexdigest()
+
+
+def register_user(
+    username: str,
+    email: str,
+    password: str,
+    role: str = "USER",
+) -> User:
+    """Tạo người dùng mới và lưu vào cơ sở dữ liệu."""
+
+    user = User(
+        username=username.strip(),
+        email=email.strip().lower(),
+        role=role,
+        is_active=True,
+    )
+    user.set_password(password)
+
+    db.session.add(user)
+    db.session.commit()
+
+    return user

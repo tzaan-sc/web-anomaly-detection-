@@ -1,23 +1,160 @@
 {% extends "base.html" %}
 
-{% block title %}Trang chủ | StudyDrive{% endblock %}
+{% block title %}Trang chủ | StudyDrive - Quản lý tài liệu & An toàn thông tin{% endblock %}
 
 {% block content %}
-<section class="p-4 p-md-5 bg-white border rounded-3 shadow-sm">
-    <span class="badge text-bg-success mb-3">Flask skeleton đang hoạt động</span>
-    <h1 class="display-6 fw-bold">StudyDrive</h1>
-    <p class="lead mb-4">
-        Nền tảng quản lý tài liệu học tập, thu thập structured log
-        và phát hiện hành vi truy cập bất thường.
-    </p>
-
-    <div class="d-flex flex-wrap gap-2">
-        <a class="btn btn-primary" href="{{ url_for('documents.index') }}">
-            Mở module tài liệu
-        </a>
-        <a class="btn btn-outline-secondary" href="{{ url_for('main.health') }}">
-            Kiểm tra /health
-        </a>
+<!-- Hero Section -->
+<div class="py-4 py-md-5 mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="badge text-bg-primary fs-6 mb-3 px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+                <i class="bi bi-shield-lock-fill text-warning"></i> AI-Powered Anomaly Detection
+            </span>
+            <h1 class="display-4 fw-bold mb-3">StudyDrive</h1>
+            <p class="lead text-secondary mb-4">
+                Nền tảng lưu trữ và quản lý tài liệu thông minh. Tích hợp mô hình Trí tuệ nhân tạo (Machine Learning) giám sát log truy cập và tự động phát hiện các hành vi truy cập bất thường 24/7.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                <a class="btn btn-primary btn-lg px-4 py-2 d-inline-flex align-items-center gap-2" href="{{ url_for('auth.register') }}">
+                    <i class="bi bi-person-plus-fill"></i> Đăng ký ngay
+                </a>
+                <a class="btn btn-pastel-outline btn-lg px-4 py-2 d-inline-flex align-items-center gap-2" href="{{ url_for('auth.login') }}">
+                    <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-lg p-4 bg-white text-center">
+                <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 90px; height: 90px; background: linear-gradient(135deg, var(--primary-light), var(--navbar));">
+                    <i class="bi bi-journal-bookmark-fill text-primary" style="font-size: 2.75rem;"></i>
+                </div>
+                <h3 class="h4 fw-bold mb-2">Hệ thống An toàn</h3>
+                <p class="text-secondary small mb-3">
+                    Lưu trữ tài liệu và chia sẻ an toàn.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <span class="badge text-bg-success d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-check-circle-fill"></i> Miễn phí
+                    </span>
+                    <span class="badge text-bg-info d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-shield-check"></i> Bảo mật cao
+                    </span>
+                    <span class="badge text-bg-secondary d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-lightning-charge-fill"></i> Dễ sử dụng
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
-</section>
+</div>
+
+<!-- Features Section -->
+<div class="py-4">
+    <div class="text-center mb-5">
+        <h2 class="h3 fw-bold">Tính năng Nổi bật</h2>
+        <p class="text-secondary">Giải pháp toàn diện cho việc học tập và bảo mật dữ liệu</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 p-4 border-0 shadow-sm text-center">
+                <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 70px; height: 70px; background: rgba(255, 143, 177, 0.15);">
+                    <i class="bi bi-folder-symlink-fill text-primary fs-2"></i>
+                </div>
+                <h3 class="h5 fw-bold mb-2">Quản lý Tài liệu</h3>
+                <p class="text-secondary small mb-0">
+                    Tải lên, tổ chức thư mục linh hoạt, xem chi tiết và tìm kiếm tài liệu dễ dàng.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 p-4 border-0 shadow-sm text-center">
+                <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 70px; height: 70px; background: rgba(125, 225, 188, 0.2);">
+                    <i class="bi bi-share-fill text-success fs-2"></i>
+                </div>
+                <h3 class="h5 fw-bold mb-2">Chia sẻ An toàn</h3>
+                <p class="text-secondary small mb-0">
+                    Phân quyền chia sẻ tài liệu cho từng người dùng, thu hồi quyền hạn bất cứ lúc nào.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 p-4 border-0 shadow-sm text-center">
+                <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 70px; height: 70px; background: rgba(250, 185, 142, 0.25);">
+                    <i class="bi bi-cpu-fill text-warning fs-2"></i>
+                </div>
+                <h3 class="h5 fw-bold mb-2">Giám sát AI / ML</h3>
+                <p class="text-secondary small mb-0">
+                    Tự động phân tích nhật ký truy cập (Log), phát hiện dị thường và dò quét lỗ hổng.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 p-4 border-0 shadow-sm text-center">
+                <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 70px; height: 70px; background: rgba(160, 160, 255, 0.2);">
+                    <i class="bi bi-moon-stars-fill text-info fs-2"></i>
+                </div>
+                <h3 class="h5 fw-bold mb-2">Pastel & Dark Mode</h3>
+                <p class="text-secondary small mb-0">
+                    Thiết kế tinh tế, hỗ trợ chuyển đổi chế độ Sáng/Tối dịu mắt cho người dùng.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Workflow Section -->
+<div class="py-5 my-3">
+    <div class="card border-0 shadow-sm p-4 p-md-5 bg-white">
+        <div class="row align-items-center">
+            <div class="col-md-4 mb-4 mb-md-0 text-center text-md-start">
+                <h2 class="h3 fw-bold mb-3">Quy trình Sử dụng</h2>
+                <p class="text-secondary mb-0">Chỉ mất vài bước đơn giản để bắt đầu quản lý tài liệu học tập của bạn.</p>
+            </div>
+            <div class="col-md-8">
+                <div class="row g-4">
+                    <div class="col-sm-4 text-center">
+                        <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle text-white shadow-sm" style="width: 60px; height: 60px; background-color: var(--primary-dark);">
+                            <i class="bi bi-person-plus-fill fs-4"></i>
+                        </div>
+                        <h4 class="h6 fw-bold">1. Tạo tài khoản</h4>
+                        <p class="small text-secondary mb-0">Đăng ký nhanh chóng với username & email.</p>
+                    </div>
+                    <div class="col-sm-4 text-center">
+                        <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle text-white shadow-sm" style="width: 60px; height: 60px; background-color: var(--primary-dark);">
+                            <i class="bi bi-cloud-arrow-up-fill fs-4"></i>
+                        </div>
+                        <h4 class="h6 fw-bold">2. Tải lên & Lưu trữ</h4>
+                        <p class="small text-secondary mb-0">Tạo thư mục và lưu trữ bài giảng, tài liệu.</p>
+                    </div>
+                    <div class="col-sm-4 text-center">
+                        <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle text-white shadow-sm" style="width: 60px; height: 60px; background-color: var(--primary-dark);">
+                            <i class="bi bi-shield-check fs-4"></i>
+                        </div>
+                        <h4 class="h6 fw-bold">3. Bảo vệ 24/7</h4>
+                        <p class="small text-secondary mb-0">Hệ thống AI tự động theo dõi và bảo vệ.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Banner -->
+<div class="py-4 text-center">
+    <div class="card border-0 shadow-sm p-4 p-md-5" style="background: linear-gradient(135deg, var(--primary-light), var(--navbar));">
+        <h2 class="h3 fw-bold text-primary mb-3">Sẵn sàng trải nghiệm StudyDrive?</h2>
+        <p class="text-secondary mb-4 mx-auto" style="max-width: 600px;">
+            Đăng ký tài khoản ngay hôm nay để quản lý dữ liệu hiệu quả và trải nghiệm giải pháp an toàn thông tin hiện đại.
+        </p>
+        <div>
+            <a class="btn btn-primary btn-lg px-4 py-2 d-inline-flex align-items-center gap-2" href="{{ url_for('auth.register') }}">
+                <i class="bi bi-rocket-takeoff-fill"></i> Tạo tài khoản ngay
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

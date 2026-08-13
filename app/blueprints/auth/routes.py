@@ -12,6 +12,7 @@ from app.blueprints.auth.forms import (
     ChangePasswordForm,
     LoginForm,
     ProfileForm,
+    RegisterForm,
 )
 from app.decorators.authorization import login_required
 from app.extensions import db
@@ -19,7 +20,9 @@ from app.models import User
 from app.services.auth_service import (
     authenticate_user,
     create_session_hash,
+    register_user,
 )
+
 
 
 def redirect_after_login():
@@ -75,6 +78,52 @@ def login():
         "auth/login.html",
         form=form,
     )
+
+
+@bp.route("/register", methods=["GET", "POST"])
+def register():
+    if g.current_user is not None:
+        return redirect_after_login()
+
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        username = form.username.data.strip()
+        email = form.email.data.strip().lower()
+
+        existing_user = User.query.filter(
+            (db.func.lower(User.username) == username.lower())
+        ).first()
+
+        if existing_user is not None:
+            form.username.errors.append("Tên đăng nhập đã được sử dụng.")
+
+        existing_email = User.query.filter(
+            (db.func.lower(User.email) == email)
+        ).first()
+
+        if existing_email is not None:
+            form.email.errors.append("Email đã được sử dụng.")
+
+        if not form.username.errors and not form.email.errors:
+            register_user(
+                username=username,
+                email=email,
+                password=form.password.data,
+            )
+
+            flash(
+                "Đăng ký tài khoản thành công! Vui lòng đăng nhập.",
+                "success",
+            )
+
+            return redirect(url_for("auth.login"))
+
+    return render_template(
+        "auth/register.html",
+        form=form,
+    )
+
 
 
 @bp.post("/logout")
