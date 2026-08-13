@@ -95,25 +95,97 @@
 </div>
 
 
+<!-- Top Row: Thống kê Kịch bản Tấn công (Trái) & Chạy phát hiện (Phải) -->
 <div class="row g-4 mb-4">
-    <div class="col-12 col-xl-8">
+    <div class="col-12 col-xl-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">Thống kê Kịch bản Tấn công</div>
+            <div class="card-body">
+                <div class="row align-items-center h-100 py-1">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="list-group list-group-flush border rounded-3 overflow-hidden">
+                            {% set bg_colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#64748b'] %}
+                            {% set friendly_names = {
+                                'export_abuse': 'Trích xuất dữ liệu',
+                                'bola_scan': 'Dò quét tài nguyên (BOLA)',
+                                'delete_abuse': 'Xóa dữ liệu hàng loạt',
+                                'bruteforce': 'Dò mật khẩu (Bruteforce)',
+                                'login_bruteforce': 'Dò mật khẩu (Bruteforce)',
+                                'idor_scan': 'Dò quét IDOR',
+                                'general': 'Bất thường chung'
+                            } %}
+                            {% for hint, count in hint_counts %}
+                                {% set color = bg_colors[loop.index0 % bg_colors|length] %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
+                                    <div class="d-flex align-items-center gap-2 overflow-hidden me-2">
+                                        <span class="d-inline-block rounded-circle flex-shrink-0" style="width: 10px; height: 10px; background-color: {{ color }};"></span>
+                                        <div>
+                                            <div class="fw-semibold text-truncate small">{{ friendly_names.get(hint, hint or 'Chưa xác định') }}</div>
+                                            <code class="text-secondary" style="font-size: 0.75rem;">{{ hint or 'unknown' }}</code>
+                                        </div>
+                                    </div>
+                                    <span class="badge text-bg-light border fw-bold fs-6 ms-2 px-2 py-1">{{ count }}</span>
+                                </div>
+                            {% else %}
+                                <div class="list-group-item text-secondary py-3 text-center">Chưa có cảnh báo.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% if hint_counts %}
+                    <div class="col-md-6 text-center position-relative">
+                        <div style="height: 190px; position: relative;">
+                            <canvas id="scenarioDoughnutChart"></canvas>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">Chạy phát hiện (Detection)</div>
+            <div class="card-body d-flex flex-column justify-content-center">
+                <form method="post" action="{{ url_for('alerts.run_detection_action') }}" class="row g-3">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="col-6">
+                        <label class="form-label" for="detect_start">Từ</label>
+                        <input class="form-control" type="datetime-local" id="detect_start" name="start">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label" for="detect_end">Đến</label>
+                        <input class="form-control" type="datetime-local" id="detect_end" name="end">
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button class="btn btn-primary w-100 py-2" type="submit">Chạy phát hiện</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Row: Lọc cảnh báo (Full width) -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white fw-semibold">Lọc cảnh báo</div>
             <div class="card-body">
                 <form method="get" class="row g-3 align-items-end">
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <label class="form-label" for="start">Từ</label>
                         <input class="form-control" type="datetime-local" id="start" name="start" value="{{ filters.start }}">
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <label class="form-label" for="end">Đến</label>
                         <input class="form-control" type="datetime-local" id="end" name="end" value="{{ filters.end }}">
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <label class="form-label" for="user">Người dùng</label>
                         <input class="form-control" id="user" name="user" value="{{ filters.user }}" placeholder="id/username/email">
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <label class="form-label" for="hint">Dấu hiệu</label>
                         <select class="form-select" id="hint" name="hint">
                             <option value="">Tất cả</option>
@@ -122,7 +194,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <label class="form-label" for="model_version">Mô hình</label>
                         <select class="form-select" id="model_version" name="model_version">
                             <option value="">Tất cả</option>
@@ -131,7 +203,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <label class="form-label" for="status">Trạng thái</label>
                         <select class="form-select" id="status" name="status">
                             <option value="">Tất cả</option>
@@ -140,7 +212,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <label class="form-label" for="sort">Sắp xếp</label>
                         <select class="form-select" id="sort" name="sort">
                             {% for key, label in sort_options %}
@@ -148,7 +220,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <label class="form-label" for="per_page">Mỗi trang</label>
                         <select class="form-select" id="per_page" name="per_page">
                             {% for value in [10, 20, 50, 100] %}
@@ -162,43 +234,8 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-xl-4">
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white fw-semibold">Chạy phát hiện (Detection)</div>
-            <div class="card-body">
-                <form method="post" action="{{ url_for('alerts.run_detection_action') }}" class="row g-3">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <div class="col-12">
-                        <label class="form-label" for="detect_start">Từ</label>
-                        <input class="form-control" type="datetime-local" id="detect_start" name="start">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label" for="detect_end">Đến</label>
-                        <input class="form-control" type="datetime-local" id="detect_end" name="end">
-                    </div>
-                    <div class="col-12">
-                        <button class="btn btn-primary w-100" type="submit">Chạy phát hiện</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white fw-semibold">Thống kê Kịch bản Tấn công</div>
-            <div class="list-group list-group-flush">
-                {% for hint, count in hint_counts %}
-                    <div class="list-group-item d-flex justify-content-between"><span>{{ hint or 'unknown' }}</span><span class="badge text-bg-secondary">{{ count }}</span></div>
-                {% else %}
-                    <div class="list-group-item text-secondary">Chưa có cảnh báo.</div>
-                {% endfor %}
-            </div>
-            {% if hint_counts %}
-            <div class="card-body pt-0">
-                <canvas id="scenarioDoughnutChart" style="max-height: 220px;"></canvas>
-            </div>
-            {% endif %}
-        </div>
-    </div>
 </div>
+
 
 <div class="card border-0 shadow-sm">
     <div class="table-responsive">
@@ -251,23 +288,63 @@ document.addEventListener("DOMContentLoaded", function() {
     // --- Vẽ Doughnut Chart ---
     const doughnutCtx = document.getElementById('scenarioDoughnutChart');
     if (doughnutCtx && doughnutDataRaw.length > 0) {
-        const labels = doughnutDataRaw.map(d => d.hint);
+        const friendlyMap = {
+            'export_abuse': 'Trích xuất dữ liệu',
+            'bola_scan': 'Dò quét BOLA',
+            'delete_abuse': 'Xóa dữ liệu hàng loạt',
+            'bruteforce': 'Dò mật khẩu',
+            'login_bruteforce': 'Dò mật khẩu',
+            'idor_scan': 'Dò quét IDOR',
+            'general': 'Bất thường chung'
+        };
+
+        const labels = doughnutDataRaw.map(d => friendlyMap[d.hint] || d.hint);
         const data = doughnutDataRaw.map(d => d.count);
         const backgroundColors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#64748b'];
+
+        // Plugin hiển thị số tổng ở tâm biểu đồ
+        const centerTextPlugin = {
+            id: 'centerText',
+            beforeDraw(chart) {
+                const { width, height, ctx } = chart;
+                ctx.save();
+                const total = data.reduce((a, b) => a + b, 0);
+
+                ctx.font = 'bold 22px sans-serif';
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-main') || '#1f2937';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(total, width / 2, height / 2 - 8);
+
+                ctx.font = '12px sans-serif';
+                ctx.fillStyle = '#6b7280';
+                ctx.fillText('Cảnh báo', width / 2, height / 2 + 14);
+                ctx.restore();
+            }
+        };
+
         new Chart(doughnutCtx, {
             type: 'doughnut',
             data: {
                 labels: labels,
-                datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 0, hoverOffset: 4 }]
+                datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 6 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' } }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.label}: ${context.raw} cảnh báo`;
+                            }
+                        }
+                    }
                 },
-                cutout: '70%'
-            }
+                cutout: '72%'
+            },
+            plugins: [centerTextPlugin]
         });
     }
 
