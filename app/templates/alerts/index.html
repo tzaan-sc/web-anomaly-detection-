@@ -68,7 +68,7 @@
         <h1 class="h2 mb-1">Bảng điều khiển cảnh báo bất thường</h1>
     </div>
     <div class="d-flex flex-wrap gap-2">
-        <a class="btn btn-outline-secondary" href="{{ url_for('admin.logs') }}">Xem request logs</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin.logs') }}">Xem nhật ký truy cập (request logs)</a>
         <a class="btn btn-outline-secondary" href="{{ url_for('admin.index') }}">← Bảng điều khiển quản trị viên</a>
     </div>
 </div>
@@ -76,19 +76,19 @@
 <div class="row g-3 mb-4">
     <div class="col-12 col-md-4">
         <div class="card border-0 shadow-sm"><div class="card-body">
-            <div class="text-secondary small">Tổng request log</div>
+            <div class="text-secondary small">Tổng nhật ký truy cập</div>
             <div class="fs-3 fw-bold">{{ total_logs }}</div>
         </div></div>
     </div>
     <div class="col-12 col-md-4">
         <div class="card border-0 shadow-sm"><div class="card-body">
-            <div class="text-secondary small">Tổng alert</div>
+            <div class="text-secondary small">Tổng cảnh báo</div>
             <div class="fs-3 fw-bold">{{ total_alerts }}</div>
         </div></div>
     </div>
     <div class="col-12 col-md-4">
         <div class="card border-0 shadow-sm"><div class="card-body">
-            <div class="text-secondary small">Alert mới</div>
+            <div class="text-secondary small">Cảnh báo mới</div>
             <div class="fs-3 fw-bold">{{ new_alerts }}</div>
         </div></div>
     </div>
@@ -141,7 +141,7 @@
                         </select>
                     </div>
                     <div class="col-12 col-md-3">
-                        <label class="form-label" for="sort">Sort</label>
+                        <label class="form-label" for="sort">Sắp xếp</label>
                         <select class="form-select" id="sort" name="sort">
                             {% for key, label in sort_options %}
                                 <option value="{{ key }}" {% if filters.sort == key %}selected{% endif %}>{{ label }}</option>
@@ -149,14 +149,14 @@
                         </select>
                     </div>
                     <div class="col-12 col-md-3">
-                        <label class="form-label" for="per_page">Per page</label>
+                        <label class="form-label" for="per_page">Mỗi trang</label>
                         <select class="form-select" id="per_page" name="per_page">
                             {% for value in [10, 20, 50, 100] %}
                                 <option value="{{ value }}" {% if per_page == value %}selected{% endif %}>{{ value }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-auto"><button class="btn btn-primary" type="submit">Lọc alert</button></div>
+                    <div class="col-auto"><button class="btn btn-primary" type="submit">Lọc cảnh báo</button></div>
                     <div class="col-auto"><a class="btn btn-outline-secondary" href="{{ url_for('alerts.index') }}">Xóa lọc</a></div>
                 </form>
             </div>
@@ -164,7 +164,7 @@
     </div>
     <div class="col-12 col-xl-4">
         <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white fw-semibold">Chạy detection</div>
+            <div class="card-header bg-white fw-semibold">Chạy phát hiện (Detection)</div>
             <div class="card-body">
                 <form method="post" action="{{ url_for('alerts.run_detection_action') }}" class="row g-3">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -177,7 +177,7 @@
                         <input class="form-control" type="datetime-local" id="detect_end" name="end">
                     </div>
                     <div class="col-12">
-                        <button class="btn btn-primary w-100" type="submit">Run detection</button>
+                        <button class="btn btn-primary w-100" type="submit">Chạy phát hiện</button>
                     </div>
                 </form>
             </div>
@@ -188,7 +188,7 @@
                 {% for hint, count in hint_counts %}
                     <div class="list-group-item d-flex justify-content-between"><span>{{ hint or 'unknown' }}</span><span class="badge text-bg-secondary">{{ count }}</span></div>
                 {% else %}
-                    <div class="list-group-item text-secondary">Chưa có alert.</div>
+                    <div class="list-group-item text-secondary">Chưa có cảnh báo.</div>
                 {% endfor %}
             </div>
             {% if hint_counts %}
@@ -221,7 +221,7 @@
                     <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('alerts.detail', alert_id=alert.id) }}">Chi tiết</a></td>
                 </tr>
             {% else %}
-                <tr><td colspan="8" class="text-center text-secondary py-4">Chưa có alert hoặc không khớp bộ lọc.</td></tr>
+                <tr><td colspan="8" class="text-center text-secondary py-4">Chưa có cảnh báo hoặc không khớp bộ lọc.</td></tr>
             {% endfor %}
             </tbody>
         </table>
@@ -229,7 +229,8 @@
 </div>
 
 {% if pagination.pages > 1 %}
-<nav class="mt-4" aria-label="Phân trang alert">
+<nav class="mt-4" aria-label="Phân trang cảnh báo">
+
     <ul class="pagination justify-content-center flex-wrap">
         <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}"><a class="page-link" href="{{ page_url(pagination.prev_num) if pagination.has_prev else '#' }}">Trước</a></li>
         <li class="page-item disabled"><span class="page-link">Trang {{ pagination.page }}/{{ pagination.pages }}</span></li>

@@ -18,7 +18,8 @@
 
 <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb mb-0">
-        <li class="breadcrumb-item"><a href="{{ url_for('documents.index') }}">My Drive</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('documents.index') }}">Tài liệu của tôi</a></li>
+
         {% for folder in breadcrumb %}
             <li class="breadcrumb-item {% if loop.last %}active{% endif %}" {% if loop.last %}aria-current="page"{% endif %}>
                 {% if loop.last %}

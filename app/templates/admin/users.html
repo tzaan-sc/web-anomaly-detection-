@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Admin users | StudyDrive{% endblock %}
+{% block title %}Quản lý người dùng | StudyDrive{% endblock %}
 
 {% block content %}
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
     <div>
-        <h1 class="h2 mb-1">Quản lý user</h1>
+        <h1 class="h2 mb-1">Quản lý người dùng</h1>
     </div>
     <a class="btn btn-outline-secondary" href="{{ url_for('admin.index') }}">← Bảng điều khiển quản trị viên</a>
 </div>
@@ -13,7 +13,7 @@
 <div class="card border-0 shadow-sm mb-4"><div class="card-body">
     <form method="get" class="row g-3 align-items-end">
         <div class="col-12 col-lg-6">
-            <label class="form-label" for="q">Search username/email/role</label>
+            <label class="form-label" for="q">Tìm kiếm tên đăng nhập / email / vai trò</label>
             <input class="form-control" id="q" name="q" value="{{ search_text }}" maxlength="255" placeholder="VD: user1 hoặc ADMIN">
         </div>
         <div class="col-auto"><button class="btn btn-primary" type="submit">Tìm</button></div>
@@ -46,7 +46,7 @@
                     </td>
                 </tr>
             {% else %}
-                <tr><td colspan="7" class="text-center text-secondary py-4">Không tìm thấy user.</td></tr>
+                <tr><td colspan="7" class="text-center text-secondary py-4">Không tìm thấy người dùng.</td></tr>
             {% endfor %}
             </tbody>
         </table>
@@ -54,7 +54,8 @@
 </div>
 
 {% if pagination.pages > 1 %}
-<nav class="mt-4" aria-label="Phân trang user">
+<nav class="mt-4" aria-label="Phân trang người dùng">
+
     <ul class="pagination justify-content-center flex-wrap">
         <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}"><a class="page-link" href="{{ page_url(pagination.prev_num) if pagination.has_prev else '#' }}">Trước</a></li>
         <li class="page-item disabled"><span class="page-link">Trang {{ pagination.page }}/{{ pagination.pages }}</span></li>
