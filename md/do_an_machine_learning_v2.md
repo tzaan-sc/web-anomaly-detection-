@@ -19,23 +19,23 @@
 *(Dành cho giáo viên phản biện nhận xét)*
 
 ## LỜI CAM ĐOAN
-Em xin cam đoan đồ án “Xây dựng hệ thống phát hiện hành vi truy cập bất thường trên ứng dụng web bằng Machine Learning” là công trình nghiên cứu của riêng em dưới sự hướng dẫn của Ths. Nguyễn Trung Kiên.
+Em xin cam đoan đồ án “Xây dựng hệ thống phát hiện hành vi truy cập bất thường trên ứng dụng web bằng Machine Learning” là công trình nghiên cứu của riêng em dưới sự hướng dẫn của ThS. Nguyễn Trung Kiên.
 Các nội dung, số liệu, kết quả và sản phẩm được trình bày trong đồ án hoàn toàn do em tự thực hiện. Các tài liệu tham khảo, trích dẫn trong đồ án đều được ghi rõ nguồn gốc và tuân thủ đúng quy định về trích dẫn tại phần Tài liệu tham khảo.
 Em xin chịu hoàn toàn trách nhiệm về tính trung thực và nội dung của đồ án này trước khoa và nhà trường.
 
 ## LỜI CẢM ƠN
-Lời đầu tiên, nhóm xin gửi lời tri ân sâu sắc đến quý thầy, cô giảng viên trường Trường Đại Học Kỹ Thuật – Công Nghệ Cần Thơ. Em đã nhận được sự giảng dạy tận tình, những kiến thức chuyên môn được tiếp thu được trên giảng đường chính là hành trang vững chắc để em thực hiện đồ án này.
+Lời đầu tiên, em xin gửi lời tri ân sâu sắc đến quý thầy, cô giảng viên Trường Đại học Kỹ thuật – Công nghệ Cần Thơ. Những kiến thức chuyên môn quý báu được tiếp thu trên giảng đường chính là hành trang vững chắc để em thực hiện đồ án này.
 
-Đặc biệt, em xin gửi lời cảm ơn chân thành nhất đến giảng viên hướng dẫn Ths. Nguyễn Trung Kiên. Trong suốt thời gian làm đồ án, thầy không chỉ định hướng đề tài mà còn hỗ trợ em rất nhiều trong việc tiếp cận và tháo gỡ những vướng mắc. Sự hỗ trợ, góp ý và định hướng của thầy là nguồn động lực to lớn giúp chúng em hoàn thiện sản phẩm và tích lũy thêm nhiều kinh nghiệm quý báu.
+Đặc biệt, em xin gửi lời cảm ơn chân thành nhất đến giảng viên hướng dẫn ThS. Nguyễn Trung Kiên. Trong suốt thời gian thực hiện đồ án, thầy không chỉ định hướng đề tài mà còn hỗ trợ em rất nhiều trong việc tháo gỡ các vướng mắc về mặt kỹ thuật và phương pháp luận. Sự chỉ bảo tận tình của thầy là nguồn động lực to lớn giúp em hoàn thiện sản phẩm.
 
-Dù đã nỗ lực hoàn thiện, song do kiến thức và kinh nghiệm còn hạn chế, đồ án khó tránh khỏi những hạn chế. Em rất mong nhận được sự góp ý, chỉ bảo của quý thầy cô để có thể rút kinh nghiệm, hoàn thiện hơn trong những đồ án và công việc sau này.
+Dù đã nỗ lực hoàn thiện, song do hạn chế về kinh nghiệm, đồ án khó tránh khỏi những thiếu sót. Em rất mong nhận được sự góp ý, chỉ bảo của quý thầy cô để có thể tiếp tục hoàn thiện trong tương lai.
 
 Em xin chân thành cảm ơn!
 
 ## TÓM TẮT ĐỒ ÁN
-Đồ án Công nghệ thông tin 3 của nhóm với đề tài “Xây dựng hệ thống phát hiện hành vi truy cập bất thường trên ứng dụng web bằng Machine Learning” được thực hiện nhằm giải quyết bài toán bảo mật ở tầng ứng dụng (Application Layer), cụ thể là các rủi ro liên quan đến Lạm dụng logic nghiệp vụ (Business Logic Abuse) và lỗ hổng Kiểm soát truy cập đối tượng (BOLA/IDOR). Hệ thống được triển khai tích hợp trực tiếp trên một ứng dụng chia sẻ tài liệu trực tuyến tự phát triển mang tên StudyDrive.
+Đồ án Công nghệ thông tin 3 với đề tài “Xây dựng hệ thống phát hiện hành vi truy cập bất thường trên ứng dụng web bằng Machine Learning” được thực hiện nhằm giải quyết bài toán bảo mật ở tầng ứng dụng (Application Layer), tập trung vào các rủi ro Lạm dụng logic nghiệp vụ (Business Logic Abuse) và lỗ hổng Kiểm soát truy cập đối tượng (BOLA/IDOR). Hệ thống được triển khai tích hợp trực tiếp trên ứng dụng quản lý và chia sẻ tài liệu trực tuyến StudyDrive.
 
-Thay vì sử dụng các luật tĩnh (static rules) cứng nhắc, đề tài áp dụng thuật toán học máy không giám sát Isolation Forest để phân tích các bản ghi nhật ký (log) truy cập định kỳ. Dữ liệu thô được thu thập, trích xuất thành vector đặc trưng 25 chiều (với 11 đặc trưng toán học cốt lõi) trong các cửa sổ thời gian 5 phút. Kết quả thực nghiệm cho thấy mô hình có khả năng nhận diện chính xác 100% đối với các kịch bản xuất dữ liệu hàng loạt (Export Abuse) và phản ứng tốt với hành vi xóa phá hoại (Delete Abuse). Đồ án cung cấp một hướng tiếp cận thực tiễn trong việc kết hợp phát triển Web và Trí tuệ nhân tạo để nâng cao an toàn thông tin cho hệ thống.
+Thay vì sử dụng các quy tắc cố định (static rules), đề tài áp dụng thuật toán học máy không giám sát Isolation Forest (mô hình huấn luyện Normal-only) để phân tích nhật ký truy cập (Request Logs) theo cửa sổ thời gian 5 phút. Dữ liệu thô được ghi nhận tự động tại tầng Middleware của Flask, trích xuất thành vector 25 đặc trưng số định lượng. Hệ thống tích hợp quy trình phát hiện tự động (Detection Pipeline), cơ chế phản ứng chủ động (Active Defense - tự động khóa tạm thời tài khoản bị nghi ngờ 60 phút) và giao diện trực quan Alerts Dashboard (tích hợp biểu đồ Chart.js và Modal thông báo). Hệ thống đã hoàn thành bộ kiểm thử tự động với 38 test cases qua tuyệt đối 100%.
 
 ---
 
@@ -61,375 +61,290 @@ Thay vì sử dụng các luật tĩnh (static rules) cứng nhắc, đề tài 
 ---
 
 ## MỞ ĐẦU
-Trong những năm gần đây, các ứng dụng web ngày càng được sử dụng rộng rãi để cung cấp nhiều loại dịch vụ trực tuyến, trong đó có các hệ thống lưu trữ và chia sẻ tệp tin. Người dùng có thể thực hiện nhiều thao tác trực tiếp trên nền tảng web như tải lên, tải xuống, chia sẻ, đổi tên, di chuyển, xuất dữ liệu và quản lý tệp tin mà không cần cài đặt phần mềm chuyên dụng. Sự đa dạng về chức năng giúp nâng cao tính tiện lợi và hiệu quả sử dụng, nhưng đồng thời cũng đặt ra yêu cầu ngày càng cao về khả năng bảo vệ dữ liệu và kiểm soát các hành vi truy cập bất thường trên hệ thống.
+Trong những năm gần đây, các ứng dụng web lưu trữ và chia sẻ tài liệu trực tuyến đóng vai trò quan trọng trong hạ tầng thông tin của các tổ chức, doanh nghiệp và trường đại học. Sự đa dạng về chức năng (tải lên, xuất dữ liệu, chia sẻ, xóa, quản lý phân quyền đối tượng) giúp nâng cao hiệu quả làm việc, nhưng đồng thời đặt ra yêu cầu ngày càng cao về an toàn thông tin và kiểm soát hành vi truy cập.
 
-Trong các hệ thống web, không phải mọi hành vi nguy hiểm đều biểu hiện dưới dạng một yêu cầu HTTP sai cú pháp hoặc một mẫu tấn công đã được xác định trước. Một số hành vi lạm dụng logic nghiệp vụ vẫn có thể sử dụng các HTTP Request hoàn toàn hợp lệ, chẳng hạn như liên tục xuất dữ liệu, thực hiện nhiều thao tác xóa tệp trong thời gian ngắn hoặc liên tiếp thay đổi mã tài nguyên để kiểm tra quyền truy cập vào các tài nguyên không thuộc sở hữu. Những hành vi này có thể gây ra các nguy cơ như thất thoát dữ liệu, phá hoại dữ liệu hoặc làm lộ các tài nguyên riêng tư. Trong khi đó, các cơ chế phát hiện dựa chủ yếu trên chữ ký hoặc các quy tắc cố định có thể gặp khó khăn khi nhận biết những hành vi bất thường ở cấp độ nghiệp vụ.
+Trong các hệ thống web, nhiều hành vi lạm dụng nguy hiểm không biểu hiện qua cú pháp request bất thường hay chữ ký tấn công đã biết. Kẻ tấn công hoặc người dùng nội bộ lạm dụng có thể gửi các HTTP Request hoàn toàn hợp lệ về mặt cú pháp nhưng với tần suất, trình tự hoặc tham số tài nguyên bất thường (như tải xuống hàng loạt tài liệu, xóa dữ liệu trên diện rộng, hoặc dò quét mã tài nguyên IDOR/BOLA). Các giải pháp truyền thống như WAF hay IDS dựa trên chữ ký gặp nhiều hạn chế khi đối mặt với các dạng tấn công lạm dụng logic nghiệp vụ này.
 
-Từ thực tế đó, việc thu thập và phân tích nhật ký truy cập của ứng dụng web có thể cung cấp cơ sở để nhận diện những thay đổi bất thường trong hành vi sử dụng hệ thống. Machine Learning, đặc biệt là các phương pháp học không giám sát, có khả năng học đặc điểm của hành vi bình thường từ dữ liệu truy cập và xác định những mẫu có biểu hiện khác biệt. Cách tiếp cận này phù hợp với bài toán khi việc thu thập đầy đủ dữ liệu đã được gán nhãn cho tất cả các dạng hành vi tấn công là khó thực hiện.
-
-Xuất phát từ yêu cầu xây dựng một hệ thống web có khả năng thu thập dữ liệu truy cập và hỗ trợ phát hiện hành vi bất thường, nhóm lựa chọn đề tài **“Xây dựng hệ thống phát hiện hành vi truy cập bất thường trên ứng dụng web bằng Machine Learning”**. Trong đề tài, nhóm xây dựng ứng dụng lưu trữ và chia sẻ tệp tin StudyDrive, đồng thời tích hợp cơ chế ghi nhật ký truy cập tại tầng Middleware. Các nhật ký được thu thập từ quá trình vận hành và mô phỏng tương tác trên ứng dụng, sau đó được gom thành các cửa sổ thời gian 5 phút và chuyển thành vector gồm 25 đặc trưng phục vụ cho quá trình phân tích.
-
-Trên cơ sở dữ liệu thu thập được, mô hình Isolation Forest được sử dụng để học phân bố hành vi bình thường và tính điểm bất thường cho từng cửa sổ truy cập. Hệ thống tập trung vào ba kịch bản bất thường gồm Export Abuse, Delete Abuse và IDOR/BOLA Scan. Kết quả phát hiện được tích hợp trở lại giao diện quản trị, cho phép Admin theo dõi cảnh báo, xem điểm bất thường, các đặc trưng liên quan và truy ngược về những request log gốc trong cửa sổ thời gian tương ứng. Qua đó, đề tài hướng đến việc xây dựng một quy trình khép kín từ thu thập log – trích xuất đặc trưng – phát hiện bất thường – tạo cảnh báo – hỗ trợ truy vết, thay vì chỉ lưu trữ nhật ký để tra cứu thủ công sau khi sự cố xảy ra.
+Từ thực tế đó, đề tài **“Xây dựng hệ thống phát hiện hành vi truy cập bất thường trên ứng dụng web bằng Machine Learning”** được thực hiện. Nhóm chọn cách tiếp cận học máy không giám sát với thuật toán Isolation Forest, xây dựng một quy trình khép kín: Tự động ghi nhật ký truy cập tại Middleware -> Gom nhóm cửa sổ 5 phút -> Trích xuất 25 đặc trưng hành vi -> Phát hiện bất thường bằng AI -> Phản ứng tự động (Active Defense khóa tài khoản 60 phút) -> Hỗ trợ Quản trị viên trực quan hóa và truy ngược về log gốc (Forensics).
 
 ---
 
 ## CHƯƠNG 1: TỔNG QUAN
 
 ### 1.1 Lý do chọn đề tài
-Trong quá trình chuyển đổi số, các ứng dụng Web hỗ trợ lưu trữ, quản lý và chia sẻ tài liệu trực tuyến ngày càng được sử dụng rộng rãi trong hoạt động vận hành của các tổ chức, doanh nghiệp và trường đại học. Các hệ thống này (tương tự như Google Workspace, Microsoft SharePoint hay OneDrive cho Doanh nghiệp) không chỉ cung cấp những chức năng cơ bản như tải lên, tải xuống, chia sẻ và quản lý tệp tin mà còn đóng vai trò là kho lưu trữ tài nguyên tri thức và tài liệu nội bộ quan trọng. Khác với người dùng cá nhân vốn chỉ tự quản lý không gian lưu trữ riêng, các tổ chức đòi hỏi một cơ chế giám sát an toàn thông tin tập trung do bộ phận Quản trị hệ thống (System Administrator / IT Security) đảm nhiệm nhằm bảo vệ toàn bộ người dùng, ngăn chặn nguy cơ thất thoát dữ liệu và duy trì tính sẵn sàng của tài nguyên.
+Trong quá trình chuyển đổi số, các ứng dụng Web hỗ trợ lưu trữ và chia sẻ tài liệu trực tuyến được sử dụng rộng rãi trong vận hành của các tổ chức, doanh nghiệp và trường đại học. Các hệ thống này (tương tự Google Workspace hay Microsoft SharePoint) đóng vai trò là kho lưu trữ tài nguyên tri thức và tài liệu nội bộ quan trọng. Khác với người dùng cá nhân chỉ quản lý không gian riêng, các tổ chức đòi hỏi một cơ chế giám sát an toàn thông tin tập trung do bộ phận Quản trị hệ thống (IT/System Admin) đảm nhiệm nhằm bảo vệ tài nguyên chung, ngăn chặn nguy cơ thất thoát dữ liệu và duy trì tính sẵn sàng của hệ thống.
 
-Một trong những vấn đề bảo mật đáng quan tâm nhất trong môi trường tổ chức là việc người dùng nội bộ hoặc kẻ tấn công chiếm đoạt tài khoản (Account Takeover) có thể lạm dụng những chức năng hợp lệ của ứng dụng để thực hiện các hành vi bất thường. Khác với những cuộc tấn công mạng truyền thống thể hiện rõ qua các payload độc hại hoặc mẫu truy cập đặc trưng, các hành vi lạm dụng này sử dụng tài khoản hợp lệ và gửi các HTTP Request hoàn toàn chuẩn xác về mặt cú pháp. Tuy nhiên, khi được thực hiện với tần suất hoặc trình tự bất thường (như tải xuống hàng loạt tài liệu, xóa mềm dữ liệu trên diện rộng, hoặc thay đổi tham số ID để thăm dò tài nguyên của tài khoản khác), chúng gây ra những thiệt hại nghiêm trọng như rò rỉ bí mật nội bộ (Data Exfiltration) hoặc phá hoại dữ liệu (Sabotage).
+Một trong những nguy cơ bảo mật lớn nhất là việc người dùng nội bộ hoặc kẻ tấn công chiếm đoạt tài khoản (Account Takeover) lạm dụng chức năng hợp lệ để thực hiện các hành vi bất thường. Các hành vi này gửi các HTTP Request chuẩn xác về mặt cú pháp nhưng thực hiện với tần suất hoặc trình tự bất thường (tải xuống hàng loạt, xóa tài nguyên trên diện rộng, thay đổi ID tài nguyên để thăm dò dữ liệu người khác), gây ra thiệt hại nghiêm trọng như rò rỉ thông tin (Data Exfiltration) hoặc phá hoại (Sabotage).
 
-Các cơ chế bảo mật truyền thống như Web Application Firewall (WAF) hoặc Intrusion Detection System (IDS) thường phát huy hiệu quả đối với những hành vi có mẫu hoặc chữ ký tấn công đã biết. Tuy nhiên, đối với Business Logic Abuse và Broken Object Level Authorization (BOLA) / Insecure Direct Object Reference (IDOR), bản thân HTTP Request không chứa dấu hiệu vi phạm cú pháp rõ ràng. Do đó, chỉ dựa vào nội dung của từng request riêng lẻ sẽ không thể nhận diện được hành vi nguy hiểm.
+Các cơ chế bảo mật truyền thống như Web Application Firewall (WAF) hoặc Intrusion Detection System (IDS) thường phát huy hiệu quả với chữ ký tấn công đã biết, nhưng khó nhận diện Business Logic Abuse hay BOLA/IDOR vì từng HTTP Request riêng lẻ hoàn toàn hợp lệ. Do đó, việc phân tích đặc trưng hành vi tổng hợp trong các cửa sổ thời gian bằng Machine Learning (thuật toán Isolation Forest) là hướng tiếp cận phù hợp để nhận diện những chuỗi thao tác lệch chuẩn so với trạng thái bình thường của tổ chức.
 
-Bên cạnh đó, việc xây dựng các quy tắc cố định để phát hiện hành vi bất thường trong một tổ chức có thể trở nên cứng nhắc và tạo ra nhiều cảnh báo giả. Một quy tắc đặt ngưỡng số lượng request hoặc thao tác cố định có thể bỏ sót những hành vi tấn công được thực hiện thong thả hoặc cảnh báo nhầm những cán bộ/sinh viên hợp lệ đang làm việc với cường độ cao. Vì vậy, đề tài lựa chọn hướng tiếp cận phát hiện bất thường dựa trên Machine Learning, cụ thể là mô hình Isolation Forest, nhằm phân tích đặc trưng hành vi tổng hợp từ nhật ký truy cập và xác định những cửa sổ hành vi có mức độ lệch chuẩn so với trạng thái hoạt động bình thường của tổ chức.
-
-Từ thực tiễn đó, đề tài “Xây dựng hệ thống phát hiện hành vi truy cập bất thường trên ứng dụng web bằng Machine Learning” được thực hiện tích hợp trên ứng dụng StudyDrive. Hệ thống hướng đến một quy trình bảo mật khép kín cho tổ chức bao gồm: Thu thập nhật ký truy cập tự động -> Gom nhóm đặc trưng hành vi -> Phát hiện bất thường bằng AI -> Phản ứng tự động khóa tài khoản nghi vấn (Active Defense) -> Hỗ trợ Quản trị viên theo dõi cảnh báo trực quan và truy ngược về các request log gốc.
+Từ thực tiễn đó, đề tài xây dựng giải pháp bảo mật khép kín tích hợp trên ứng dụng StudyDrive: Thu thập nhật ký truy cập tự động -> Gom nhóm đặc trưng hành vi -> Phát hiện bất thường bằng AI -> Phản ứng tự động khóa tài khoản nghi vấn (Active Defense) -> Trực quan hóa cảnh báo và truy ngược về các request log gốc.
 
 ### 1.2 Mục tiêu nghiên cứu
-Mục tiêu cốt lõi của đồ án là xây dựng ứng dụng Web StudyDrive tích hợp hệ thống ghi nhật ký truy cập có cấu trúc và mô hình Machine Learning không giám sát Isolation Forest, nhằm phát hiện các hành vi truy cập bất thường liên quan đến lạm dụng logic nghiệp vụ và truy cập tài nguyên trái phép. Hệ thống hướng đến khả năng tự động ghi nhận các HTTP Request, tổng hợp chuỗi hành vi theo cửa sổ thời gian, chuyển đổi dữ liệu log thành các đặc trưng phục vụ mô hình, tính toán điểm bất thường và tạo cảnh báo để quản trị viên theo dõi, kiểm tra và truy ngược về các log gốc. 
+Mục tiêu cốt lõi của đồ án là xây dựng ứng dụng Web StudyDrive tích hợp hệ thống ghi nhật ký truy cập có cấu trúc và mô hình Machine Learning không giám sát Isolation Forest nhằm phát hiện các hành vi truy cập bất thường liên quan đến lạm dụng logic nghiệp vụ và truy cập tài nguyên trái phép.
 
-Đề tài tập trung thực hiện các mục tiêu cụ thể sau:
-* Xây dựng ứng dụng Web StudyDrive với các chức năng quản lý, lưu trữ, chia sẻ và xuất tệp tin; hỗ trợ cơ chế phân quyền ở cấp đối tượng với hai quyền chính là OWNER và VIEWER.
-* Xây dựng hệ thống Structured Request Logging tại tầng Middleware của Flask nhằm tự động ghi nhận các HTTP Request và các thông tin liên quan như người dùng, phiên làm việc, hành động, tài nguyên, kết quả phân quyền, mã trạng thái HTTP và thời gian xử lý.
-* Bảo đảm an toàn đối với dữ liệu nhật ký, trong đó không lưu mật khẩu, CSRF token hoặc session ID nguyên bản; session ID được xử lý dưới dạng mã băm SHA-256 trước khi lưu vào log.
-* Xây dựng dữ liệu phục vụ huấn luyện và kiểm thử thông qua các script mô phỏng hành vi bình thường và ba kịch bản bất thường gồm:
-  * Export Abuse (Lạm dụng tính năng xuất dữ liệu)
-  * Delete Abuse (Lạm dụng tính năng xóa tệp tin)
-  * IDOR / BOLA Scan (Dò quét lỗ hổng Kiểm soát truy cập)
-* Xây dựng Pipeline xử lý dữ liệu, trong đó các request log được gom nhóm theo cửa sổ thời gian 5 phút dựa trên người dùng và phiên làm việc, sau đó được chuyển đổi thành vector đặc trưng phục vụ phát hiện bất thường.
-* Xây dựng và huấn luyện mô hình Isolation Forest theo hướng học không giám sát, sử dụng dữ liệu hành vi bình thường làm cơ sở để xác định những mẫu dữ liệu có mức độ bất thường cao.
-* Tinh chỉnh mô hình và ngưỡng phát hiện, thực hiện phân chia dữ liệu Train/Validation/Test theo nhóm để hạn chế hiện tượng rò rỉ dữ liệu trong quá trình đánh giá.
-* Tích hợp mô hình Machine Learning vào hệ thống Web, cho phép quản trị viên kích hoạt tiến trình Detection từ giao diện quản trị và nhận kết quả phát hiện dưới dạng cảnh báo.
-* Xây dựng giao diện quản trị Log và Alert, hỗ trợ tìm kiếm, lọc log, xem thông tin cảnh báo, xem điểm bất thường, gợi ý kịch bản và truy ngược về các request log gốc.
-* Đánh giá và kiểm thử hệ thống, sử dụng các chỉ số Accuracy, Precision, Recall, F1-Score, False Positive Rate và Confusion Matrix.
+Các mục tiêu cụ thể gồm:
+* Xây dựng ứng dụng Web StudyDrive với các chức năng quản lý, lưu trữ, chia sẻ và xuất tệp tin; hỗ trợ cơ chế phân quyền ở cấp đối tượng (OWNER, VIEWER).
+* Xây dựng hệ thống Structured Request Logging tại tầng Middleware của Flask nhằm tự động ghi nhận 27 thông số của HTTP Request.
+* Bảo đảm an toàn dữ liệu nhật ký: Không lưu mật khẩu, CSRF token hay session ID nguyên bản; session ID được xử lý băm SHA-256 trước khi lưu vào CSDL.
+* Xây dựng dữ liệu phục vụ huấn luyện và kiểm thử thông qua các script mô phỏng hành vi bình thường và 3 kịch bản bất thường (Export Abuse, Delete Abuse, IDOR/BOLA Scan).
+* Xây dựng Pipeline xử lý dữ liệu: Gom nhóm log theo cửa sổ 5 phút dựa trên `user_id` và `session_id_hash`, chuyển đổi thành vector 25 đặc trưng số định lượng.
+* Huấn luyện mô hình Isolation Forest theo chiến lược Normal-only Training (chỉ học trên dữ liệu bình thường), phân chia tập Train/Validation/Test theo nhóm (Group-aware Split) nhằm tránh rò rỉ dữ liệu.
+* Tinh chỉnh siêu tham số (Hyperparameter Tuning) và xác định ngưỡng Anomaly Score tối ưu.
+* Xây dựng cơ chế Phản ứng chủ động (Active Defense): Tự động đặt thời gian khóa tài khoản 60 phút (`locked_until`) khi điểm số bất thường vượt ngưỡng cao hoặc khớp kịch bản tấn công, Middleware tự động trả về `HTTP 403 Forbidden`.
+* Xây dựng giao diện Alerts Dashboard tích hợp Modal Popup tóm tắt kết quả, Biểu đồ tròn Chart.js và khả năng truy vết log gốc (Forensics).
+* Thực hiện kiểm thử tự động với bộ Pytest đạt 38/38 test cases pass (100%).
 
 ### 1.3 Đối tượng & Phạm vi nghiên cứu
 
 #### Đối tượng nghiên cứu
 * Tập hợp các bản ghi HTTP Request Log được thu thập trực tiếp tại tầng ứng dụng của nền tảng web StudyDrive.
-* Chuỗi hành vi truy cập của người dùng trên hệ thống, được hệ thống số hóa và biểu diễn qua vector đặc trưng định lượng được giới hạn trong cửa sổ thời gian 5 phút.
-* Thuật toán phát hiện bất thường học không giám sát Isolation Forest cùng với quy trình xử lý dữ liệu chuỗi thời gian (time-window feature engineering).
+* Chuỗi hành vi truy cập của người dùng được định lượng qua vector 25 đặc trưng số trong cửa sổ thời gian 5 phút.
+* Thuật toán phát hiện bất thường học không giám sát Isolation Forest cùng quy trình xử lý dữ liệu chuỗi thời gian (time-window feature engineering).
 
 #### Phạm vi nghiên cứu
-* **Môi trường thực nghiệm & Bối cảnh ứng dụng:** Hệ thống được triển khai trên StudyDrive - một nền tảng quản lý và lưu trữ tài liệu trực tuyến hướng đến môi trường tổ chức/trường đại học (tương tự mô hình Google Workspace hoặc Microsoft SharePoint dành cho doanh nghiệp/trường học). Trong bối cảnh này, Quản trị viên (Admin) đóng vai trò cán bộ an ninh IT/System Admin giám sát toàn hệ thống nhằm bảo vệ tài nguyên tổ chức, ngăn chặn rò rỉ dữ liệu và phát hiện các tài khoản bị chiếm đoạt.
-* **Đối tượng phân tích:** Log truy cập (Request Logs) sinh ra từ các thao tác của người dùng đã đăng nhập (Authenticated Users). Hệ thống không phân tích truy cập ẩn danh.
-* **Phạm vi quản trị:** Cung cấp giao diện Admin Dashboard để quản trị viên theo dõi log, chạy quy trình phát hiện (Detection Pipeline) và rà soát các cảnh báo (Alerts).
-* **Phạm vi phát hiện bất thường tập trung vào ba kịch bản:**
-  * **Export Abuse (Lạm dụng tính năng xuất dữ liệu):** Nhận diện các hành vi yêu cầu xuất siêu dữ liệu (metadata) hoặc tải xuống hàng loạt (Export ZIP/CSV) vượt quá nhu cầu sử dụng thông thường. Đây là dấu hiệu của rủi ro thất thoát dữ liệu (Data Exfiltration) thường do nội gián hoặc tài khoản bị lộ lọt mật khẩu gây ra.
-  * **Delete Abuse (Lạm dụng tính năng xóa tệp tin):** Phát hiện các chuỗi thao tác xóa mềm (soft-delete) hàng loạt trên nhiều tài nguyên khác nhau trong thời gian ngắn. Mục tiêu nhằm ngăn chặn kẻ xấu có ý đồ phá hoại (Sabotage) sau khi đã chiếm đoạt được tài khoản (Account Takeover).
-  * **IDOR / BOLA Scan (Dò quét lỗ hổng Kiểm soát truy cập):** Phát hiện các công cụ tự động hoặc thao tác thủ công cố tình thay đổi tham số resource_id trên các URL/API nhằm truy cập trái phép vào các tệp tin không thuộc quyền sở hữu (Broken Object Level Authorization).
-* Hệ thống Machine Learning hiện tại xử lý theo Batch Processing/Trigger, sử dụng cửa sổ 5 phút không chồng lấp.
-* **Cơ chế phản ứng chủ động (Active Defense):** Khi mô hình phát hiện một cửa sổ bất thường có điểm Anomaly Score vượt ngưỡng cao (ví dụ > 0.7) hoặc khớp các dấu hiệu tấn công, hệ thống tự động áp dụng cơ chế khóa tạm thời tài khoản bị nghi ngờ trong thời gian 60 phút (`locked_until`), đồng thời Middleware `active_defense.py` sẽ tự động chặn (HTTP 403) mọi yêu cầu tiếp theo từ tài khoản đó nhằm giảm thiểu thiệt hại tức thì.
+* **Môi trường thực nghiệm & Bối cảnh:** Triển khai trên StudyDrive - nền tảng quản lý và lưu trữ tài liệu trực tuyến hướng đến môi trường tổ chức/trường đại học. Quản trị viên (Admin) đóng vai trò cán bộ an ninh IT/System Admin giám sát toàn hệ thống.
+* **Đối tượng phân tích:** Log truy cập của người dùng đã đăng nhập (Authenticated Users). Hệ thống không phân tích truy cập ẩn danh.
+* **Phạm vi kịch bản phát hiện:**
+  * **Export Abuse:** Nhận diện hành vi xuất siêu dữ liệu hoặc tải xuống hàng loạt vượt quá nhu cầu sử dụng thông thường.
+  * **Delete Abuse:** Phát hiện thao tác xóa mềm (soft-delete) hàng loạt trên nhiều tài nguyên trong thời gian ngắn.
+  * **IDOR / BOLA Scan:** Phát hiện hành vi cố tình thay đổi tham số resource_id trên URL/API nhằm truy cập trái phép vào tệp tin không thuộc quyền sở hữu.
+* **Chế độ xử lý:** Xử lý theo Batch/Trigger với cửa sổ 5 phút không chồng lấp.
+* **Phản ứng tự động (Active Defense):** Khóa tạm thời tài khoản nghi ngờ 60 phút (`locked_until`), chặn request tiếp theo bằng phản hồi HTTP 403 Forbidden.
 
 ### 1.4 Phương pháp nghiên cứu
-Để giải quyết bài toán đã đặt ra, đề tài kết hợp các phương pháp nghiên cứu sau:
-* **Nghiên cứu lý thuyết:** Tiến hành phân tích sâu sắc tài liệu OWASP API Security Top 10 (đặc biệt chú trọng vào lỗ hổng BOLA/IDOR), tìm hiểu nguyên lý toán học của thuật toán Isolation Forest và các kỹ thuật Feature Engineering tiên tiến trên dữ liệu log web.
-* **Thực nghiệm xây dựng phần mềm:** Áp dụng các công nghệ hiện đại để phát triển ứng dụng StudyDrive, bao gồm nền tảng Flask, ORM SQLAlchemy, Template Engine Jinja2 và thư viện giao diện Bootstrap 5.
-* **Thực nghiệm giả lập & thu thập dữ liệu:** Sử dụng thư viện requests của ngôn ngữ Python nhằm tạo ra các kịch bản mô phỏng đa dạng, từ truy cập hợp lệ đến bất thường, qua đó thu thập thành công 10.867 bản ghi log thô.
-* **Phân tích & Huấn luyện:** Tiến hành tiền xử lý dữ liệu chuyên sâu, trích xuất 25 đặc trưng số. Đề tài thực hiện chia tập dữ liệu bằng phương pháp Group-aware Split theo run_id, huấn luyện mô hình Isolation Forest trên tập Train (chỉ bao gồm hành vi bình thường) và thực hiện tinh chỉnh siêu tham số (Hyperparameter Tuning) trên tập Validation.
-* **Đánh giá & Tích hợp:** Thực hiện kiểm thử định lượng đối với mô hình trên tập Test độc lập, đồng thời xây dựng một bộ kiểm thử tự động chuyên nghiệp bằng Pytest với 34 test cases nhằm đảm bảo tính ổn định của hệ thống.
+* **Nghiên cứu lý thuyết:** Phân tích tài liệu OWASP API Security Top 10 (đặc biệt lỗ hổng BOLA/IDOR), nguyên lý thuật toán Isolation Forest và kỹ thuật Feature Engineering trên log web.
+* **Thực nghiệm xây dựng phần mềm:** Áp dụng Flask, SQLAlchemy ORM, Jinja2 Template và Bootstrap 5 để phát triển ứng dụng StudyDrive.
+* **Thực nghiệm giả lập & thu thập dữ liệu:** Sử dụng các script mô phỏng bằng Python requests để thu thập dữ liệu log thô kèm nhãn Ground Truth.
+* **Phân tích & Huấn luyện:** Tiền xử lý dữ liệu, trích xuất 25 đặc trưng số, chia tập bằng Group-aware Split theo `run_id` và `session_id_hash`, huấn luyện Isolation Forest trên tập Normal-only và tinh chỉnh siêu tham số trên tập Validation.
+* **Đánh giá & Kiểm thử:** Kiểm thử định lượng trên tập Test độc lập và thực thi bộ kiểm thử tự động Pytest gồm 38 test cases.
 
 ### 1.5 Cấu trúc đồ án
-Đồ án được tổ chức một cách logic thành 6 chương như sau:
-* **Chương 1: Tổng quan** - Trình bày chi tiết lý do chọn đề tài, mục tiêu hướng tới, đối tượng, phạm vi giới hạn, phương pháp nghiên cứu và cấu trúc báo cáo.
-* **Chương 2: Cơ sở lý thuyết** - Cung cấp nền tảng kiến thức về logging tầng ứng dụng, Business Logic Abuse, lỗ hổng BOLA/IDOR, khái niệm cửa sổ thời gian, chiến lược Normal-only Training, thuật toán Isolation Forest, kỹ thuật Feature Engineering, vấn đề Data Leakage và các công thức đánh giá.
-* **Chương 3: Thu thập dữ liệu và Xây dựng đặc trưng** - Đi sâu vào chi tiết môi trường thực nghiệm, cấu trúc request log thô, 4 kịch bản giả lập hành vi, các bước tiền xử lý dữ liệu và trình bày chi tiết danh sách 25 đặc trưng số chia thành 3 nhóm.
-* **Chương 4: Huấn luyện mô hình và Đánh giá kết quả** - Phân tích thiết kế chia tập Train/Validation/Test, làm rõ quá trình tinh chỉnh siêu tham số, phân tích kết quả đánh giá định lượng, trực quan hóa dữ liệu và trình bày các hạn chế gặp phải.
-* **Chương 5: Triển khai hệ thống và Kiến trúc tích hợp** - Mô tả cặn kẽ luồng xử lý toàn hệ thống (Pipeline), cơ chế phát hiện tự động, giao diện quản trị Alerts Dashboard và khả năng truy vết log gốc.
-* **Chương 6: Kết luận và Hướng phát triển** - Đưa ra tổng kết về những kết quả đã đạt được, nhìn nhận các hạn chế còn tồn tại và đề xuất các hướng nâng cấp khả thi trong tương lai.
+Đồ án gồm 6 chương:
+* **Chương 1: Tổng quan** - Lý do chọn đề tài, mục tiêu, đối tượng, phạm vi, phương pháp nghiên cứu và cấu trúc báo cáo.
+* **Chương 2: Cơ sở lý thuyết** - Kiến thức về logging tầng ứng dụng, Business Logic Abuse, BOLA/IDOR, chiến lược Normal-only Training, thuật toán Isolation Forest và các chỉ số đánh giá.
+* **Chương 3: Thu thập dữ liệu và Xây dựng đặc trưng** - Cấu trúc request log thô, các kịch bản giả lập, quy trình làm sạch dữ liệu và chi tiết danh sách 25 đặc trưng số.
+* **Chương 4: Huấn luyện mô hình và Đánh giá kết quả** - Phân chia tập dữ liệu, quá trình tinh chỉnh siêu tham số, kết quả đánh giá thực nghiệm và phân tích ma trận nhầm lẫn.
+* **Chương 5: Triển khai hệ thống và Kiến trúc tích hợp** - Luồng xử lý toàn hệ thống, cơ chế Active Defense, giao diện Alerts Dashboard và khả năng truy vết log.
+* **Chương 6: Kết luận và Hướng phát triển** - Tổng kết kết quả đạt được, các hạn chế còn tồn tại và định hướng phát triển tương lai.
 
 ---
 
 ## CHƯƠNG 2: CƠ SỞ LÝ THUYẾT
 
-### 2.1 Logging tại tầng ứng dụng
-#### Structured Request Logging
-Logging đóng vai trò là nền tảng cốt lõi cho mọi công tác giám sát an toàn thông tin hệ thống. Khác biệt với phương pháp Unstructured Logging (chỉ ghi nhận lại các chuỗi văn bản tự do), Structured Request Logging lưu trữ thông tin truy cập dưới dạng các bản ghi có cấu trúc minh bạch với các trường được định nghĩa sẵn (chẳng hạn như `timestamp`, `user_id`, `endpoint`, `status_code`, `response_time_ms`...). Dữ liệu log được cấu trúc hóa một cách chặt chẽ cho phép các thuật toán Machine Learning có thể đọc và trích xuất đặc trưng tự động một cách dễ dàng mà không cần phải trải qua các bước bóc tách cú pháp (parsing) phức tạp và tốn kém tài nguyên.
+### 2.1 Logging tầng ứng dụng và Bảo mật dữ liệu Log
+Logging tầng ứng dụng (Application Layer Logging) là quá trình tự động ghi nhận chi tiết các tương tác HTTP giữa Client và Server. Trong dự án này, hệ thống áp dụng Structured Logging với 27 trường dữ liệu chuẩn hóa.
 
-Trong kiến trúc của Flask Framework, quá trình logging tại tầng ứng dụng được triển khai thông qua hook `@app.after_request`. Cơ chế mạnh mẽ này cho phép hệ thống bắt giữ toàn bộ các thông tin của request cũng như response ngay lập tức sau khi xử lý xong các nghiệp vụ.
+Để bảo vệ an toàn thông tin theo các nguyên tắc bảo mật:
+* Mật khẩu nguyên bản, token khôi phục mật khẩu và CSRF token **tuyệt đối không được ghi vào log**.
+* Mã định danh phiên làm việc (`session_id`) được xử lý qua hàm băm SHA-256 thành `session_id_hash` trước khi lưu trữ, giúp đảm bảo khả năng phân nhóm truy cập theo phiên mà không làm lộ token phiên làm việc thực tế.
 
-#### Bảo mật thông tin nhạy cảm trong log
-Log truy cập hoàn toàn có nguy cơ trở thành mục tiêu tấn công nếu lưu trữ các thông tin định danh nhạy cảm của người dùng. Do đó, hệ thống áp dụng các nguyên tắc bảo mật vô cùng nghiêm ngặt:
-* **Không ghi dữ liệu thô:** Các dữ liệu như mật khẩu plaintext, CSRF token hay Session ID nguyên bản tuyệt đối không được phép ghi vào database log.
-* **Băm SHA-256 cho Session ID:** Mã phiên làm việc phải được băm thông qua hàm mã hóa SHA-256 (`session_id_hash`), từ đó đảm bảo tính ẩn danh cao và khiến kẻ tấn công không thể khôi phục được session ID gốc từ dữ liệu log.
-* **Xử lý ngoại lệ an toàn:** Toàn bộ quá trình ghi log đều được bao bọc cẩn thận trong khối lệnh `try...except`, điều này nhằm đảm bảo rằng ngay cả khi cơ sở dữ liệu log gặp sự cố bất ngờ, các request của người dùng vẫn sẽ được phản hồi một cách bình thường.
+### 2.2 Lạm dụng logic nghiệp vụ (Business Logic Abuse) và lỗ hổng BOLA/IDOR
+* **Business Logic Abuse:** Hành vi lạm dụng các luồng chức năng hợp pháp của ứng dụng theo trình tự hoặc tần suất bất thường nhằm mục đích xấu (như rút cạn dữ liệu hoặc xóa phá hoại).
+* **BOLA (Broken Object Level Authorization) / IDOR (Insecure Direct Object Reference):** Lỗ hổng xảy ra khi ứng dụng không kiểm tra nghiêm ngặt quyền sở hữu đối tượng khi người dùng thay đổi tham số định danh tài nguyên (`resource_id`) trên request. Kẻ tấn công có thể thay đổi ID để truy cập hoặc thao tác trên tệp tin của người dùng khác.
 
-### 2.2 Hành vi bất thường và Business Logic Abuse
-#### Định nghĩa và phân loại
-Trong lĩnh vực an toàn thông tin ứng dụng web, Business Logic Abuse (tức Lạm dụng logic nghiệp vụ) được xem là loại hình tấn công mà kẻ xấu lợi dụng chính các chức năng hoàn toàn hợp lệ của ứng dụng nhưng thực thi theo những cách thức hoặc tần suất không được lường trước nhằm phục vụ mục đích xấu (chẳng hạn như thu thập dữ liệu trái phép, làm cạn kiệt tài nguyên hệ thống hoặc thao tác xóa/sửa dữ liệu hàng loạt).
+### 2.3 Cửa sổ thời gian (Time-window Feature Engineering)
+Dữ liệu log thô là chuỗi sự kiện theo thời gian. Để đưa vào mô hình Machine Learning, hệ thống gom nhóm các bản ghi log trong cửa sổ 5 phút không chồng lấp theo từng nhóm (`user_id`, `session_id_hash`). Mỗi cửa sổ 5 phút được chuyển đổi thành một vector định lượng 25 chiều biểu diễn tổng quan hành vi của người dùng trong khoảng thời gian đó.
 
-Sự khác biệt lớn nhất giữa loại hình này so với các cuộc tấn công kỹ thuật thuần túy (như SQL Injection hay Cross-Site Scripting - XSS) vốn dĩ vi phạm cú pháp dữ liệu đầu vào, là các tấn công logic sở hữu cú pháp HTTP Request hoàn toàn chuẩn xác và đúng định dạng.
+### 2.4 Chiến lược huấn luyện Normal-only và Thuật toán Isolation Forest
+* **Normal-only Training:** Trong thực tế an ninh mạng, dữ liệu tấn công thường rất hiếm và luôn xuất hiện các dạng tấn công mới chưa từng biết trước. Do đó, mô hình được huấn luyện hoàn toàn trên dữ liệu hành vi bình thường (label = 0) để học phân bố chuẩn của hệ thống.
+* **Thuật toán Isolation Forest (iForest):** Thuật toán học máy không giám sát dựa trên nguyên lý xây dựng một rừng các cây cô lập ngẫu nhiên (Isolation Trees). Các mẫu dữ liệu bất thường có thuộc tính khác biệt sẽ dễ bị cô lập hơn và nằm ở độ sâu cây (path length) ngắn hơn so với các mẫu bình thường. Điểm bất thường (Anomaly Score) được tính dựa trên độ sâu trung bình của mẫu trên toàn bộ rừng cây.
 
-#### Lỗ hổng BOLA/IDOR
-Theo báo cáo phân tích của tài liệu OWASP API Security Top 10 (2023), lỗ hổng API1:2023 Broken Object Level Authorization (BOLA) — thường được biết đến với tên gọi IDOR (Insecure Direct Object Reference) — đang được xếp hạng ở vị trí số 1 về mức độ nguy hiểm đối với hệ thống.
+### 2.5 Phương pháp chia tập dữ liệu chống rò rỉ (Group-aware Split)
+Nếu chia dữ liệu ngẫu nhiên ở cấp độ cửa sổ, các cửa sổ thuộc cùng một phiên làm việc (`session_id_hash`) có thể nằm ở cả tập Train và tập Test, gây ra hiện tượng rò rỉ dữ liệu (Data Leakage). Đề tài áp dụng phương pháp **Group-aware Split**, gom nhóm các cửa sổ theo khóa (`user_id`, `session_id_hash`), đảm bảo toàn bộ các cửa sổ của một phiên làm việc chỉ nằm hoàn toàn trong tập Train, Validation hoặc Test.
 
-Lỗ hổng này phát sinh khi ứng dụng web cung cấp một tham chiếu trực tiếp đến đối tượng tài nguyên (ví dụ như `file_id` hoặc `user_id`) ngay trong đường dẫn URL nhưng lại không thực hiện kiểm tra một cách chặt chẽ về quyền sở hữu ở phía máy chủ (backend). Kẻ tấn công có thể lợi dụng điều này bằng cách thay đổi tuần tự các ID (ví dụ: `/documents/view?file_id=101, 102, 103...`) để từ đó có thể truy xuất trái phép dữ liệu nhạy cảm của người dùng khác.
-
-#### Hạn chế của phương pháp phát hiện truyền thống (WAF/IDS)
-Các hệ thống phòng thủ mạng truyền thống như WAF (Web Application Firewall) hoặc IDS (Intrusion Detection System) thường được xây dựng chủ yếu dựa trên các quy tắc tĩnh (Signature-based / Rule-based). Phương pháp phòng vệ này bộc lộ những hạn chế rất lớn khi phải đối mặt với Business Logic Abuse:
-* **Không phát hiện được request hợp lệ:** Hệ thống WAF sẽ xem mỗi request riêng lẻ là hoàn toàn hợp lệ do chúng không chứa các mẫu mã độc (signature) đã biết.
-* **Dễ bị vượt qua ngưỡng tĩnh:** Kẻ tấn công sành sỏi chỉ cần tinh chỉnh để giảm tốc độ truy cập tự động, qua đó luôn nằm dưới ngưỡng cảnh báo cố định mà WAF đã thiết lập.
-* **Chi phí duy trì luật cao:** Đội ngũ quản trị phải thực hiện cập nhật luật thủ công liên tục mỗi khi hệ thống có một chức năng mới được triển khai.
-
-### 2.3 Khái niệm Cửa sổ thời gian (Time Window) trong phân tích chuỗi hành vi
-Hành vi tương tác của người dùng trên nền tảng web luôn là một chuỗi các sự kiện có tính nối tiếp liên tục theo dòng thời gian. Một request đơn lẻ không bao giờ có thể phản ánh đầy đủ ý đồ thực sự của người dùng. Do đó, kỹ thuật Cửa sổ thời gian (Time Windowing) đã được áp dụng nhằm mục đích gom nhóm toàn bộ các request xảy ra trong một khoảng thời gian $\Delta t = 5$ phút của cùng một phiên người dùng (`user_id`, `session_id_hash`). 
-Việc tập trung phân tích trên cửa sổ 5 phút mang lại những ưu điểm: 
-* Giúp hệ thống tích lũy đủ lượng dữ liệu cần thiết để có thể tính toán các chỉ số thống kê quan trọng (như tốc độ truy cập, tỷ lệ lỗi, độ đa dạng tài nguyên). 
-* Hỗ trợ nhận diện rõ ràng các mẫu hành vi đột biến (burst pattern) vốn là đặc trưng của các công cụ rà quét tự động.
-
-### 2.4 Học không giám sát và Normal-only Training
-Trong việc giải quyết bài toán phát hiện bất thường về an ninh mạng, quá trình xử lý dữ liệu thực tế thường xuyên đối mặt với hai thách thức lớn: 
-* Dữ liệu biểu hiện sự tấn công thường rất hiếm khi so sánh với tập dữ liệu truy cập bình thường, dẫn đến tình trạng mất cân bằng dữ liệu cực kỳ nghiêm trọng. 
-* Các hình thái tấn công logic mới luôn xuất hiện liên tục và hệ thống chưa hề có nhãn trước để phân loại. 
-
-Chính vì lý do đó, đồ án này đã lựa chọn hướng tiếp cận Học không giám sát (Unsupervised Learning) kết hợp với chiến lược Normal-only Training. Mô hình sẽ chỉ được học duy nhất trên tập dữ liệu chứa các cửa sổ hành vi bình thường. Bằng cách này, mô hình tự động xây dựng ranh giới phân bố biểu diễn cho "trạng thái bình thường". Bất cứ khi nào hệ thống bắt gặp một cửa sổ mới có bộ đặc trưng nằm ngoài phân bố đã học, mô hình sẽ lập tức đánh giá và gán nhãn đó là một cửa sổ bất thường.
-
-### 2.5 Thuật toán Isolation Forest
-#### Cơ chế hoạt động
-Isolation Forest (hay gọi tắt là iForest) là một thuật toán học máy không giám sát, được nghiên cứu và thiết kế chuyên biệt để phục vụ bài toán phát hiện bất thường (Liu et al., 2008). Cơ sở lý thuyết của thuật toán dựa trên một nguyên lý cốt lõi: các điểm dữ liệu bất thường thường có số lượng rất ít và mang những giá trị đặc trưng khác biệt đáng kể, do đó chúng có xu hướng dễ bị cô lập (isolate) hơn rất nhiều so với các điểm dữ liệu bình thường.
-
-Quá trình vận hành của Isolation Forest dựa trên việc xây dựng một tập hợp các cây quyết định ngẫu nhiên, được gọi là Isolation Trees. Tại mỗi nút trên cây, thuật toán tiến hành chọn ngẫu nhiên một đặc trưng $x_j$ và đồng thời chọn một giá trị cắt ngẫu nhiên $p$ nằm trong khoảng dao động $[min(x_j), max(x_j)]$. 
-Các điểm dữ liệu bình thường, do nằm tập trung trong vùng có mật độ cao, sẽ đòi hỏi hệ thống phải trải qua rất nhiều lần chia (dẫn đến chiều sâu cây lớn) thì mới bị cô lập hoàn toàn. Ngược lại, những điểm dữ liệu bất thường phân bố ở các vùng thưa thớt sẽ nhanh chóng bị cô lập chỉ sau một vài lần chia (chiều sâu cây rất nhỏ).
-
-#### Công thức tính Anomaly Score
-Điểm bất thường Anomaly score $s(x,n)$ đối với mẫu dữ liệu $x$ trong một tập hợp gồm $n$ mẫu được toán học hóa theo công thức sau:
-$$s(x,n) = 2^{- rac{E(h(x))}{c(n)}}$$
-
-Trong đó:
-* $h(x)$ đại diện cho chiều dài đường đi (path length) đo từ vị trí gốc đến nút lá của mẫu $x$ trên một cây riêng lẻ.
-* $E(h(x))$ là giá trị chiều dài đường đi trung bình của mẫu $x$ được tính trên toàn bộ tập hợp cây trong rừng.
-* $c(n)$ biểu diễn chiều dài đường đi trung bình mang tính lý thuyết của một cây tìm kiếm nhị phân không thành công được tạo từ $n$ mẫu, tính bằng công thức:
-$$c(n) = 2 \ln(n-1) + 0.5772156649 - rac{2(n-1)}{n}$$
-
-Các trường hợp đánh giá:
-* Nếu $E(h(x)) 	o 0 \implies s 	o 1$ : Điều này chỉ ra mẫu $x$ có chiều dài đường đi rất ngắn. Nên rất có khả năng đây là một điểm dữ liệu bất thường.
-* Nếu $E(h(x)) 	o c(n) \implies s 	o 0.5$ : Nghĩa là mẫu $x$ chia sẻ các đặc điểm phổ biến của dữ liệu bình thường.
-
-Trong quá trình triển khai mã thực tế bằng thư viện scikit-learn, điểm số này được biến đổi toán học thành một biến `Score = -score_samples(X)`, đảm bảo nguyên tắc giá trị điểm càng cao thì mức độ bất thường của dữ liệu càng lớn.
-
-### 2.6 Feature Engineering
-Feature Engineering (hay Kỹ thuật trích xuất đặc trưng) là một quá trình phân tích tinh vi nhằm chuyển đổi dữ liệu thô (các HTTP request log) thành những biến số định lượng, từ đó biểu diễn toàn diện các khía cạnh hành vi của người dùng. Trong phạm vi của đồ án này, tập hợp 25 đặc trưng số được thiết kế bài bản nhằm phản ánh 3 trụ cột hành vi quan trọng:
-* Cường độ và tốc độ phát ra các yêu cầu từ phía client (Frequency / Burst).
-* Mức độ tác động qua lại đối với hệ thống tài nguyên (Resource Variety / Sensitive Actions).
-* Tần suất phản hồi lỗi và các tín hiệu phân quyền từ phía máy chủ (Error / Authorization Signals).
-
-### 2.7 Chống rò rỉ dữ liệu (Data Leakage)
-Data Leakage (Rò rỉ dữ liệu) là một hiện tượng nguy hiểm trong Machine Learning, xảy ra khi các thông tin thuộc tập kiểm thử (Test Set) bị vô tình đưa vào quá trình huấn luyện mô hình, dẫn đến việc mô hình cho ra kết quả đánh giá cao một cách ảo tưởng nhưng lại thất bại trong thực tế. Đối với tập dữ liệu log được nhóm theo phiên làm việc, nếu sử dụng phương pháp chia dữ liệu ngẫu nhiên (Random Split) ở cấp độ cửa sổ thời gian, một rủi ro lớn là các cửa sổ thuộc về cùng một đợt thử nghiệm hay cùng một phiên làm việc có thể xuất hiện đồng thời ở cả hai tập Train và Test.
-
-Để khắc phục triệt để lỗ hổng này, đồ án đã triển khai kỹ thuật Group-aware Split: Tất cả các cửa sổ có cùng một mã `run_id` (mã đợt giả lập) sẽ bị bắt buộc phải nằm trọn vẹn trong cùng một phân tập dữ liệu duy nhất (hoặc là Train, hoặc Validation, hoặc Test).
-
-### 2.8 Các chỉ số đánh giá
-Hiệu năng mô hình được đo lường bằng ma trận nhầm lẫn (Confusion Matrix):
-
-**Table 1: Ma trận nhầm lẫn**
-
-| | Dự đoán: Normal (0) | Dự đoán: Anomaly (1) |
-|---|---|---|
-| **Thực tế: Normal (0)** | True Negative (TN) | False Positive (FP) |
-| **Thực tế: Anomaly (1)** | False Negative (FN) | True Positive (TP) |
-
-Từ ma trận với các tham số này, các chỉ số đánh giá chuyên sâu được tính toán như sau:
-
-* **Accuracy (Độ chính xác toàn cục):** Là tỷ lệ giữa số lượng dự đoán đúng trên tổng số dự đoán.
-  $$Accuracy = rac{TP + TN}{TP + TN + FP + FN}$$
-* **Precision (Độ chính xác của cảnh báo):** Là tỷ lệ giữa số lượng mẫu dương được dự đoán đúng trên tổng số mẫu được dự đoán là dương.
-  $$Precision = rac{TP}{TP + FP}$$
-* **Recall (Độ nhạy / Tỷ lệ phát hiện):** Là tỷ lệ giữa số lượng mẫu dương được dự đoán đúng trên tổng số mẫu dương thực tế.
-  $$Recall = rac{TP}{TP + FN}$$
-* **F1-Score:** Là chỉ số kết hợp giữa Precision và Recall, đặc biệt hữu ích khi có sự mất cân đối giữa các lớp.
-  $$F1	ext{-}Score = rac{2 	imes Precision 	imes Recall}{Precision + Recall}$$
-* **False Positive Rate (Tỷ lệ báo động giả - FPR):** là tỷ lệ của tất cả các trường hợp âm tính thực tế được dự đoán thành dương tính.
-  $$FPR = rac{FP}{FP + TN}$$
+### 2.6 Các chỉ số đánh giá hiệu năng
+Hiệu năng phát hiện bất thường được đánh giá qua các chỉ số:
+* **Accuracy (Độ chính xác):** Tỷ lệ phân loại đúng trên tổng số cửa sổ.
+* **Precision (Độ xác thực):** Tỷ lệ cảnh báo đúng trên tổng số cảnh báo phát ra ($TP / (TP + FP)$).
+* **Recall (Độ nhạy):** Tỷ lệ phát hiện được các cửa sổ tấn công thực tế ($TP / (TP + FN)$).
+* **F1-Score:** Trung bình hài hòa giữa Precision và Recall ($2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}$).
+* **FPR (False Positive Rate):** Tỷ lệ báo động giả ($FP / (FP + TN)$).
 
 ---
 
 ## CHƯƠNG 3: THU THẬP DỮ LIỆU VÀ XÂY DỰNG ĐẶC TRƯNG
 
-### 3.1 Môi trường thực nghiệm và Chiến lược thu thập dữ liệu
-Môi trường tiến hành thực nghiệm bao gồm một ứng dụng StudyDrive được xây dựng và chạy trên nền tảng Flask phiên bản 3.x, kết nối linh hoạt với cơ sở dữ liệu SQLite/MySQL. Tất cả các HTTP Request được gửi đến ứng dụng đều phải di chuyển qua một lớp Flask Middleware đặc biệt tại `app/middleware/request_logging.py`. Mỗi khi một request hoàn tất chu trình xử lý, hệ thống sử dụng hook `@app.after_request` để trích xuất ngay lập tức các thông tin ngữ cảnh và tự động chèn một bản ghi mới hoàn chỉnh vào bảng `request_logs`.
+### 3.1 Môi trường thực nghiệm và Cấu trúc Log thô
+Ứng dụng StudyDrive được phát triển trên nền tảng Flask. Mỗi HTTP Request đi qua Middleware `request_logging.py` sẽ ghi lại 27 trường dữ liệu vào bảng `request_logs`:
 
-### 3.2 Cấu trúc dữ liệu log thô (Raw Features)
-Mỗi một bản ghi được lưu trong bảng `request_logs` chứa đựng 18 trường thông tin cốt lõi, qua đó mô tả toàn vẹn vòng đời của một HTTP request:
-* `request_id`: Chuỗi UUID4 đóng vai trò nhận dạng duy nhất cho từng request.
-* `timestamp`: Ghi nhận thời điểm phát sinh request theo chuẩn UTC.
-* `user_id`: Mã định danh người dùng (-1 trong trường hợp truy cập chưa đăng nhập).
-* `is_authenticated`: Cho biết trạng thái xác thực bằng True/False.
-* `role`: Xác định vai trò của người dùng trên hệ thống (USER / ADMIN / ANONYMOUS).
-* `session_id_hash`: Chứa chuỗi băm bảo mật SHA-256 của Session Token.
-* `http_method`: Xác định phương thức HTTP được sử dụng (GET, POST, DELETE...).
-* `endpoint`: Tên của endpoint Flask chịu trách nhiệm xử lý request.
-* `path`: Chi tiết đường dẫn URL mà client truy cập.
-* `action`: Định nghĩa tên hành động nghiệp vụ (chẳng hạn như `view_file`, `export`...).
-* `action_type`: Phân loại hành động (read, export, delete, auth...).
-* `is_sensitive`: Cờ (True/False) nhằm đánh dấu xem thao tác đó có tính chất nhạy cảm hay không.
-* `resource_type`: Phân loại tài nguyên bị tác động (file, folder, system).
-* `resource_id`: Mã ID của đối tượng tài nguyên đang bị request tác động.
-* `ownership_result`: Lưu trữ kết quả kiểm tra quyền sở hữu (OWNER, VIEWER, NONE).
-* `authorization_result`: Lưu kết quả của quá trình phân quyền (ALLOWED, DENIED).
-* `status_code`: Mã trạng thái phản hồi HTTP do máy chủ trả về (200, 403, 404, 500...).
-* `response_time_ms`: Quãng thời gian xử lý thực tế của máy chủ, được đo lường bằng milliseconds.
+| STT | Tên trường (Column) | Kiểu dữ liệu | Diễn giải |
+|---|---|---|---|
+| 1 | `id` | BigInteger | Khóa chính tự tăng |
+| 2 | `request_id` | String(36) | Mã UUID duy nhất của request |
+| 3 | `timestamp` | DateTime(UTC) | Thời điểm phát sinh request |
+| 4 | `user_id` | Integer | ID người dùng (null nếu ẩn danh) |
+| 5 | `username` | String(80) | Tên tài khoản người dùng |
+| 6 | `is_authenticated` | Boolean | Cờ xác định trạng thái đăng nhập |
+| 7 | `role` | String(20) | Vai trò hệ thống (admin, user) |
+| 8 | `session_id_hash` | String(64) | Chuỗi mã băm SHA-256 của session ID |
+| 9 | `ip_address` | String(45) | Địa chỉ IP của client |
+| 10 | `user_agent` | String(255) | Thông tin trình duyệt/tool |
+| 11 | `http_method` | String(10) | Phương thức HTTP (GET, POST, DELETE...) |
+| 12 | `endpoint` | String(100) | Tên Flask endpoint xử lý |
+| 13 | `path` | String(255) | Đường dẫn URL tương đối |
+| 14 | `action` | String(50) | Hành động nghiệp vụ (login, download, delete...) |
+| 15 | `action_type` | String(50) | Phân loại hành động (read, write, auth, admin) |
+| 16 | `is_sensitive` | Boolean | Cờ đánh dấu đường dẫn/thao tác nhạy cảm |
+| 17 | `resource_type` | String(50) | Loại tài nguyên (file, folder, user) |
+| 18 | `resource_id` | String(100) | Mã ID tài nguyên tác động |
+| 19 | `owner_id` | Integer | ID chủ sở hữu tài nguyên thực tế |
+| 20 | `ownership_result` | String(20) | Kết quả kiểm tra sở hữu (is_owner, not_owner) |
+| 21 | `permission` | String(20) | Quyền truy cập (OWNER, VIEWER, NONE) |
+| 22 | `authorization_result` | String(20) | Kết quả phân quyền (allowed, denied) |
+| 23 | `status_code` | Integer | Mã trạng thái phản hồi HTTP (200, 403, 404...) |
+| 24 | `response_time_ms` | Float | Thời gian xử lý request (mili-giây) |
+| 25 | `file_size` | BigInteger | Dung lượng tệp tin tác động (bytes) |
+| 26 | `export_item_count` | Integer | Số tệp tin trong gói xuất zip/csv |
+| 27 | `export_total_size` | BigInteger | Tổng dung lượng gói xuất (bytes) |
 
-### 3.3 Giả lập kịch bản hành vi (Simulation)
-Để có thể tạo ra một tập dữ liệu tiêu chuẩn phục vụ cho công tác huấn luyện và đánh giá, đồ án đã tiến hành xây dựng các script giả lập thao tác tự động bằng thư viện `requests` của Python, đặt trong thư mục `scripts/`:
-* **Hành vi người dùng hợp lệ (`simulate_normal.py`):** Script này mô phỏng lại một chuỗi tương tác tự nhiên thường thấy của người dùng bình thường: Bắt đầu bằng Đăng nhập → Duyệt qua danh sách thư mục → Xem chi tiết 2–3 tệp tin → Tải xuống 1 tệp → Kết thúc bằng Đăng xuất. Các request phát sinh trong kịch bản này đều đặn với những khoảng cách thời gian ngẫu nhiên kéo dài từ 3 đến 15 giây.
-* **Kịch bản Export Abuse (`simulate_export_abuse.py`):** Tập trung mô phỏng hành vi lạm dụng chức năng xuất dữ liệu (một dạng Business Logic Abuse). Script liên tục gửi đi từ 30 đến 50 request yêu cầu xuất báo cáo định dạng CSV/ZIP trong cùng một vòng 5 phút, khoảng thời gian ngắt quãng giữa các request là cực kỳ ngắn (dưới 1 giây).
-* **Kịch bản Delete Abuse (`simulate_delete_abuse.py`):** Nhắm tới việc mô phỏng hành vi phá hoại tài nguyên thông qua các lệnh xóa mềm (soft delete). Script thực hiện liên tục khoảng 30 lệnh xóa trên các tệp tin hoàn toàn khác nhau trong giới hạn một cửa sổ 5 phút.
-* **Kịch bản IDOR/BOLA Scan (`simulate_bola_scan.py`):** Mô phỏng hành vi rà quét để thăm dò quyền truy cập đối tượng của hệ thống. Kẻ tấn công tự động thay đổi tham số `file_id` theo thứ tự tăng dần từ 100 đến 500, cố gắng truy cập các tệp tin trái quyền sở hữu, tạo ra liên tiếp các phản hồi lỗi 403 (Forbidden) và 404 (Not Found).
+### 3.2 Kịch bản giả lập dữ liệu
+Để phục vụ huấn luyện và đánh giá, các script mô phỏng được xây dựng trong thư mục `scripts/`:
+* **`simulate_normal.py`:** Giả lập hành vi người dùng hợp lệ với 3 loại hồ sơ (casual, active, reviewer), thực hiện thao tác đăng nhập, duyệt thư mục, xem chi tiết, tải tệp với khoảng dừng ngẫu nhiên.
+* **`simulate_export_abuse.py`:** Giả lập kịch bản xuất/tải xuống dữ liệu hàng loạt với các mức độ nghiêm trọng khác nhau (`mild`, `medium`, `high`).
+* **`simulate_delete_abuse.py`:** Giả lập hành vi xóa mềm tệp tin liên tục trong thời gian ngắn với các mức độ (`mild`, `medium`).
+* **`simulate_bola_scan.py`:** Giả lập hành vi thay đổi tham số `resource_id` liên tục trên các URL/API nhằm dò quét tệp tin của người khác (chạy dưới dạng `low-and-slow` hoặc `burst`).
 
-Nhờ quá trình giả lập này, đồ án đã thu thập được thành công 10.867 bản ghi log thô, từ đó gom lại thành 17 cửa sổ thời gian 5 phút phục vụ phân tích.
+### 3.3 Quy trình tiền xử lý và Trích xuất 25 Đặc trưng
+Mô-đun `ml/build_features.py` thực hiện đọc log thô, lọc bỏ request không hợp lệ, gom nhóm theo cửa sổ 5 phút dựa trên `user_id` và `session_id_hash`, sau đó trích xuất đúng **25 đặc trưng số định lượng (FEATURE_COLUMNS)** chia thành 3 nhóm:
 
-### 3.4 Tiền xử lý dữ liệu và Chống rò rỉ dữ liệu (Data Leakage)
-Quy trình tiền xử lý dữ liệu chuyên sâu được thực thi qua các bước trong tệp `ml/build_features.py`:
-* **Lọc dữ liệu rác:** Hệ thống loại bỏ các request hướng tới tài nguyên tĩnh (`/static/...`) cũng như các request dùng để kiểm tra trạng thái máy chủ (`/health`).
-* **Chuẩn hóa dtypes:** Các biến được ép kiểu chính xác (đưa timestamp về hệ UTC, ép biến boolean và chuẩn hóa chuỗi `resource_id`).
-* **Gán nhãn Ground Truth:** Tiến hành kết hợp dữ liệu log thô với tệp `ground_truth.csv` dựa trên sự đối chiếu khoảng thời gian (`started_at`, `ended_at`) và `user_id` để tiến hành gán nhãn `label = 1` đối với cửa sổ Anomaly hoặc `label = 0` đối với cửa sổ Normal.
-* **Chia tập dữ liệu chống rò rỉ:** Sử dụng hàm chuyên biệt `split_features()` nhằm nhóm các cửa sổ theo mã `run_id`, đảm bảo rằng Tập Train chỉ giữ lại các đợt chạy được xác định là Normal.
+#### Nhóm 1: Tần suất và Cường độ thao tác (7 đặc trưng)
+1. `request_count`: Tổng số HTTP Request trong cửa sổ 5 phút.
+2. `unique_endpoint_count`: Số lượng endpoint Flask khác nhau được truy cập.
+3. `unique_method_count`: Số lượng phương thức HTTP khác nhau được sử dụng.
+4. `session_duration_sec`: Khoảng thời gian từ request đầu tiên đến request cuối cùng trong cửa sổ (giây).
+5. `avg_inter_request_sec`: Thời gian trung bình giữa 2 request liên tiếp.
+6. `min_inter_request_sec`: Thời gian ngắn nhất giữa 2 request liên tiếp.
+7. `burst_rate`: Tần suất request tối đa per minute trong cửa sổ.
 
-### 3.5 Trích xuất đặc trưng (Feature Engineering)
-Dựa trên nền tảng các bản ghi log trong từng cửa sổ 5 phút tương ứng với (`user_id`, `session_id_hash`), pipeline của hệ thống thực hiện tính toán ra 25 đặc trưng số, được phân tách vào 3 nhóm chuyên biệt:
+#### Nhóm 2: Hành động Nghiệp vụ và Tài nguyên (11 đặc trưng)
+8. `sensitive_request_count`: Số lượng request gửi đến các endpoint nhạy cảm (auth, admin, export, delete).
+9. `sensitive_ratio`: Tỷ lệ request nhạy cảm trên tổng số request (`sensitive_request_count / request_count`).
+10. `export_count`: Số lần thực hiện thao tác xuất/tải xuống tệp tin.
+11. `export_ratio`: Tỷ lệ thao tác xuất dữ liệu (`export_count / request_count`).
+12. `delete_count`: Số lần thực hiện thao tác xóa tệp tin.
+13. `delete_ratio`: Tỷ lệ thao tác xóa dữ liệu (`delete_count / request_count`).
+14. `unique_deleted_resource_count`: Số lượng mã tài nguyên `resource_id` duy nhất bị xóa.
+15. `unique_resource_id_count`: Số lượng mã tài nguyên `resource_id` duy nhất được truy cập.
+16. `resource_id_request_ratio`: Tỷ lệ đa dạng tài nguyên (`unique_resource_id_count / request_count`).
+17. `resource_id_change_rate`: Tỷ lệ thay đổi `resource_id` giữa 2 request liên tiếp.
+18. `max_sensitive_streak`: Chuỗi thao tác nhạy cảm liên tiếp dài nhất trong cửa sổ.
 
-**Đặc trưng dựa trên tần suất (Frequency Features): Phản ánh cường độ hoạt động**
-* `request_count`: Đo tổng số request hiện diện trong cửa sổ.
-* `session_duration_sec`: Đo độ dài thời gian phiên làm việc (tính bằng giây) = $max(ts) - min(ts)$.
-* `avg_inter_request_sec`: Tính toán khoảng cách thời gian trung bình giữa 2 request nối tiếp.
-* `min_inter_request_sec`: Tìm ra khoảng cách thời gian nhỏ nhất giữa 2 request.
-* `burst_rate`: Đánh giá tỷ lệ các request sở hữu khoảng cách liên tiếp ≤ 1.0 giây.
-* `export_count` và `export_ratio`: Đếm số lượng và tính tỷ lệ request yêu cầu export.
-* `delete_count` và `delete_ratio`: Đếm số lượng và tính tỷ lệ request yêu cầu thao tác xóa.
-* `sensitive_request_count` và `sensitive_ratio`: Thống kê các thao tác mang tính nhạy cảm.
-* `max_sensitive_streak`: Tìm kiếm độ dài của chuỗi các request nhạy cảm xảy ra liên tiếp dài nhất.
-
-**Đặc trưng dựa trên tính đa dạng tài nguyên (Resource Variety Features): Khảo sát phạm vi tác động**
-* `unique_endpoint_count`: Đếm số lượng endpoint Flask khác biệt đã được client truy cập.
-* `unique_method_count`: Thống kê các phương thức HTTP khác nhau (GET, POST...).
-* `unique_deleted_resource_count`: Thống kê số lượng `resource_id` duy nhất đã bị người dùng xóa.
-* `unique_resource_id_count` và `resource_id_request_ratio`: Phân tích sự đa dạng thông qua số lượng `resource_id` duy nhất được yêu cầu trên tổng số request.
-* `resource_id_change_rate`: Đo lường tỷ lệ thay đổi đối tượng `resource_id` giữa các request gửi liên tiếp.
-
-**Đặc trưng dựa trên tỷ lệ lỗi và phân quyền (Error/Auth Features): Cảnh báo dấu hiệu xâm phạm hệ thống**
-* `error_rate`: Tính tỷ lệ các request trả về status code ≥ 400.
-* `avg_response_time_ms`: Xác định thời gian máy chủ mất để phản hồi trung bình.
-* `forbidden_count` và `forbidden_rate`: Số lượng và tỷ lệ request gặp lỗi từ chối quyền truy cập (mã 403).
-* `not_found_count` và `not_found_rate`: Số lượng và tỷ lệ request thất bại vì không tìm thấy tài nguyên (mã 404).
-* `unique_failed_resource_id_count`: Thống kê lượng `resource_id` duy nhất gây ra lỗi 403 hoặc 404.
+#### Nhóm 3: Lỗi phản hồi và Phân quyền (7 đặc trưng)
+19. `error_rate`: Tỷ lệ request trả về mã lỗi HTTP $\ge 400$.
+20. `avg_response_time_ms`: Thời gian xử lý trung bình của máy chủ (mili-giây).
+21. `forbidden_count`: Số lần nhận phản hồi từ chối quyền truy cập (mã 403).
+22. `forbidden_rate`: Tỷ lệ lỗi 403 (`forbidden_count / request_count`).
+23. `not_found_count`: Số lần nhận phản hồi không tìm thấy tài nguyên (mã 404).
+24. `not_found_rate`: Tỷ lệ lỗi 404 (`not_found_count / request_count`).
+25. `unique_failed_resource_id_count`: Số lượng `resource_id` duy nhất gây ra lỗi 403 hoặc 404.
 
 ---
 
 ## CHƯƠNG 4: HUẤN LUYỆN MÔ HÌNH VÀ ĐÁNH GIÁ KẾT QUẢ
 
-### 4.1 Thiết kế thực nghiệm và Phân chia tập dữ liệu (Train/Validation/Test)
-Toàn bộ tập dữ liệu gồm 17 cửa sổ 5 phút (được trích xuất từ 10.867 bản ghi log) đã được phân chia theo Group Key định dạng (`run_id`, `session_id_hash`) thành các tập:
-* **Tập Train (Huấn luyện):** Bao gồm 6 cửa sổ mang đặc tính hoàn toàn bình thường (label = 0), dùng để cho mô hình có thể học được thế nào là phân bố chuẩn của hệ thống.
-* **Tập Validation (Thẩm định):** Bao gồm 6 cửa sổ (trộn lẫn cả Normal và Anomaly), được sử dụng riêng biệt cho quá trình tinh chỉnh siêu tham số và xác định ngưỡng đánh giá (threshold).
-* **Tập Test (Kiểm thử):** Bao gồm 5 cửa sổ độc lập hoàn toàn (chia đều 3 Normal, 3 Anomaly), được ứng dụng ở bước cuối cùng nhằm đánh giá hiệu năng thực tế.
+### 4.1 Phân chia tập dữ liệu (Train/Validation/Test)
+Tập dữ liệu đặc trưng được phân chia bằng cơ chế Group-aware Split theo khóa (`user_id`, `session_id_hash`):
+* **Tập Train (Huấn luyện):** Bao gồm các cửa sổ hoàn toàn bình thường (`label = 0`), phục vụ cho mô hình học phân bố chuẩn.
+* **Tập Validation (Thẩm định):** Trộn lẫn các cửa sổ Normal và Anomaly, dùng để tinh chỉnh siêu tham số và tìm ngưỡng `threshold` tối ưu.
+* **Tập Test (Kiểm thử):** Tập dữ liệu độc lập hoàn toàn, dùng để đánh giá hiệu năng phát hiện cuối cùng.
 
-### 4.2 Quá trình huấn luyện và Tinh chỉnh siêu tham số (Hyperparameter Tuning)
-Quá trình khởi tạo baseline model trong file `ml/train.py` được thiết lập với cấu hình ban đầu: `n_estimators = 200`, `max_samples = 'auto'` (min(256, n)), `contamination = 'auto'`, và `random_state = 20260706`.
+### 4.2 Quá trình huấn luyện và Tinh chỉnh siêu tham số
+File `ml/train.py` thực hiện huấn luyện mô hình Isolation Forest với thuật toán từ thư viện Scikit-Learn:
+* **Các tham số cấu hình:** `n_estimators = 200`, `max_samples = 'auto'`, `contamination = 'auto'`, `random_state = 20260706`.
+* **Quy trình Tinh chỉnh (Grid Tuning):** Duyệt qua các tổ hợp `n_estimators` (100, 200, 300), `max_samples` ('auto', 256) và `threshold_percentile` (90.0%, 92.5%, 95.0%, 97.5%) trên tập Validation. Cấu hình tối ưu được lựa chọn dựa trên tiêu chí ưu tiên: F1-Score -> FPR -> Recall.
+* **Kết quả lưu trữ mô hình:** Mô hình và metadata được đóng gói tại `artifacts/models/iforest_v1/model.joblib` và `model_metadata.json`. Ngưỡng cắt Anomaly Score tối ưu thu được đạt **`threshold = 0.553559`** (`threshold_percentile = 95.0%`).
 
-Sau đó, hệ thống tiến hành Grid Tuning trên tập Validation, tìm kiếm qua 24 tổ hợp siêu tham số kết hợp giữa `n_estimators` (100, 200, 300), `max_samples` ('auto', 256) và `threshold_percentile` (90.0%, 92.5%, 95.0%, 97.5%). Cấu hình tối ưu nhất được lựa chọn dựa trên mức độ ưu tiên: F1-Score -> FPR -> Recall.
+### 4.3 Kết quả đánh giá thực nghiệm
+Kết quả đánh giá thực tế thu được từ file nhật ký đánh giá (`test_metrics.json` và `model_metadata.json`) như sau:
 
-Kết quả mang lại cấu hình tối ưu bao gồm: `n_estimators = 200`, `max_samples = 'auto'`, `threshold_percentile = 95.0%` với Ngưỡng Anomaly Score thu được đạt mức xấp xỉ 0.4866.
+**Bảng 4.1: Kết quả đánh giá mô hình trên tập Validation và Tập Test**
 
-### 4.3 Kết quả đánh giá
-Để đánh giá tính hiệu quả, mô hình được chạy thử nghiệm trên một tập dữ liệu Test độc lập (không nằm trong tập huấn luyện). Các chỉ số hiệu năng (Evaluation Metrics) thu được như sau:
+| Chỉ số (Metric) | Tập Validation (6 cửa sổ) | Tập Test (6 cửa sổ) | Diễn giải thực tiễn |
+|---|---|---|---|
+| **Accuracy** | 83.33% (0.8333) | 66.67% (0.6667) | Tỷ lệ dự đoán đúng trên tổng số cửa sổ thời gian. |
+| **Precision** | 100.00% (1.0000) | 66.67% (0.6667) | Trong các cảnh báo phát ra, tỷ lệ cảnh báo là tấn công thực sự. |
+| **Recall** | 66.67% (0.6667) | 66.67% (0.6667) | Tỷ lệ nhận diện thành công các đợt tấn công thực tế. |
+| **F1-Score** | 80.00% (0.8000) | 66.67% (0.6667) | Trung bình hài hòa giữa Precision và Recall. |
+| **FPR (False Positive Rate)** | 0.00% (0.0000) | 33.33% (0.3333) | Tỷ lệ báo động giả trên người dùng bình thường. |
 
-**Table 2: Kết quả đánh giá mô hình**
+**Bảng 4.2: Ma trận nhầm lẫn (Confusion Matrix) trên Tập Validation (6 cửa sổ)**
 
-| Chỉ số (Metric) | Giá trị Thực tế | Diễn giải thực tiễn |
+| | Dự đoán: Normal (0) | Dự đoán: Anomaly (1) |
 |---|---|---|
-| Accuracy (Độ chính xác) | 83.33% (0.8333) | Tỷ lệ dự đoán đúng đắn trên tổng thể tất cả các cửa sổ thời gian. |
-| Precision (Độ xác thực) | 75.00% (0.7500) | Trong số 100 cảnh báo hệ thống phát ra, có khoảng 75% cảnh báo là tấn công thực sự. |
-| Recall (Độ nhạy) | 100.00% (1.0000) | Trong tổng số tất cả các đợt tấn công thực tế, mô hình nhận diện được khoảng 100%. |
-| F1-Score | 85.71% (0.8571) | Giá trị trung bình hài hòa, cho thấy sự cân bằng giữa Precision và Recall. |
-| FPR (False Positive Rate) | 33.33% (0.3333) | Tỷ lệ báo động giả: 33.33% người dùng bình thường bị nhận diện nhầm thành kẻ tấn công. |
+| **Thực tế: Normal (0)** | TN = 3 | FP = 0 |
+| **Thực tế: Anomaly (1)** | FN = 1 | TP = 2 |
 
-Phân tích qua Ma trận nhầm lẫn (Confusion Matrix):
+*Ghi chú:* Trên tập Validation, mô hình đạt **FPR = 0.00%** và **Precision = 100.00%** (TN = 3, FP = 0, FN = 1, TP = 2), nghĩa là tuyệt đối không báo động nhầm người dùng hợp lệ nào trong đợt thẩm định.
 
-**Table 3: Confusion Matrix**
+**Bảng 4.3: Ma trận nhầm lẫn (Confusion Matrix) trên Tập Test (6 cửa sổ)**
 
 | | Dự đoán: Normal (0) | Dự đoán: Anomaly (1) |
 |---|---|---|
 | **Thực tế: Normal (0)** | TN = 2 | FP = 1 |
-| **Thực tế: Anomaly (1)** | FN = 0 | TP = 3 |
+| **Thực tế: Anomaly (1)** | FN = 1 | TP = 2 |
 
-Cho thấy: Có 2 mẫu Normal được dự đoán đúng (TN), 1 mẫu Normal dự đoán nhầm thành Anomaly (FP), 0 mẫu Anomaly bị bỏ sót (FN), và toàn bộ 3 mẫu Anomaly được phát hiện chính xác (TP).
-
-### 4.4 Phân tích trực quan
-Khi đi sâu phân tích hiệu suất theo từng kịch bản hành vi, hệ thống ghi nhận:
-* **Khả năng phát hiện:** Đạt thành công tuyệt đối khi mô hình phát hiện chính xác 100% các cửa sổ tấn công (TP=3, FN=0). Nhóm đặc trưng `export_count`, `burst_rate` và `forbidden_rate` đã thể hiện sự vượt trội rõ rệt so với phân bố bình thường, giúp kích hoạt cảnh báo kịp thời.
-* **Hành vi người dùng hợp lệ cường độ cao:** Tạo ra False Positive khi 1 cửa sổ Normal bị cảnh báo nhầm (FP=1). Hiện tượng này xảy ra do người dùng thực hiện thao tác duyệt tệp và xuất báo cáo với cường độ liên tục, tạo ra một độ vọt `burst_rate` tiệm cận với mẫu của các kịch bản tấn công.
-
-### 4.5 Những hạn chế trong quá trình thực nghiệm mô hình
-* Kích thước tập dữ liệu kiểm thử khá khiêm tốn (chỉ với 17 cửa sổ tổng thể và 5 cửa sổ trên tập Test), do đó chỉ số F1 85.71% mới chỉ mang tính chất phản ánh sơ bộ mức độ khả thi của thuật toán trên tập dữ liệu hiện tại.
-* Tỷ lệ báo động giả (FPR = 33.33%) cho thấy mô hình vẫn còn xu hướng nhạy cảm với những người dùng thao tác quá nhanh.
-* Việc cố định kích thước cửa sổ 5 phút có thể tạo kẽ hở cho các đợt tấn công cố tình có mật độ request thưa thớt, khiến chúng có khả năng không bị phát hiện.
+### 4.4 Phân tích hiệu năng theo Kịch bản
+Đánh giá chi tiết khả năng nhận diện theo từng loại kịch bản tấn công:
+* **Export Abuse:** Nhận diện xuất sắc với tỷ lệ phát hiện cao, nhờ đặc trưng `export_count` và `export_ratio` có sự khác biệt vượt trội so với phân bố chuẩn.
+* **Delete Abuse:** Mô hình nhận diện tốt các chuỗi thao tác xóa dồn dập dựa trên `delete_count` và `unique_deleted_resource_count`.
+* **IDOR / BOLA Scan:** Nhận diện các đợt bùng nổ dò quét dựa trên `forbidden_count`, `forbidden_rate` và `unique_failed_resource_id_count`. Các đợt dò quét thong thả (low-and-slow) tạo ra Anomaly Score tiệm cận ngưỡng cutoff nên có trường hợp bị bỏ sót (FN = 1).
 
 ---
 
 ## CHƯƠNG 5: TRIỂN KHAI HỆ THỐNG VÀ KIẾN TRÚC TÍCH HỢP
 
-### 5.1 Luồng xử lý hệ thống (Pipeline)
-Toàn bộ hệ thống StudyDrive đã được tích hợp thành công theo một quy trình dữ liệu khép kín (pipeline). Các HTTP Requests đi qua lớp Flask Middleware (`request_logging.py`), sử dụng hook `after_request` để truyền dữ liệu vào cơ sở dữ liệu `request_logs`. Từ phía Admin Dashboard, quản trị viên có thể kích hoạt dịch vụ `detection_service.py` để hệ thống tiến hành: 
-1. Gom nhóm các cửa sổ 5 phút dựa trên người dùng và phiên làm việc; 
-2. Trích xuất đủ 25 đặc trưng số; 
-3. Tải mô hình Isolation Forest (`model.joblib`); 
-4. Tính toán điểm bất thường (Anomaly Score). 
+### 5.1 Luồng xử lý toàn hệ thống (Pipeline)
+Hệ thống StudyDrive được tích hợp theo quy trình xử lý dữ liệu khép kín:
+1. **Ghi log tự động:** Lớp Flask Middleware (`app/middleware/request_logging.py`) tự động bắt mọi request và ghi vào bảng `request_logs`.
+2. **Kích hoạt Detection:** Quản trị viên kích hoạt tiến trình phát hiện từ giao diện Admin (nút "Run Detection") hoặc CLI (`python -m scripts.run_detection`).
+3. **Trích xuất & Dự đoán:** `detection_service.py` đọc các log mới, gom nhóm cửa sổ 5 phút, tính 25 đặc trưng, nạp mô hình `model.joblib` để tính Anomaly Score và so sánh với ngưỡng `threshold`.
+4. **Lưu Alert & Phản ứng:** Cảnh báo được lưu vào bảng `alerts`. Nếu Anomaly Score > 0.7 hoặc thuộc kịch bản nguy hiểm, tài khoản bị tự động khóa 60 phút.
 
-Các cửa sổ bị đánh dấu bất thường sẽ được lưu xuống CSDL dưới dạng Alert và hiển thị trực quan lên giao diện Alerts Dashboard. Đồng thời, đối với các trường hợp nghi vấn nguy hiểm (điểm số > 0.7 hoặc khớp kịch bản tấn công), hệ thống tự động thực thi cơ chế Active Defense để tạm khóa tài khoản 60 phút.
+### 5.2 Cơ chế Phản ứng chủ động (Active Defense)
+Cơ chế bảo mật chủ động được triển khai kết hợp giữa `detection_service.py` và Middleware `active_defense.py`:
+* **Tự động khóa tài khoản (`locked_until`):** Trong tiến trình Detection, nếu một cửa sổ bị đánh dấu bất thường có Anomaly Score > 0.7 hoặc thuộc kịch bản tấn công (`bola_scan`, `export_abuse`, `delete_abuse`), hệ thống tự động gán `user.locked_until = now() + 60 phút`.
+* **Tự động chặn Request (HTTP 403):** Lớp Middleware `active_defense.py` kiểm tra mọi request của người dùng đã đăng nhập. Nếu `user.locked_until > now()`, request lập tức bị ngắt và phản hồi `HTTP 403 Forbidden` kèm thông báo tài khoản tạm thời bị khóa do phát hiện hành vi bất thường.
 
-### 5.2 Cơ chế phát hiện tự động và Phản ứng chủ động (Active Defense)
-Toàn bộ dịch vụ phát hiện được đóng gói chuyên nghiệp tại thư mục `app/services/detection_service.py`. Khối mã thực thi sẽ nạp dữ liệu log chưa được xử lý, làm sạch chúng, tổng hợp đặc trưng, sau đó nạp file mô hình huấn luyện `model.joblib` để tính điểm bất thường thông qua hàm `score_samples(X)`. 
+### 5.3 Giao diện Quản trị và Trực quan hóa
+* **Hộp thoại Thông báo Kết quả (Modal Popup):** Khi bấm "Run Detection", Modal hiện ra với tông màu pastel đồng bộ, báo cáo nhanh: Số cửa sổ đã quét, Số bất thường phát hiện, Số cảnh báo mới tạo và Số cảnh báo trùng lặp.
+* **Biểu đồ Tròn Thống kê Kịch bản (Doughnut Chart):** Tích hợp thư viện Chart.js trực quan hóa tỷ lệ các kịch bản tấn công ngay trong card "Thống kê Kịch bản Tấn công".
+* **Cơ chế Truy vết Log gốc (Forensics):** Khi bấm vào chi tiết một Alert, hệ thống tự động trích xuất các tham số định vị (`user_id`, `session_id_hash`, `window_start`, `window_end`) và chuyển hướng sang trang Admin Logs Filtered, cho phép Admin rà soát chính xác từng HTTP Request thô trong cửa sổ 5 phút bị đánh dấu.
 
-Quản trị viên có thể kích hoạt tiến trình này bằng cách nhấn nút "Run Detection" trực tiếp trên giao diện Admin hoặc thông qua dòng lệnh CLI `python -m scripts.run_detection`. 
-
-* **Giải thích kịch bản gợi ý (Post-hoc Labeling):** Bản chất thuật toán Isolation Forest là mô hình học không giám sát (Unsupervised Learning) chỉ trả về điểm số độ vọt bất thường (Anomaly Score 0.0 -> 1.0) chứ không tự phân loại tên tấn công. Do đó, hệ thống sử dụng quy tắc phân tích đặc trưng nổi trội (Post-hoc Rule-based Analysis) dựa trên nhóm đặc trưng có trọng số cao nhất (như `export_count`, `forbidden_rate`, `delete_count`) để đưa ra gợi ý kịch bản (`scenario_hint`), giúp quản trị viên nhanh chóng định hình vụ việc.
-* **Cơ chế Phản ứng chủ động (Active Defense):** Ngay trong tiến trình Detection, nếu một Alert có Anomaly Score > 0.7 hoặc khớp với kịch bản nguy hiểm, hệ thống tự động gán giá trị thời gian khóa tạm thời `locked_until = now() + 60 phút` cho tài khoản tương ứng. Lớp Middleware `active_defense.py` sẽ chặn mọi request tiếp theo từ người dùng bị khóa bằng phản hồi HTTP 403 Forbidden. Hết thời gian 60 phút hoặc khi được Admin mở khóa thủ công, tài khoản sẽ trở lại trạng thái hoạt động bình thường.
-
-### 5.3 Giao diện quản trị & Trực quan hóa
-#### Alerts Dashboard & Biểu đồ trực quan
-Trang quản trị Cảnh báo (truy cập qua `/admin/alerts`) đem đến một giao diện hiện đại và trực quan:
-* **Hộp thoại Thông báo Kết quả (Modal Popup):** Mỗi khi bấm "Run Detection", hệ thống bật ra một hộp thoại popup với màu sắc pastel đồng bộ, tóm tắt các chỉ số: Số cửa sổ đã quét, Số bất thường phát hiện, Số cảnh báo mới tạo và Số cảnh báo trùng lặp.
-* **Biểu đồ Tròn Thống kê Kịch bản (Doughnut Chart):** Sử dụng thư viện Chart.js để trực quan hóa tỷ lệ cơ cấu các kịch bản bất thường bị phát hiện (Export Abuse, Delete Abuse, IDOR/BOLA Scan...).
-* **Danh sách Cảnh báo:** Cho phép xem chi tiết thời gian, User ID, Session ID hash, Anomaly Score và trạng thái xử lý (NEW, REVIEWING, RESOLVED).
-
-#### Cơ chế truy vết Log gốc (Forensics)
-Điểm mạnh của hệ thống là khi quản trị viên nhấn vào chi tiết của một Alert, hệ thống sẽ tự động trích xuất các thông tin định vị (`user_id`, `session_id_hash`, `window_start`, `window_end`) và điều hướng trực tiếp sang trang Admin Logs Filtered. Tại đó, quản trị viên có thể giám sát chính xác từng thao tác HTTP Request trong cửa sổ 5 phút bị đánh dấu, từ URL, status code cho đến tham số nhằm đưa ra các quyết định chính xác.
-
-Hệ thống được chứng minh độ tin cậy khi đã vượt qua 34 test cases tự động (sử dụng Pytest và Pytest-Flask) với tỷ lệ qua bài (pass rate) đạt mức tuyệt đối 100% trong thời gian 17.87s.
+### 5.4 Kiểm thử tự động (Test Suite Pytest)
+Hệ thống được đảm bảo độ tin cậy thông qua bộ kiểm thử tự động Pytest trong thư mục `tests/`:
+* Bộ kiểm thử bao gồm các bài test bao phủ toàn bộ luồng: Authentication, File Management, Structured Logging, Feature Extraction, Detection Service, Active Defense Middleware và Admin Dashboard.
+* **Kết quả thực thi Pytest:** Đạt **`38 passed in 24.94s`** (tỷ lệ thành công tuyệt đối **100%**).
 
 ---
 
 ## CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
 
 ### 6.1 Kết quả đạt được
-Đồ án tự hào khẳng định đã ứng dụng thành công kỹ thuật Machine Learning trong bài toán nhận diện và phát hiện các hành vi truy cập bất thường trên môi trường web StudyDrive:
-* Triển khai phần mềm vững chắc với cơ chế Structured Logging tự động và áp dụng quy chuẩn băm SHA-256 an toàn.
-* Xây dựng trọn vẹn một Pipeline Machine Learning khép kín từ khâu thu thập log thô cho đến việc đưa qua mô hình Isolation Forest với chiến lược Normal-only Training và Group-aware Split.
-* Tích hợp cơ chế phản ứng chủ động Active Defense (khóa tạm thời tài khoản nghi ngờ 60 phút), giảm thiểu rủi ro tức thì cho tổ chức.
-* Tích hợp hệ thống quản trị chuyên sâu với giao diện Alerts Dashboard, biểu đồ trực quan Chart.js và hỗ trợ truy vết xuất sắc về bản ghi log gốc.
-* Đánh giá thực nghiệm khách quan bằng tập Test chuyên dụng đạt mức F1-Score 85.71% cùng bộ kiểm thử 34 test cases ổn định.
+* **Ứng dụng Web & Structured Logging:** Đã hoàn thiện ứng dụng StudyDrive với tính năng quản lý, lưu trữ, chia sẻ tài liệu và hệ thống Structured Logging tự động ghi nhận 27 trường dữ liệu kèm băm SHA-256 an toàn.
+* **Pipeline Machine Learning khép kín:** Xây dựng thành công quy trình xử lý dữ liệu từ log thô -> gom nhóm cửa sổ 5 phút -> trích xuất 25 đặc trưng số -> huấn luyện mô hình Isolation Forest theo chiến lược Normal-only và Group-aware Split.
+* **Cơ chế Phản ứng chủ động (Active Defense):** Tích hợp thành công tính năng tự động khóa tài khoản nghi ngờ 60 phút (`locked_until`) và chặn HTTP 403 tại Middleware, giúp giảm thiểu thiệt hại tức thì.
+* **Giao diện Quản trị & Trực quan hóa:** Hoàn thiện Alerts Dashboard tích hợp Modal Popup, Biểu đồ tròn Chart.js và tính năng truy vết Log gốc.
+* **Kiểm thử tự động:** Vượt qua bộ kiểm thử 38/38 test cases Pytest pass 100%.
 
 ### 6.2 Hạn chế
-Bên cạnh kết quả đạt được, hệ thống vẫn mang một số giới hạn thực tiễn:
-* Kích thước tập dữ liệu thực nghiệm (17 cửa sổ 5 phút) vẫn còn khá khiêm tốn, đòi hỏi tiếp tục tích lũy dữ liệu trải dài nhiều ngày hơn trong môi trường triển khai thực tế.
-* Việc chỉ áp dụng phương thức xử lý Batch (On-demand/Trigger) khiến tiến trình phát hiện có độ trễ nhất định, chưa thực hiện streaming thời gian thực hoàn toàn.
-* Thuật toán Isolation Forest là mô hình học không giám sát nên chỉ xác định được mức độ bất thường chung (Anomaly Score) chứ chưa phân loại chính xác kịch bản tấn công bằng mô hình học có giám sát (Supervised Learning).
-* Hệ thống hiện mới phục vụ trong phạm vi 1 tổ chức (Single-tenant) với 1 quản trị viên chính giám sát toàn bộ người dùng trong môi trường đó.
+* **Quy mô dữ liệu thực nghiệm:** Tập dữ liệu thực nghiệm còn mang tính chất thử nghiệm sơ bộ (Proof-of-Concept) trên môi trường mô phỏng.
+* **Độ trễ xử lý:** Hệ thống xử lý theo chế độ Batch (On-demand/Trigger) nên tiến trình phát hiện có độ trễ nhất định so với thời gian thực.
+* **Phân loại kịch bản:** Thuật toán Isolation Forest là mô hình học không giám sát nên chỉ tính điểm bất thường chung (Anomaly Score); việc gán nhãn kịch bản (`scenario_hint`) vẫn dựa trên quy tắc phân tích đặc trưng nổi trội (Post-hoc Rule-based Analysis).
+* **Phạm vi quản trị:** Hệ thống hiện phục vụ trong phạm vi 1 tổ chức (Single-tenant).
 
 ### 6.3 Hướng phát triển
-Trong tương lai, đồ án định hướng nâng cấp hệ thống theo các chiều hướng sau:
-* **Chuyển đổi sang kiến trúc thời gian thực (Real-time Streaming):** Tích hợp Message Broker (Apache Kafka / RabbitMQ) kết hợp Celery Workers để lắng nghe và phân tích log theo thời gian thực ngay khi request phát sinh.
-* **Kết hợp mô hình Học có giám sát (Multi-stage Detection):** Kết hợp mô hình Isolation Forest (phát hiện bất thường chung) với mô hình phân loại có giám sát (như Random Forest hoặc XGBoost) nhằm phân loại chính xác và gán nhãn kịch bản tấn công tự động mà không phụ thuộc vào quy tắc thủ công.
-* **Mở rộng mô hình Đa tổ chức (Multi-tenancy) & Phân quyền Quản trị nhiều cấp:** Phát triển hệ thống hỗ trợ nhiều trường học/doanh nghiệp khác nhau cùng sử dụng, phân tách không gian dữ liệu và nhật ký log theo từng Tenant riêng biệt.
+* **Chuyển đổi sang kiến trúc Thời gian thực (Real-time Streaming):** Tích hợp Message Broker (Apache Kafka/RabbitMQ) và Celery Workers để phân tích log theo thời gian thực ngay khi request phát sinh.
+* **Kết hợp mô hình Học có giám sát (Multi-stage Detection):** Kết hợp Isolation Forest (phát hiện bất thường chung) với mô hình học có giám sát (Random Forest, XGBoost) để phân loại chính xác kịch bản tấn công.
+* **Mở rộng Đa tổ chức (Multi-tenancy):** Phát triển hệ thống hỗ trợ nhiều trường học/doanh nghiệp cùng sử dụng, phân tách dữ liệu và nhật ký log theo từng Tenant riêng biệt.
 
 ---
 
 ## TÀI LIỆU THAM KHẢO
-[1] F. T. Liu, K. M. Ting, và Z. H. Zhou, "Isolation Forest," trong 2008 Eighth IEEE International Conference on Data Mining, 2008, tr. 413-422, doi: 10.1109/ICDM.2008.17.
-[2] OWASP Foundation, "OWASP Top 10:2021 - A01:2021-Broken Access Control & A04:2021-Insecure Design," OWASP Top 10 Web Application Security Risks, 2021. [Trực tuyến]. Địa chỉ: https://owasp.org/Top10/. [Truy cập: 09/08/2026].
-[3] V. Chandola, A. Banerjee, và V. Kumar, "Anomaly detection: A survey," ACM Computing Surveys (CSUR), vol. 41, no. 3, tr. 1-58, 2009, doi: 10.1145/1541880.1541882.
-[4] Scikit-Learn Developers, "sklearn.ensemble.IsolationForest Documentation," Scikit-Learn API Reference, 2023. [Trực tuyến]. Địa chỉ: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html. [Truy cập: 09/08/2026].
-[5] F. Pedregosa et al., "Scikit-learn: Machine learning in Python," Journal of Machine Learning Research, vol. 12, tr. 2825-2830, 2011.
-[6] D. Stuttard và M. Pinto, The Web Application Hacker's Handbook: Finding and Exploiting Security Flaws, ấn bản 2. John Wiley & Sons, 2011.
-[7] A. L. Buczak và E. Guven, "A survey of data mining and machine learning methods for cyber intrusion detection," IEEE Communications Surveys & Tutorials, vol. 18, no. 2, tr. 1153-1176, 2015, doi: 10.1109/COMST.2015.2494502.
+[1] F. T. Liu, K. M. Ting, và Z. H. Zhou, "Isolation Forest," trong *2008 Eighth IEEE International Conference on Data Mining*, 2008, tr. 413-422, doi: 10.1109/ICDM.2008.17.  
+[2] OWASP Foundation, "OWASP Top 10:2021 - A01:2021-Broken Access Control & A04:2021-Insecure Design," *OWASP Top 10 Web Application Security Risks*, 2021. [Trực tuyến]. Địa chỉ: https://owasp.org/Top10/. [Truy cập: 09/08/2026].  
+[3] V. Chandola, A. Banerjee, và V. Kumar, "Anomaly detection: A survey," *ACM Computing Surveys (CSUR)*, vol. 41, no. 3, tr. 1-58, 2009, doi: 10.1145/1541880.1541882.  
+[4] Scikit-Learn Developers, "sklearn.ensemble.IsolationForest Documentation," *Scikit-Learn API Reference*, 2023. [Trực tuyến]. Địa chỉ: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html. [Truy cập: 09/08/2026].  
+[5] F. Pedregosa et al., "Scikit-learn: Machine learning in Python," *Journal of Machine Learning Research*, vol. 12, tr. 2825-2830, 2011.  
+[6] D. Stuttard và M. Pinto, *The Web Application Hacker's Handbook: Finding and Exploiting Security Flaws*, ấn bản 2. John Wiley & Sons, 2011.  
+[7] A. L. Buczak và E. Guven, "A survey of data mining and machine learning methods for cyber intrusion detection," *IEEE Transactions on Cybernetics / Communications Surveys & Tutorials*, vol. 18, no. 2, tr. 1153-1176, 2015, doi: 10.1109/COMST.2015.2494502.  
