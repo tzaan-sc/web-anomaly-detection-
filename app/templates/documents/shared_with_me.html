@@ -26,7 +26,7 @@
                     <td>{{ share.file.owner.username }}</td>
                     <td>.{{ share.file.file_extension|lower }}</td>
                     <td>{{ format_file_size(share.file.file_size) }}</td>
-                    <td>{{ share.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>{{ share.created_at|local_dt('%d/%m/%Y %H:%M') }}</td>
                     <td class="text-end">
                         <div class="btn-group btn-group-sm">
                             <a class="btn btn-outline-primary" href="{{ url_for('documents.file_detail', file_id=share.file.id) }}">Xem</a>

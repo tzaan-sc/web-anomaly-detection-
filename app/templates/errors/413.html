@@ -1,12 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}413 | Tệp quá lớn{% endblock %}
+{% block title %}413 | Tệp vượt quá dung lượng | StudyDrive{% endblock %}
 
 {% block content %}
-<div class="text-center py-5">
-    <div class="display-1 fw-bold">413</div>
-    <h1 class="h3">Tệp vượt quá giới hạn cho phép</h1>
-    <p class="text-secondary">StudyDrive chỉ nhận tệp có dung lượng tối đa 20 MB.</p>
-    <a class="btn btn-primary" href="{{ url_for('documents.upload_file') }}">Chọn tệp khác</a>
+<div class="py-5 text-center">
+    <div class="card border-0 shadow-sm p-4 p-md-5 bg-white mx-auto" style="max-width: 620px;">
+        <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 85px; height: 85px; background: rgba(250, 185, 142, 0.25);">
+            <i class="bi bi-file-earmark-arrow-up-fill text-warning" style="font-size: 2.75rem;"></i>
+        </div>
+        
+        <span class="badge text-bg-warning fs-6 mb-3 px-3 py-1 d-inline-flex align-items-center gap-1 mx-auto shadow-sm">
+            HTTP ERROR 413
+        </span>
+
+        <h1 class="h3 fw-bold mb-2">Tệp vượt quá giới hạn cho phép</h1>
+        <p class="text-secondary mb-4">
+            Hệ thống StudyDrive chỉ cho phép tải lên tệp có dung lượng tối đa <strong>20 MB</strong>. Vui lòng chọn tệp nhỏ hơn.
+        </p>
+
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+            <a class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2" href="{{ url_for('documents.upload_file') }}">
+                <i class="bi bi-cloud-arrow-up-fill"></i> Chọn tệp khác
+            </a>
+            <a class="btn btn-pastel-outline px-4 py-2 d-inline-flex align-items-center gap-2" href="{{ url_for('documents.index') }}">
+                <i class="bi bi-folder-fill"></i> Tài liệu của tôi
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}

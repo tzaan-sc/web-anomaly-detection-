@@ -153,7 +153,7 @@
                                             <span class="text-secondary">My Drive</span>
                                         {% endif %}
                                     </td>
-                                    <td>{{ file.updated_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td>{{ file.updated_at|local_dt('%d/%m/%Y %H:%M') }}</td>
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm" role="group" aria-label="Thao tác tệp">
                                             <a class="btn btn-outline-primary" href="{{ url_for('documents.file_detail', file_id=file.id) }}">Chi tiết</a>

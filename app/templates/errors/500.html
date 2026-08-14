@@ -1,14 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}500 | Lỗi hệ thống{% endblock %}
+{% block title %}500 | Lỗi hệ thống | StudyDrive{% endblock %}
 
 {% block content %}
-<div class="text-center py-5">
-    <div class="display-1 fw-bold">500</div>
-    <h1 class="h3">Hệ thống gặp lỗi</h1>
-    <p class="text-secondary">
-        Yêu cầu chưa thể xử lý. Chi tiết kỹ thuật đã được ghi vào log.
-    </p>
-    <a class="btn btn-primary" href="{{ url_for('main.index') }}">Về trang chủ</a>
+<div class="py-5 text-center">
+    <div class="card border-0 shadow-sm p-4 p-md-5 bg-white mx-auto" style="max-width: 620px;">
+        <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 85px; height: 85px; background: rgba(249, 139, 133, 0.25);">
+            <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 2.75rem;"></i>
+        </div>
+        
+        <span class="badge text-bg-danger fs-6 mb-3 px-3 py-1 d-inline-flex align-items-center gap-1 mx-auto shadow-sm">
+            HTTP ERROR 500
+        </span>
+
+        <h1 class="h3 fw-bold mb-2">Hệ thống gặp sự cố</h1>
+        <p class="text-secondary mb-4">
+            Yêu cầu chưa thể hoàn tất do lỗi phía máy chủ. Chi tiết kỹ thuật đã được ghi nhận vào nhật ký (Log) hệ thống.
+        </p>
+
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+            <a class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2" href="{{ url_for('main.index') }}">
+                <i class="bi bi-house-door-fill"></i> Về trang Chủ
+            </a>
+            <button class="btn btn-pastel-outline px-4 py-2 d-inline-flex align-items-center gap-2" onclick="window.location.reload()">
+                <i class="bi bi-arrow-clockwise"></i> Thử lại
+            </button>
+        </div>
+    </div>
 </div>
 {% endblock %}

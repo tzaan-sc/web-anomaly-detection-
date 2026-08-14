@@ -20,11 +20,11 @@
             <div class="card-body">
                 <dl class="row mb-0">
                     <dt class="col-sm-4">ID khoảng thời gian</dt><dd class="col-sm-8"><code class="text-break">{{ alert.window_id }}</code></dd>
-                    <dt class="col-sm-4">Thời gian</dt><dd class="col-sm-8">{{ alert.window_start.strftime('%d/%m/%Y %H:%M:%S') if alert.window_start else '-' }} → {{ alert.window_end.strftime('%d/%m/%Y %H:%M:%S') if alert.window_end else '-' }}</dd>
+                    <dt class="col-sm-4">Thời gian</dt><dd class="col-sm-8">{{ alert.window_start|local_dt('%d/%m/%Y %H:%M:%S') if alert.window_start else '-' }} → {{ alert.window_end|local_dt('%d/%m/%Y %H:%M:%S') if alert.window_end else '-' }}</dd>
                     <dt class="col-sm-4">Người dùng</dt><dd class="col-sm-8">{% if alert.user %}{{ alert.user.username }} #{{ alert.user_id }}{% else %}-{% endif %}</dd>
                     <dt class="col-sm-4">Điểm bất thường</dt><dd class="col-sm-8"><strong>{{ '%.6f'|format(alert.anomaly_score or 0) }}</strong></dd>
                     <dt class="col-sm-4">Dấu hiệu</dt><dd class="col-sm-8"><span class="badge text-bg-warning">{{ alert.scenario_hint or 'general_anomaly' }}</span></dd>
-                    <dt class="col-sm-4">Ngày tạo</dt><dd class="col-sm-8">{{ alert.created_at.strftime('%d/%m/%Y %H:%M:%S') if alert.created_at else '-' }}</dd>
+                    <dt class="col-sm-4">Ngày tạo</dt><dd class="col-sm-8">{{ alert.created_at|local_dt('%d/%m/%Y %H:%M:%S') if alert.created_at else '-' }}</dd>
                 </dl>
             </div>
         </div>
@@ -37,7 +37,7 @@
                     <tbody>
                     {% for log in related_logs %}
                         <tr>
-                            <td>{{ log.timestamp.strftime('%H:%M:%S') if log.timestamp else '-' }}</td>
+                            <td>{{ log.timestamp|local_dt('%H:%M:%S') if log.timestamp else '-' }}</td>
                             <td>{{ log.action_type or 'other' }}</td>
                             <td><code class="small text-break">{{ log.path }}</code></td>
                             <td>{{ log.status_code }}</td>

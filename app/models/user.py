@@ -74,5 +74,15 @@ class User(db.Model):
         # Role ADMIN được xem là quản trị viên.
         return self.role.upper() == "ADMIN"
 
+    @property
+    def is_locked(self) -> bool:
+        """Kiểm tra an toàn trạng thái tài khoản có đang bị khóa bởi Active Defense không."""
+        if not self.locked_until:
+            return False
+        lu = self.locked_until
+        if lu.tzinfo is None:
+            lu = lu.replace(tzinfo=timezone.utc)
+        return lu > datetime.now(timezone.utc)
+
     def __repr__(self) -> str:
         return f"<User {self.username!r} role={self.role!r}>"

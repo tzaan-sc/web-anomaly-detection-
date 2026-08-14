@@ -126,7 +126,7 @@ def register():
 
 
 
-@bp.post("/logout")
+@bp.route("/logout", methods=["GET", "POST"])
 @login_required
 def logout():
     session.clear()

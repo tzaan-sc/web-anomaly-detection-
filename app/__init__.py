@@ -86,9 +86,31 @@ def register_request_hooks(app: Flask) -> None:
 
     @app.context_processor
     def inject_current_user():
+        from datetime import datetime, timezone
+        def to_local_time(dt):
+            if dt is None:
+                return None
+            if hasattr(dt, "tzinfo") and dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone()
         return {
             "current_user": g.get("current_user"),
+            "utc_now": lambda: datetime.now(timezone.utc),
+            "to_local_time": to_local_time,
         }
+
+    @app.template_filter("local_dt")
+    def local_datetime_filter(value, fmt="%d/%m/%Y %H:%M:%S"):
+        """Chuyển đổi thời gian UTC sang giờ thực tế của laptop (GMT+7)."""
+        if value is None:
+            return ""
+        try:
+            from datetime import timezone
+            if hasattr(value, "tzinfo") and value.tzinfo is None:
+                value = value.replace(tzinfo=timezone.utc)
+            return value.astimezone().strftime(fmt)
+        except Exception:
+            return str(value)
 
 def register_blueprints(app: Flask) -> None:
     """Import blueprints locally to avoid circular imports."""

@@ -332,7 +332,9 @@ def _timestamp_for_display(value) -> str:
     if value is None:
         return ""
     try:
-        return value.strftime("%d/%m/%Y %H:%M:%S")
+        if hasattr(value, "tzinfo") and value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.astimezone().strftime("%d/%m/%Y %H:%M:%S")
     except Exception:
         return str(value)
 

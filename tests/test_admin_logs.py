@@ -15,7 +15,7 @@ def test_admin_can_filter_logs_and_open_detail(client, app, login_as):
 
     assert response.status_code == 200
     assert b"/health" in response.data
-    assert b"Request logs" in response.data
+    assert "Nhật ký truy cập".encode("utf-8") in response.data
 
     detail = client.get(f"/admin/logs/{log_id}")
     assert detail.status_code == 200

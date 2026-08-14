@@ -70,10 +70,10 @@
                     {% endif %}
 
                     <dt class="col-sm-4">Ngày tạo</dt>
-                    <dd class="col-sm-8">{{ file.created_at.strftime('%d/%m/%Y %H:%M') }}</dd>
+                    <dd class="col-sm-8">{{ file.created_at|local_dt('%d/%m/%Y %H:%M') }}</dd>
 
                     <dt class="col-sm-4">Cập nhật</dt>
-                    <dd class="col-sm-8">{{ file.updated_at.strftime('%d/%m/%Y %H:%M') }}</dd>
+                    <dd class="col-sm-8">{{ file.updated_at|local_dt('%d/%m/%Y %H:%M') }}</dd>
                 </dl>
             </div>
         </div>

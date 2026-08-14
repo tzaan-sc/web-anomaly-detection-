@@ -119,7 +119,7 @@
                                 <td>{{ file.file_extension|upper }}</td>
                                 <td>{{ file.file_size }} bytes</td>
                                 <td>
-                                    {{ file.created_at.strftime("%d/%m/%Y %H:%M") }}
+                                    {{ file.created_at|local_dt('%d/%m/%Y %H:%M') }}
                                 </td>
                             </tr>
                         {% endfor %}

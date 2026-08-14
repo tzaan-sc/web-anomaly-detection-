@@ -63,14 +63,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
-    <div>
-        <h1 class="h2 mb-1">Bảng điều khiển cảnh báo bất thường</h1>
-    </div>
-    <div class="d-flex flex-wrap gap-2">
-        <a class="btn btn-outline-secondary" href="{{ url_for('admin.logs') }}">Xem nhật ký truy cập (request logs)</a>
-        <a class="btn btn-outline-secondary" href="{{ url_for('admin.index') }}">← Bảng điều khiển quản trị viên</a>
-    </div>
+<div class="mb-4">
+    <h1 class="h2 mb-1">Bảng điều khiển cảnh báo bất thường</h1>
 </div>
 
 <div class="row g-3 mb-4">
@@ -249,7 +243,7 @@
             {% for alert in alerts %}
                 <tr>
                     <td>#{{ alert.id }}</td>
-                    <td><div>{{ alert.window_start.strftime('%d/%m/%Y %H:%M') if alert.window_start else '-' }}</div><code class="small">{{ alert.window_id }}</code></td>
+                    <td><div>{{ alert.window_start|local_dt('%d/%m/%Y %H:%M:%S') if alert.window_start else '-' }}</div><code class="small">{{ alert.window_id }}</code></td>
                     <td>{% if alert.user %}{{ alert.user.username }} #{{ alert.user_id }}{% else %}-{% endif %}</td>
                     <td class="fw-semibold">{{ '%.4f'|format(alert.anomaly_score or 0) }}</td>
                     <td><span class="badge text-bg-warning">{{ alert.scenario_hint or 'general' }}</span></td>

@@ -33,7 +33,7 @@ def _filter_values() -> dict[str, str]:
         "hint": request.args.get("hint", "", type=str).strip()[:80],
         "model_version": request.args.get("model_version", "", type=str).strip()[:80],
         "status": request.args.get("status", "", type=str).strip()[:30],
-        "sort": request.args.get("sort", "score_desc", type=str).strip()[:30],
+        "sort": request.args.get("sort", "newest", type=str).strip()[:30],
     }
 
 
@@ -66,15 +66,15 @@ def _apply_filters(query, filters: dict[str, str]):
 
 def _ordered_query(filters: dict[str, str]):
     query = _apply_filters(Alert.query, filters)
-    sort = filters.get("sort") or "score_desc"
+    sort = filters.get("sort") or "newest"
     if sort == "oldest":
         return query.order_by(Alert.window_start.asc(), Alert.id.asc())
-    if sort == "newest":
-        return query.order_by(Alert.window_start.desc(), Alert.id.desc())
+    if sort == "score_desc":
+        return query.order_by(Alert.anomaly_score.desc(), Alert.window_start.desc(), Alert.id.desc())
     if sort == "score_asc":
-        return query.order_by(Alert.anomaly_score.asc(), Alert.id.desc())
-    filters["sort"] = "score_desc"
-    return query.order_by(Alert.anomaly_score.desc(), Alert.window_start.desc(), Alert.id.desc())
+        return query.order_by(Alert.anomaly_score.asc(), Alert.window_start.desc(), Alert.id.desc())
+    filters["sort"] = "newest"
+    return query.order_by(Alert.window_start.desc(), Alert.id.desc())
 
 
 def _loads_features(features_json: str | None) -> dict[str, object]:
@@ -169,9 +169,9 @@ def index():
         model_options=model_options,
         detection_result=detection_result,
         sort_options=[
+            ("newest", "Mới nhất"),
             ("score_desc", "Score cao nhất"),
             ("score_asc", "Score thấp nhất"),
-            ("newest", "Mới nhất"),
             ("oldest", "Cũ nhất"),
         ],
     )

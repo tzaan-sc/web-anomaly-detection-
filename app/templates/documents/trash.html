@@ -32,7 +32,7 @@
                     </td>
                     <td>.{{ file.file_extension|lower }}</td>
                     <td>{{ format_file_size(file.file_size) }}</td>
-                    <td>{{ file.deleted_at.strftime('%d/%m/%Y %H:%M') if file.deleted_at else 'Không rõ' }}</td>
+                    <td>{{ file.deleted_at|local_dt('%d/%m/%Y %H:%M') if file.deleted_at else 'Không rõ' }}</td>
                     <td class="text-end">
                         <div class="d-flex flex-wrap justify-content-end gap-2">
                             <form method="post" action="{{ url_for('documents.restore_file', file_id=file.id) }}" class="m-0">

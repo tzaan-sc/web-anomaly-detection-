@@ -1,12 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}404 | Không tìm thấy trang{% endblock %}
+{% block title %}404 | Không tìm thấy trang | StudyDrive{% endblock %}
 
 {% block content %}
-<div class="text-center py-5">
-    <div class="display-1 fw-bold">404</div>
-    <h1 class="h3">Không tìm thấy trang</h1>
-    <p class="text-secondary">Đường dẫn em yêu cầu không tồn tại.</p>
-    <a class="btn btn-primary" href="{{ url_for('main.index') }}">Về trang chủ</a>
+<div class="py-5 text-center">
+    <div class="card border-0 shadow-sm p-4 p-md-5 bg-white mx-auto" style="max-width: 620px;">
+        <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 85px; height: 85px; background: rgba(255, 143, 177, 0.2);">
+            <i class="bi bi-compass text-primary" style="font-size: 2.75rem;"></i>
+        </div>
+        
+        <span class="badge text-bg-primary fs-6 mb-3 px-3 py-1 d-inline-flex align-items-center gap-1 mx-auto shadow-sm">
+            HTTP ERROR 404
+        </span>
+
+        <h1 class="h3 fw-bold mb-2">Không tìm thấy trang</h1>
+        <p class="text-secondary mb-4">
+            Đường dẫn bạn yêu cầu không tồn tại, đã bị xóa hoặc đã chuyển sang địa chỉ khác trong StudyDrive.
+        </p>
+
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+            <a class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2" href="{{ url_for('main.index') }}">
+                <i class="bi bi-house-door-fill"></i> Về trang Chủ
+            </a>
+            <a class="btn btn-pastel-outline px-4 py-2 d-inline-flex align-items-center gap-2" href="javascript:history.back()">
+                <i class="bi bi-arrow-left"></i> Quay lại trang trước
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}
