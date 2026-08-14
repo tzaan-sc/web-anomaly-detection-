@@ -12,190 +12,92 @@ Không có quyền truy cập | StudyDrive
 {% set is_active_defense = (current_user and current_user.is_locked) or (error and error.description and ('khóa' in error.description|lower or 'bất thường' in error.description|lower)) %}
 
 {% if is_active_defense %}
-<!-- TIÊU ĐỀ TRANG ĐỒNG BỘ CHUẨN PASTEL PINK TOÀN HỆ THỐNG -->
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
-    <div>
-        <div class="d-flex align-items-center gap-2 mb-2">
-            <span class="badge px-3 py-2 rounded-pill shadow-sm" style="background: #FFE4EC; color: #D81B60; border: 1px solid #FF8FB1; font-weight: 700; font-size: 0.85rem;">
-                <i class="bi bi-shield-slash-fill me-1"></i> ACTIVE DEFENSE
+<!-- GIAO DIỆN KHÓA TÀI KHOẢN ĐỒNG BỘ 100% VỚI PHONG CÁCH BẢNG ĐIỀU KHIỂN -->
+<div class="py-4 text-center">
+    <div class="card border-0 shadow-sm p-4 p-md-5 bg-white mx-auto text-center" style="max-width: 580px; border-radius: 18px; border: 1px solid #F8D7E3 !important;">
+        
+        <!-- VÒNG TRÒN BIỂU TƯỢNG HỒNG PASTEL -->
+        <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 76px; height: 76px; background: #FFE4EC; border: 2px solid #FFD6E0;">
+            <i class="bi bi-shield-lock-fill" style="font-size: 2.5rem; color: #F06292;"></i>
+        </div>
+
+        <!-- HUY HIỆU PASTEL -->
+        <div class="mb-3">
+            <span class="badge px-3 py-2 rounded-pill shadow-sm" style="background: #FFE4EC; color: #F06292; border: 1px solid #FFD6E0; font-weight: 700; font-size: 0.85rem;">
+                <i class="bi bi-shield-slash-fill me-1"></i> ACTIVE DEFENSE · HTTP 403
             </span>
-            <span class="badge px-3 py-2 rounded-pill shadow-sm" style="background: #FFF0F5; color: #F06292; border: 1px solid #FFD6E0; font-size: 0.85rem;">
-                HTTP 403
-            </span>
         </div>
-        <h1 class="h2 mb-1" style="color: #D81B60; font-weight: 700;">
-            Tài khoản của bạn đã bị tạm khóa
-        </h1>
-        <p class="text-secondary mb-0">
-            Hệ thống Machine Learning đã phát hiện chuỗi hành vi truy cập bất thường và tự động kích hoạt cơ chế phòng thủ chủ động.
-        </p>
-    </div>
 
-    <div class="d-flex flex-wrap gap-2">
-        <a class="btn btn-primary px-3 shadow-sm" href="{{ url_for('auth.logout') }}">
-            <i class="bi bi-box-arrow-right me-1"></i> Đăng xuất
-        </a>
-        <button class="btn btn-pastel-outline px-3 shadow-sm" onclick="window.location.reload()">
-            <i class="bi bi-arrow-clockwise me-1"></i> Kiểm tra lại
-        </button>
-    </div>
-</div>
-
-<!-- 4 THẺ CHỈ SỐ TỔNG QUAN VỚI VÒNG TRÒN ICON HỒNG PASTEL ĐẶC TRƯNG -->
-<div class="row g-3 mb-4">
-    <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm h-100 text-center p-3">
-            <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-2 rounded-circle shadow-sm" style="width: 56px; height: 56px; background: #FFE4EC; border: 2px solid #FFD6E0;">
-                <i class="bi bi-person-circle fs-3" style="color: #F06292;"></i>
-            </div>
-            <div class="text-secondary small">Tài khoản tác động</div>
-            <div class="fs-5 fw-bold text-truncate mt-1" style="color: #2b2327;">
-                {{ current_user.username if current_user else 'user1' }}
-            </div>
-            <div class="small text-muted">ID: #{{ current_user.id if current_user else '1' }}</div>
-        </div>
-    </div>
-
-    <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm h-100 text-center p-3">
-            <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-2 rounded-circle shadow-sm" style="width: 56px; height: 56px; background: #FFE4EC; border: 2px solid #FFD6E0;">
-                <i class="bi bi-clock-history fs-3" style="color: #D81B60;"></i>
-            </div>
-            <div class="text-secondary small">Thời gian mở khóa</div>
-            <div class="fs-5 fw-bold mt-1" style="color: #D81B60;">
-                {% if current_user and current_user.locked_until %}
-                    {{ current_user.locked_until|local_dt('%H:%M:%S') }}
-                {% else %}
-                    60 phút
-                {% endif %}
-            </div>
-            <div class="small text-muted">Tự động mở khóa</div>
-        </div>
-    </div>
-
-    <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm h-100 text-center p-3">
-            <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-2 rounded-circle shadow-sm" style="width: 56px; height: 56px; background: #FFF3E0; border: 2px solid #FFE0B2;">
-                <i class="bi bi-cpu-fill fs-3" style="color: #e67e22;"></i>
-            </div>
-            <div class="text-secondary small">Mô hình nhận diện</div>
-            <div class="fs-5 fw-bold mt-1" style="color: #d35400;">
-                Isolation Forest
-            </div>
-            <div class="small text-muted">Ngưỡng điểm &gt; 0.70</div>
-        </div>
-    </div>
-
-    <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm h-100 text-center p-3">
-            <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-2 rounded-circle shadow-sm" style="width: 56px; height: 56px; background: #FFE4EC; border: 2px solid #FFD6E0;">
-                <i class="bi bi-shield-lock-fill fs-3" style="color: #D81B60;"></i>
-            </div>
-            <div class="text-secondary small">Trạng thái bảo vệ</div>
-            <div class="fs-5 fw-bold mt-1" style="color: #D81B60;">
-                Phong tỏa
-            </div>
-            <div class="small text-muted">Provisional Lock</div>
-        </div>
-    </div>
-</div>
-
-<!-- THẺ CHI TIẾT SỰ CỐ BẢO MẬT (ĐỒNG BỘ PASTEL CARD) -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="color: #D81B60; font-weight: 700;">
-            <i class="bi bi-shield-shaded" style="color: #F06292;"></i>
-            Thông tin chi tiết sự cố an ninh
-        </h2>
-
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
-                <tbody>
-                    <tr>
-                        <th class="text-secondary fw-semibold py-3" style="width: 25%;">Lý do can thiệp</th>
-                        <td class="fw-semibold py-3" style="color: #D81B60;">
-                            {{ error.description if error and error.description else 'Phát hiện hành vi có dấu hiệu bất thường (Lạm dụng xuất tệp hàng loạt, Xóa dữ liệu dồn dập hoặc Dò quét BOLA/IDOR).' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="text-secondary fw-semibold py-3">Mã sự cố (Incident ID)</th>
-                        <td class="py-3">
-                            <span class="badge px-3 py-1 rounded-pill" style="background: #FFE4EC; color: #D81B60; border: 1px solid #FF8FB1; font-family: monospace; font-size: 0.85rem;">
-                                SEC-ACTIVE-DEFENSE-403
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="text-secondary fw-semibold py-3">Thời gian khóa đầy đủ</th>
-                        <td class="py-3">
-                            <span class="fw-semibold text-secondary">
-                            {% if current_user and current_user.locked_until %}
-                                {{ current_user.locked_until|local_dt('%H:%M:%S ngày %d/%m/%Y (Giờ Việt Nam)') }}
-                            {% else %}
-                                60 phút kể từ thời điểm phát hiện
-                            {% endif %}
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="text-secondary fw-semibold py-3">Tầng áp dụng chặn</th>
-                        <td class="py-3">
-                            <span class="badge px-2 py-1 rounded-pill" style="background: #F3E5F5; color: #8E24AA; border: 1px solid #E1BEE7;">
-                                Flask Application Middleware
-                            </span>
-                            <span class="text-secondary small ms-2">Chặn trước khi request đi vào Controller</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- THẺ HƯỚNG DẪN XỬ LÝ & THAO TÁC -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-        <h2 class="h5 mb-2" style="color: #2b2327; font-weight: 700;">Hướng dẫn người dùng</h2>
-        <p class="text-secondary mb-3">
-            Nhằm đảm bảo an toàn dữ liệu học tập, mọi yêu cầu tiếp theo từ tài khoản này sẽ tạm thời bị từ chối. Bạn có thể thực hiện một trong các thao tác sau:
+        <!-- TIÊU ĐỀ ĐỒNG BỘ MÀU CHỮ HỆ THỐNG -->
+        <h1 class="h3 fw-bold mb-2" style="color: #2b2327;">Tài khoản của bạn đã bị tạm khóa</h1>
+        <p class="mb-4 small" style="color: #6B5F65;">
+            Hệ thống Machine Learning đã phát hiện chuỗi hành vi bất thường và tự động tạm khóa tài khoản để bảo vệ dữ liệu.
         </p>
 
-        <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-primary px-3 shadow-sm" href="{{ url_for('auth.logout') }}">
-                <i class="bi bi-box-arrow-right me-1"></i> Đăng xuất tài khoản
-            </a>
-            <button class="btn btn-pastel-outline px-3 shadow-sm" onclick="window.location.reload()">
-                <i class="bi bi-arrow-clockwise me-1"></i> Tải lại trang kiểm tra
+        <!-- HỘP THÔNG TIN TÓM TẮT HỒNG PASTEL -->
+        <div class="p-3 mb-4 rounded-3 text-start" style="background: #FFF7FA; border: 1px solid #F8D7E3;">
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: #F8D7E3 !important;">
+                <span class="small fw-medium" style="color: #6B5F65;">Tài khoản:</span>
+                <span class="fw-bold" style="color: #2b2327;">{{ current_user.username if current_user else 'user1' }} <span class="text-muted fw-normal small">(ID: #{{ current_user.id if current_user else '1' }})</span></span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: #F8D7E3 !important;">
+                <span class="small fw-medium" style="color: #6B5F65;">Lý do can thiệp:</span>
+                <span class="fw-semibold small text-end" style="color: #F06292; max-width: 65%;">
+                    {{ error.description if error and error.description else 'Phát hiện hành vi truy cập có dấu hiệu bất thường.' }}
+                </span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <span class="small fw-medium" style="color: #6B5F65;">Tự động mở khóa lúc:</span>
+                <span class="fw-bold" style="color: #F06292;">
+                    {% if current_user and current_user.locked_until %}
+                        {{ current_user.locked_until|local_dt('%H:%M:%S (%d/%m/%Y)') }}
+                    {% else %}
+                        60 phút nữa
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- 2 NÚT THAO TÁC ĐỒNG BỘ CHÍNH XÁC VỚI NÚT TRÊN DASHBOARD -->
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+            <button class="btn shadow-sm d-inline-flex align-items-center gap-2" style="border: 1.5px solid #FF8FB1; color: #F06292; background: #ffffff; border-radius: 10px; font-weight: 600; padding: 9px 22px;" onclick="window.location.reload()">
+                <i class="bi bi-arrow-clockwise"></i> Tải lại trang kiểm tra
             </button>
-            <a class="btn btn-outline-secondary px-3 shadow-sm" href="{{ url_for('auth.login') }}">
-                <i class="bi bi-person-fill me-1"></i> Đăng nhập tài khoản khác
+            <a class="btn shadow-sm d-inline-flex align-items-center gap-2" style="background: #FF8FB1; color: #ffffff; border-radius: 10px; font-weight: 600; border: none; padding: 9px 24px; box-shadow: 0 4px 10px rgba(255, 143, 177, 0.3) !important;" href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-right"></i> Đăng xuất
             </a>
+        </div>
+
+        <div class="mt-4 small" style="color: #6B5F65;">
+            Cần hỗ trợ mở khóa sớm? Vui lòng liên hệ Quản trị viên hệ thống.
         </div>
     </div>
 </div>
 
 {% else %}
-<!-- GIAO DIỆN 403 THÔNG THƯỜNG (CHO CÁC LỖI QUYỀN TRUY CẬP KHÁC) -->
+<!-- GIAO DIỆN 403 THÔNG THƯỜNG -->
 <div class="py-5 text-center">
-    <div class="card border-0 shadow-sm p-4 p-md-5 bg-white mx-auto" style="max-width: 620px;">
-        <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 85px; height: 85px; background: #FFE4EC; border: 2px solid #FFD6E0;">
-            <i class="bi bi-shield-lock-fill" style="font-size: 2.75rem; color: #D81B60;"></i>
+    <div class="card border-0 shadow-sm p-4 p-md-5 bg-white mx-auto text-center" style="max-width: 580px; border-radius: 18px; border: 1px solid #F8D7E3 !important;">
+        <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 rounded-circle shadow-sm" style="width: 76px; height: 76px; background: #FFE4EC; border: 2px solid #FFD6E0;">
+            <i class="bi bi-shield-lock-fill" style="font-size: 2.5rem; color: #F06292;"></i>
         </div>
         
-        <span class="badge fs-6 mb-3 px-3 py-1 d-inline-flex align-items-center gap-1 mx-auto shadow-sm" style="background: #FFE4EC; color: #D81B60; border: 1px solid #FF8FB1;">
-            HTTP ERROR 403
-        </span>
+        <div class="mb-3">
+            <span class="badge px-3 py-2 rounded-pill shadow-sm" style="background: #FFE4EC; color: #F06292; border: 1px solid #FFD6E0; font-weight: 700; font-size: 0.85rem;">
+                HTTP ERROR 403
+            </span>
+        </div>
 
-        <h1 class="h3 fw-bold mb-2" style="color: #D81B60;">Không có quyền truy cập</h1>
-        <p class="text-secondary mb-4">
+        <h1 class="h3 fw-bold mb-2" style="color: #2b2327;">Không có quyền truy cập</h1>
+        <p class="mb-4 small" style="color: #6B5F65;">
             {{ error.description if error and error.description else 'Bạn không có quyền truy cập vào tài nguyên hoặc chức năng này.' }}
         </p>
 
         <div class="d-flex justify-content-center flex-wrap gap-3">
-            <a class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm" href="{{ url_for('main.index') }}">
+            <a class="btn shadow-sm d-inline-flex align-items-center gap-2" style="background: #FF8FB1; color: #ffffff; border-radius: 10px; font-weight: 600; border: none; padding: 9px 24px;" href="{{ url_for('main.index') }}">
                 <i class="bi bi-house-door-fill"></i> Về trang Chủ
             </a>
-            <a class="btn btn-pastel-outline px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm" href="javascript:history.back()">
+            <a class="btn shadow-sm d-inline-flex align-items-center gap-2" style="border: 1.5px solid #FF8FB1; color: #F06292; background: #ffffff; border-radius: 10px; font-weight: 600; padding: 9px 22px;" href="javascript:history.back()">
                 <i class="bi bi-arrow-left"></i> Quay lại trang trước
             </a>
         </div>
