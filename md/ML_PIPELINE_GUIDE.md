@@ -1,90 +1,145 @@
-# Hướng dẫn Chạy Machine Learning Pipeline (Phát hiện Bất thường Web)
+# Hướng Dẫn Vận Hành Machine Learning Pipeline (Phát Hiện Bất Thường Web)
 
-Tài liệu này hướng dẫn chi tiết các bước chạy toàn bộ ML Pipeline của dự án **Web Anomaly Detection**, bao gồm từ bước tiền xử lý dữ liệu, huấn luyện mô hình, kiểm định, cho tới tích hợp với hệ thống Web và Cảnh báo.
+Tài liệu này hướng dẫn chi tiết quy trình thực thi toàn bộ **Machine Learning Pipeline** của dự án **Web Anomaly Detection (StudyDrive)**, từ khâu sinh dữ liệu log giả lập, trích xuất đặc trưng, huấn luyện mô hình, kiểm định đánh giá, đến tích hợp cảnh báo và phòng thủ chủ động trên ứng dụng Web.
 
 ---
 
-## 1. Môi trường chạy
+## 1. Môi trường & Yêu cầu tiên quyết
 
-Đảm bảo bạn đã kích hoạt môi trường ảo (virtual environment) của dự án và cài đặt đầy đủ các thư viện trong `requirements.txt`.
-Đặc biệt, thư viện `matplotlib` cần thiết để trực quan hóa kết quả kiểm định.
+Đảm bảo môi trường ảo Python đã được kích hoạt và cài đặt đầy đủ các gói phụ thuộc:
 
 ```powershell
-# Kích hoạt môi trường (Windows PowerShell)
+# Di chuyển vào thư mục dự án
+cd D:\web-anomaly-detection
+
+# Kích hoạt môi trường ảo (PowerShell)
 .\.venv\Scripts\Activate.ps1
+
+# Kiểm tra các thư viện đã cài đặt
+pip check
 ```
+
+Cơ sở dữ liệu MySQL phải đang hoạt động tại cổng `3306` (hoặc `3307` theo cấu hình file `.env`).
 
 ---
 
-## 2. Các Bước Chạy Pipeline
+## 2. Quy trình Thực thi ML Pipeline (Từng bước chi tiết)
 
-### Bước 1: Tiền xử lý dữ liệu & Feature Engineering
-Bước này sẽ lấy dữ liệu log thô (đã được lưu hoặc sinh từ simulator) và thực hiện gom nhóm (sliding window 5 phút) để tạo ra các vector đặc trưng (Feature Vector).
+### Bước 1: Khởi tạo Dữ liệu thô từ Bộ Mô phỏng (Simulators)
 
-**Cú pháp:**
+Bước này thực thi bộ kịch bản tương tác tự động bao gồm 1 kịch bản người dùng bình thường và 3 kịch bản tấn công nghiệp vụ:
+- `simulate_normal.py`
+- `simulate_export_abuse.py`
+- `simulate_delete_abuse.py`
+- `simulate_bola_scan.py`
+
+**Lệnh thực thi:**
 ```powershell
-python -m ml.build_features
+python scripts/generate_raw_dataset_v1.py
 ```
-**Kết quả đầu ra:** Các tập tin chứa tập đặc trưng (đã xử lý) sẽ được lưu hoặc chuẩn bị sẵn sàng cho quá trình huấn luyện.
 
-### Bước 2: Huấn luyện Mô hình & Tuning (Isolation Forest)
-Tại bước này, hệ thống sử dụng thuật toán **Isolation Forest** để huấn luyện trên tập log bình thường. Hệ thống cũng chạy **Grid Tuning** trên tập validation nhằm tìm ra tham số tốt nhất.
-
-**Cú pháp:**
-```powershell
-python -m ml.train
-```
 **Kết quả đầu ra:**
-- Mô hình Isolation Forest đã huấn luyện xong (và pipeline chuẩn hóa dữ liệu).
-- Tập tin lưu tại: `artifacts/models/iforest_v1/model.joblib`
+- `data/raw/request_logs_raw.csv`: Bản ghi 10.875 dòng log thô có cấu trúc đầy đủ 21 trường.
+- `data/raw/ground_truth.csv`: Nhãn đối chứng (Normal / Anomaly và Scenario) theo từng cửa sổ 5 phút.
+- `data/raw/generation_metadata.json`: Metadata về thời gian chạy và tham số sinh dữ liệu.
 
-### Bước 3: Kiểm định Mô hình (Evaluation)
-Mô hình đã huấn luyện sẽ được đánh giá trên tập kiểm thử (test set) bao gồm cả log bình thường và log tấn công/bất thường.
+---
 
-**Cú pháp:**
+### Bước 2: Tiền xử lý Dữ liệu & Trích xuất Đặc trưng (Feature Engineering)
+
+Module `ml.build_features` tiến hành làm sạch log, loại bỏ request rác/trùng lặp, chia log thành các cửa sổ trượt 5 phút (5-minute sliding windows) theo từng người dùng và phiên làm việc (`user_id|session_id_hash`), sau đó trích xuất **vector 25 đặc trưng số**.
+
+**Lệnh thực thi:**
 ```powershell
-python -m ml.evaluate
+python -m ml.build_features --logs data/raw/request_logs_raw.csv --ground-truth data/raw/ground_truth.csv --output-dir data/processed/features_v1
 ```
+
+**Kết quả đầu ra (tại `data/processed/features_v1/`):**
+- `clean_logs.csv`: Dữ liệu log đã chuẩn hóa thời gian và kiểm tra tính toàn vẹn.
+- `windowed_logs.csv` & `window_mapping.csv`: Ánh xạ từng request vào cửa sổ 5 phút tương ứng.
+- `features_all.csv`: Toàn bộ ma trận đặc trưng 25 chiều của 19 cửa sổ.
+- `train_features.csv`: Tập huấn luyện (8 cửa sổ, 100% Normal).
+- `validation_features.csv`: Tập kiểm chuẩn (6 cửa sổ).
+- `test_features.csv`: Tập kiểm thử độc lập (5 cửa sổ).
+- `feature_list.json` & `feature_dictionary.md`: Danh mục và mô tả 25 đặc trưng.
+- `split_manifest.json` & `processing_report.json`: Báo cáo phân chia tập dữ liệu chống rò rỉ (Group-aware Split).
+
+---
+
+### Bước 3: Huấn luyện Mô hình & Tinh chỉnh Siêu tham số (Training & Tuning)
+
+Huấn luyện mô hình **Isolation Forest** theo chiến lược **Normal-only Training** trên `train_features.csv` và chạy Grid Tuning trên `validation_features.csv` để tìm bộ siêu tham số tối ưu (`n_estimators`, `max_samples`, `percentile threshold`).
+
+**Lệnh thực thi:**
+```powershell
+# Chạy huấn luyện và tối ưu siêu tham số
+python -m ml.train --features-dir data/processed/features_v1 --tune
+```
+
 **Kết quả đầu ra:**
-- Báo cáo kết quả đánh giá (Precision, Recall, F1-Score).
-- Các biểu đồ đánh giá tự động lưu tại thư mục `artifacts/metrics/`:
-  - `confusion_matrix.png`
-  - `score_distribution.png`
+- Mô hình và pipeline chuẩn hóa đã huấn luyện lưu tại: `artifacts/models/iforest_v1/model.joblib`
+- Bảng kết quả tinh chỉnh siêu tham số: `artifacts/metrics/tuning_results.csv`
 
-### Bước 4: Tích hợp Web - Quét & Lưu Vết Cảnh Báo (Alerts)
-Bước cuối cùng là tích hợp mô hình vào luồng ứng dụng thực tế. Script dưới đây quét toàn bộ log trong Database thông qua Mô hình. Nếu phát hiện Request log nào bất thường, nó sẽ tự động lưu cảnh báo vào bảng `Alert` trong cơ sở dữ liệu.
+---
 
-**Cú pháp:**
+### Bước 4: Đánh giá Mô hình trên Tập Kiểm thử (Evaluation)
+
+Đánh giá hiệu năng của mô hình đã lưu trên tập kiểm thử độc lập `test_features.csv`, tính toán các chỉ số thống kê (Accuracy, Precision, Recall, F1-Score, False Positive Rate) và xuất các biểu đồ trực quan hóa.
+
+**Lệnh thực thi:**
+```powershell
+python -m ml.evaluate --features-dir data/processed/features_v1 --model-dir artifacts/models/iforest_v1
+```
+
+**Kết quả đầu ra (tại `artifacts/metrics/`):**
+- `test_metrics.json`: Các chỉ số định lượng trên tập Test.
+- `test_predictions.csv`: Kết quả dự đoán chi tiết từng cửa sổ kiểm thử.
+- `scenario_metrics.csv`: Báo cáo hiệu năng phân rã theo từng kịch bản bất thường.
+- `confusion_matrix.png`: Biểu đồ ma trận nhầm lẫn (Confusion Matrix).
+- `score_distribution.png`: Biểu đồ phân bố Anomaly Score giữa nhóm Normal và Anomaly.
+
+---
+
+### Bước 5: Tích hợp Web & Quét Dò tìm Bất thường (Detection & Alerts)
+
+Tích hợp mô hình đã huấn luyện vào cơ sở dữ liệu thực tế của ứng dụng StudyDrive. Tiến trình sẽ trích xuất log từ bảng `request_logs`, tính vector 25 đặc trưng theo cửa sổ 5 phút, so khớp ngưỡng Anomaly Score, tự động lưu bản ghi vào bảng `alerts` và kích hoạt **Active Defense** để khóa tài khoản khả nghi.
+
+**Cách 1: Chạy script dòng lệnh**
 ```powershell
 python scripts/run_detection.py
 ```
-**Kết quả đầu ra:**
-- In ra màn hình thông báo dò tìm thành công (ví dụ: phát hiện 4 cảnh báo bất thường).
-- Dữ liệu `Alert` đã được thêm vào CSDL.
+
+**Cách 2: Kích hoạt từ Web Admin Dashboard**
+- Truy cập route: `http://127.0.0.1:5000/alerts/trigger-detection` (Dành cho Quản trị viên).
 
 ---
 
-## 3. Quản trị viên theo dõi Cảnh Báo (Dashboard)
+## 3. Khởi động Ứng dụng Web & Xem Bảng điều khiển (Dashboard)
 
-Sau khi hệ thống quét và lưu `Alert` thành công vào CSDL, Quản trị viên có thể xem trực quan trên Dashboard của Web Application.
-
-1. Bật Web Server (nếu chưa bật):
+1. **Chạy máy chủ web Flask:**
    ```powershell
    python run.py
    ```
-2. Truy cập vào trang Web của hệ thống và đăng nhập với tài khoản Admin:
-   - **Username:** `admin`
-   - **Password:** `StudyDriveAdmin@2026`
-3. Truy cập vào trang **Dashboard Alert** để xem chi tiết các cảnh báo đã được ghi nhận từ bước dò tìm.
+2. **Truy cập ứng dụng:** Mở trình duyệt tại địa chỉ `http://127.0.0.1:5000/`.
+3. **Đăng nhập với quyền Admin:**
+   - **Tài khoản:** `admin`
+   - **Mật khẩu:** `StudyDriveAdmin@2026`
+4. **Theo dõi Cảnh báo & Nhật ký:**
+   - Quản trị Cảnh báo (Alerts Dashboard): `http://127.0.0.1:5000/alerts/`
+   - Quản trị Nhật ký Request Log: `http://127.0.0.1:5000/admin/logs`
+   - Quản trị Tài khoản Người dùng (Khóa/Mở khóa): `http://127.0.0.1:5000/admin/users`
 
 ---
 
-## 4. Kiểm thử Tự động (Testing)
+## 4. Chạy Toàn Bộ Kiểm Thử Tự Động (Automated Testing)
 
-Bạn cũng có thể chạy lại bộ Test tự động để đảm bảo rằng quá trình tích hợp ML và Web hoạt động chính xác.
+Chạy toàn bộ 44 test cases bao gồm kiểm thử chức năng web, phân quyền tài nguyên, ghi log middleware, xác thực đăng ký người dùng và kiểm thử pipeline Machine Learning:
 
-**Cú pháp:**
 ```powershell
 pytest
 ```
-**Kết quả đầu ra:** Xác nhận toàn bộ bài test passed (Ví dụ: 38/38 passed).
+
+**Kết quả kỳ vọng:**
+```text
+============================== 44 passed in 23.53s ==============================
+```
