@@ -1,0 +1,11 @@
+{
+  "dataset_version": "features_v2",
+  "random_seed": 20260705,
+  "total_rows": 441,
+  "train_rows": 302,
+  "validation_rows": 69,
+  "test_rows": 70,
+  "train_anomaly_rows": 0,
+  "validation_anomaly_rows": 4,
+  "test_anomaly_rows": 5
+}

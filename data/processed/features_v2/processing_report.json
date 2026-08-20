@@ -1,0 +1,67 @@
+{
+  "dataset_version": "features_v2",
+  "created_at_utc": "2026-08-20T13:53:54.909767+00:00",
+  "raw_logs_path": "data/raw/request_logs_raw.csv",
+  "raw_logs_sha256": "d04caeabcb984ac3be707273d5171006a29d8cbeb816e74ea7579eb35f708812",
+  "ground_truth_path": "data/raw/ground_truth.csv",
+  "window_seconds": 30,
+  "step_seconds": 2,
+  "feature_count": 25,
+  "feature_columns": [
+    "request_count",
+    "unique_endpoint_count",
+    "unique_method_count",
+    "session_duration_sec",
+    "avg_inter_request_sec",
+    "min_inter_request_sec",
+    "burst_rate",
+    "error_rate",
+    "avg_response_time_ms",
+    "sensitive_request_count",
+    "sensitive_ratio",
+    "export_count",
+    "export_ratio",
+    "delete_count",
+    "delete_ratio",
+    "unique_deleted_resource_count",
+    "unique_resource_id_count",
+    "resource_id_request_ratio",
+    "forbidden_count",
+    "forbidden_rate",
+    "not_found_count",
+    "not_found_rate",
+    "unique_failed_resource_id_count",
+    "resource_id_change_rate",
+    "max_sensitive_streak"
+  ],
+  "cleaning": {
+    "original_rows": 10875,
+    "rows_after_cleaning": 10875,
+    "dropped_bad_timestamp_rows": 0,
+    "dropped_duplicate_request_id_rows": 0,
+    "timestamp_min": "2026-08-12T05:42:13+00:00",
+    "timestamp_max": "2026-08-12T05:52:55+00:00"
+  },
+  "total_windows_extracted": 441,
+  "label_distribution": {
+    "0_normal": 432,
+    "1_anomaly": 9
+  },
+  "scenario_distribution": {
+    "normal": 432,
+    "export_abuse": 5,
+    "bola_scan": 3,
+    "delete_abuse": 1
+  },
+  "split_manifest": {
+    "dataset_version": "features_v2",
+    "random_seed": 20260705,
+    "total_rows": 441,
+    "train_rows": 302,
+    "validation_rows": 69,
+    "test_rows": 70,
+    "train_anomaly_rows": 0,
+    "validation_anomaly_rows": 4,
+    "test_anomaly_rows": 5
+  }
+}

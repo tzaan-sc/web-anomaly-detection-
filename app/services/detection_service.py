@@ -182,7 +182,7 @@ def run_detection(
         predictions = predict_feature_dataframe(features, artifact)
     except Exception as exc:
         return DetectionRunResult(False, f"Detection lỗi: {exc}")
-
+# 3. Nạp mô hình Isolation Forest (file .joblib) và dự đoán
     model_version = artifact.get("metadata", {}).get("model_version", "iforest_v1")
     anomaly_rows = predictions[predictions["y_pred"].astype(int).eq(1)].copy()
     created = 0

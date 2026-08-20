@@ -27,6 +27,7 @@ def parse_args(argv: list[str] | None = None):
     parser.add_argument("--end")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--model", default="artifacts/models/iforest_v1/model.joblib")
+    #parser.add_argument("--model", default="artifacts/models/iforest_v2/model.joblib")
     return parser.parse_args(argv)
 
 

@@ -19,7 +19,7 @@ import pandas as pd
 from ml.build_features import FEATURE_COLUMNS, validate_feature_matrix
 
 DEFAULT_MODEL_PATH = "artifacts/models/iforest_v1/model.joblib"
-
+#DEFAULT_MODEL_PATH = "artifacts/models/iforest_v2/model.joblib"
 
 def load_detector(model_path: str | Path = DEFAULT_MODEL_PATH) -> dict[str, Any]:
     path = Path(model_path)
