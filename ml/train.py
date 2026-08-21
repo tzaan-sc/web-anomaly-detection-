@@ -256,10 +256,25 @@ def main(argv: list[str] | None = None) -> None:
         )
 
     model_path = save_artifact(model, args.output_dir, feature_list, result, features_dir=args.features_dir)
-    print("DONE train")
-    print(f"  model: {model_path}")
-    print(f"  threshold: {result['threshold']:.6f}")
-    print(f"  validation: {result['validation_metrics']}")
+    val = result.get("validation_metrics", {})
+    tn, fp, fn, tp = val.get("tn", 0), val.get("fp", 0), val.get("fn", 0), val.get("tp", 0)
+
+    print("\n" + "=" * 60)
+    print("=== [VERSION 1] TRAIN & TUNING COMPLETED ===")
+    print("=" * 60)
+    print(f"  • Saved Model Artifacts   : {model_path}")
+    print(f"  • Train Set Rows          : {result['train_metrics']['rows']} (Normal only)")
+    print(f"  • Validation Set Rows     : {val.get('rows', 0)}")
+    print(f"  • Optimal Threshold (tau) : {result['threshold']:.6f} (Percentile: {result.get('threshold_percentile', 95.0)}%)")
+    print("-" * 60)
+    print(f"  • Validation Accuracy     : {val.get('accuracy', 0.0)*100:.2f}%")
+    print(f"  • Validation Precision    : {val.get('precision', 0.0)*100:.2f}%")
+    print(f"  • Validation Recall       : {val.get('recall', 0.0)*100:.2f}%")
+    print(f"  • Validation F1-Score     : {val.get('f1', 0.0):.4f}")
+    print(f"  • False Positive Rate(FPR): {val.get('false_positive_rate', 0.0)*100:.2f}%")
+    print("-" * 60)
+    print(f"  • Confusion Matrix (Val)  : TN={tn} | FP={fp} | FN={fn} | TP={tp}")
+    print("=" * 60 + "\n")
 
 
 if __name__ == "__main__":

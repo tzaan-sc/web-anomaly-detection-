@@ -2,7 +2,7 @@
   "model_version": "iforest_v2",
   "dataset_version": "features_v2",
   "features_dir": "data/processed/features_v2",
-  "trained_at_utc": "2026-08-21T02:04:45.990415+00:00",
+  "trained_at_utc": "2026-08-21T02:58:34.572488+00:00",
   "random_state": 20260706,
   "feature_list": [
     "request_count",
