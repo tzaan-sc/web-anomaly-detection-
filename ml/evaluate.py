@@ -56,37 +56,60 @@ def scenario_metrics(df: pd.DataFrame) -> pd.DataFrame:
 def plot_confusion_matrix(metrics: dict[str, object], output_path: Path) -> None:
     cm = metrics["confusion_matrix"]
     matrix = np.array([[cm["tn"], cm["fp"]], [cm["fn"], cm["tp"]]])
-    fig, ax = plt.subplots(figsize=(5, 4))
-    im = ax.imshow(matrix)
-    ax.set_xticks([0, 1], labels=["Pred normal", "Pred anomaly"])
-    ax.set_yticks([0, 1], labels=["True normal", "True anomaly"])
+    tn, fp, fn, tp = cm["tn"], cm["fp"], cm["fn"], cm["tp"]
+    
+    fig, ax = plt.subplots(figsize=(5.5, 4.5), dpi=300)
+    im = ax.imshow(matrix, cmap="Blues", interpolation="nearest")
+    
+    ax.set_xticks([0, 1])
+    ax.set_yticks([0, 1])
+    ax.set_xticklabels(["Dự đoán\nNormal (0)", "Dự đoán\nAnomaly (1)"], fontsize=11, fontweight="600")
+    ax.set_yticklabels(["Thực tế\nNormal (0)", "Thực tế\nAnomaly (1)"], fontsize=11, fontweight="600")
+    
+    cell_texts = [
+        [f"TN = {tn}\n(Đúng Normal)", f"FP = {fp}\n(Báo nhầm)"],
+        [f"FN = {fn}\n(Bỏ sót)", f"TP = {tp}\n(Bắt đúng Anomaly)"],
+    ]
     for i in range(2):
         for j in range(2):
-            ax.text(j, i, int(matrix[i, j]), ha="center", va="center")
-    ax.set_title("Confusion Matrix")
-    fig.colorbar(im, ax=ax)
+            val = matrix[i, j]
+            color = "white" if val >= max(2, int(matrix.max() * 0.6)) else "#1e293b"
+            ax.text(j, i, cell_texts[i][j], ha="center", va="center", fontsize=11, fontweight="bold", color=color)
+            
+    ax.set_title("Ma Trận Nhầm Lẫn (Confusion Matrix)", fontsize=13, fontweight="bold", pad=12, color="#1e293b")
+    ax.grid(False)
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, dpi=160)
+    fig.savefig(output_path, dpi=300)
     plt.close(fig)
 
 
 def plot_score_distribution(predictions: pd.DataFrame, output_path: Path) -> None:
-    fig, ax = plt.subplots(figsize=(7, 4))
+    fig, ax = plt.subplots(figsize=(7.5, 4.5), dpi=300)
     normal = predictions[predictions["label"].fillna(0).astype(int).eq(0)]["anomaly_score"]
     anomaly = predictions[predictions["label"].fillna(0).astype(int).eq(1)]["anomaly_score"]
-    ax.hist(normal, bins=30, alpha=0.65, label="normal")
-    ax.hist(anomaly, bins=30, alpha=0.65, label="anomaly")
-    threshold = predictions["threshold"].iloc[0] if "threshold" in predictions and not predictions.empty else None
+    threshold = float(predictions["threshold"].iloc[0]) if "threshold" in predictions and not predictions.empty else None
+
+    all_scores = predictions["anomaly_score"]
+    bins = np.linspace(all_scores.min() - 0.01, all_scores.max() + 0.01, 20)
+
+    if not normal.empty:
+        ax.hist(normal, bins=bins, alpha=0.65, color="#2563eb", label=f"Normal (n={len(normal)})", edgecolor="#1d4ed8")
+    if not anomaly.empty:
+        ax.hist(anomaly, bins=bins, alpha=0.65, color="#dc2626", label=f"Anomaly (n={len(anomaly)})", edgecolor="#b91c1c")
+        
     if threshold is not None:
-        ax.axvline(float(threshold), linestyle="--", label="threshold")
-    ax.set_title("Anomaly score distribution")
-    ax.set_xlabel("anomaly_score (higher = more suspicious)")
-    ax.set_ylabel("window count")
-    ax.legend()
+        ax.axvline(float(threshold), color="#111827", linestyle="--", linewidth=2.2, label=f"Ngưỡng (Threshold = {threshold:.4f})")
+
+    ax.set_title("Phân Phối Điểm Bất Thường (Score Distribution)", fontsize=13, fontweight="bold", pad=12, color="#1e293b")
+    ax.set_xlabel("Anomaly Score (Cao hơn = Bất thường hơn)", fontsize=11, fontweight="600")
+    ax.set_ylabel("Số lượng cửa sổ (Windows)", fontsize=11, fontweight="600")
+    ax.legend(frameon=True, facecolor="white", edgecolor="#cbd5e1", fontsize=10, loc="upper right")
+    ax.grid(True, linestyle="--", alpha=0.5)
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, dpi=160)
+    fig.savefig(output_path, dpi=300)
     plt.close(fig)
 
 
@@ -119,7 +142,25 @@ def parse_args(argv: list[str] | None = None):
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     predictions = evaluate(args.model, args.test, args.output_dir)
-    print(f"DONE evaluate: {len(predictions)} predictions -> {args.output_dir}")
+    out = Path(args.output_dir)
+    metrics_path = out / "test_metrics.json"
+    
+    if metrics_path.exists():
+        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        cm = metrics.get("confusion_matrix", {})
+        print("\n" + "=" * 60)
+        print("=== EVALUATION RESULTS (TEST SET METRICS) ===")
+        print("=" * 60)
+        print(f"  • Total Test Samples       : {metrics.get('rows', len(predictions))}")
+        print(f"  • Accuracy (Do chinh xac)  : {metrics.get('accuracy', 0.0)*100:.2f}%")
+        print(f"  • Precision (Do chinh xac) : {metrics.get('precision', 0.0)*100:.2f}%")
+        print(f"  • Recall (Ty le bat trung) : {metrics.get('recall', 0.0)*100:.2f}%")
+        print(f"  • F1-Score                 : {metrics.get('f1', 0.0):.4f}")
+        print(f"  • False Positive Rate (FPR): {metrics.get('false_positive_rate', 0.0)*100:.2f}%")
+        print("-" * 60)
+        print(f"  • Confusion Matrix: TN={cm.get('tn', 0)} | FP={cm.get('fp', 0)} | FN={cm.get('fn', 0)} | TP={cm.get('tp', 0)}")
+        print("=" * 60)
+        print(f" Saved metrics & plots to: {args.output_dir}\n")
 
 
 if __name__ == "__main__":

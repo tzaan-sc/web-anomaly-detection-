@@ -150,17 +150,32 @@ def plot_combined_slide_dashboard(df: pd.DataFrame, out_path: Path):
 
 
 def main():
-    if not PREDICTIONS_PATH.exists():
-        print(f"Error: {PREDICTIONS_PATH} does not exist. Run `python -m ml.evaluate` first.")
-        return
+    import argparse
+    parser = argparse.ArgumentParser(description="Generate high-resolution evaluation charts")
+    parser.add_argument("--predictions", default="artifacts/metrics/v2/test_predictions.csv", help="Path to test_predictions.csv")
+    parser.add_argument("--output-dir", default="artifacts/figures/v2", help="Output directory for charts")
+    args = parser.parse_args()
 
-    df = pd.read_csv(PREDICTIONS_PATH, encoding="utf-8-sig")
-    print(f"Loaded {len(df)} predictions from {PREDICTIONS_PATH}")
+    pred_path = Path(args.predictions)
+    out_dir = Path(args.output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
 
-    plot_custom_confusion_matrix(df, OUTPUT_DIR / "confusion_matrix_vn.png")
-    plot_custom_score_distribution(df, OUTPUT_DIR / "score_distribution_vn.png")
-    plot_combined_slide_dashboard(df, OUTPUT_DIR / "evaluation_dashboard_slide.png")
-    print("\n Done generating all charts!")
+    if not pred_path.exists():
+        # Fallback to v1 if v2 not evaluated yet
+        if Path("artifacts/metrics/test_predictions.csv").exists():
+            pred_path = Path("artifacts/metrics/test_predictions.csv")
+            out_dir = Path("artifacts/figures")
+        else:
+            print(f"Error: {pred_path} does not exist. Run `python -m ml.evaluate` first.")
+            return
+
+    df = pd.read_csv(pred_path, encoding="utf-8-sig")
+    print(f"Loaded {len(df)} predictions from {pred_path}")
+
+    plot_custom_confusion_matrix(df, out_dir / "confusion_matrix_vn.png")
+    plot_custom_score_distribution(df, out_dir / "score_distribution_vn.png")
+    plot_combined_slide_dashboard(df, out_dir / "evaluation_dashboard_slide.png")
+    print(f"\n Done generating all beautiful charts to {out_dir}!")
 
 
 if __name__ == "__main__":

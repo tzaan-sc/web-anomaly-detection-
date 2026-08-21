@@ -1,14 +1,14 @@
 {
-  "rows": 6,
-  "precision": 0.6666666666666666,
-  "recall": 0.6666666666666666,
-  "f1": 0.6666666666666666,
-  "accuracy": 0.6666666666666666,
-  "false_positive_rate": 0.3333333333333333,
+  "rows": 5,
+  "precision": 0.75,
+  "recall": 1.0,
+  "f1": 0.8571428571428571,
+  "accuracy": 0.8,
+  "false_positive_rate": 0.5,
   "confusion_matrix": {
-    "tn": 2,
+    "tn": 1,
     "fp": 1,
-    "fn": 1,
-    "tp": 2
+    "fn": 0,
+    "tp": 3
   }
 }
